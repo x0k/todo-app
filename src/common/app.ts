@@ -2,11 +2,12 @@ import { createDomain } from 'effector'
 // @ts-expect-error wtf
 import { attachLogger } from 'effector-logger/attach'
 
-export const app = createDomain('app')
-
+export const app = createDomain()
 if (process.env.NODE_ENV === 'development') {
   attachLogger(app, {
-    console: 'enabled'
+    reduxDevtools: 'enabled',
+    console: 'enabled',
+    inspector: 'enabled'
   })
 }
 

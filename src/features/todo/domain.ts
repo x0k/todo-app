@@ -1,16 +1,16 @@
+import { app } from '@/common/app'
+
 import {
-  type TasksList,
   type CreateTask,
   type CreateTasksList,
   type TaskCreatedEvent,
   type TaskUpdatedEvent,
+  type TasksList,
   type TasksListCreatedEvent,
   type TasksListUpdatedEvent,
   type UpdateTask,
   type UpdateTasksList,
-} from '@/models/todo'
-
-import { app } from '../shared'
+} from './model'
 
 export const todo = app.createDomain('ToDo')
 

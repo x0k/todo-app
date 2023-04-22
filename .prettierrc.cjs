@@ -5,10 +5,7 @@ module.exports = {
   singleQuote: true,
   importOrder: [
     '^@/lib/(.*)$',
-    '^@/models/(.*)$',
-    '^@/domains/(.*)$',
     '^@/components/(.*)$',
-    '^@/containers/(.*)$',
     '^@/implementation/(.*)$',
     '^@/(.*)$',
     '^[./]',

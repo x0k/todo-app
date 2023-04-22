@@ -1,3 +1,4 @@
+import { sample } from 'effector'
 import {
   type ToDoHandlers,
   createTaskFx,
@@ -5,7 +6,7 @@ import {
   loadTasksListsFx,
   updateTaskFx,
   updateTasksListFx,
-} from './index'
+} from './domain'
 
 export function initToDo(handlers: ToDoHandlers): void {
   loadTasksListsFx.use(handlers.loadTasksLists)

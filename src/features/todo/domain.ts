@@ -16,17 +16,19 @@ export const todo = app.createDomain('ToDo')
 
 // Stores
 
-export const $taskLists = todo.createStore([])
+export const $tasksLists = todo.createStore<TasksList[]>([])
+
+export const $tasksMap = $tasksLists.map(lists => new Map(lists.map(list => [list.id, list])))
 
 // Events
 
-export const taskCreated = todo.createEvent<CreateTask>()
+// export const taskCreated = todo.createEvent<CreateTask>()
 
-export const tasksListCreated = todo.createEvent<CreateTasksList>()
+// export const tasksListCreated = todo.createEvent<CreateTasksList>()
 
-export const taskUpdated = todo.createEvent<UpdateTask>()
+// export const taskUpdated = todo.createEvent<UpdateTask>()
 
-export const TasksListUpdated = todo.createEvent<UpdateTasksList>()
+// export const TasksListUpdated = todo.createEvent<UpdateTasksList>()
 
 // Effects
 

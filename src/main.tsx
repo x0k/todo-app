@@ -7,9 +7,9 @@ import ReactDOM from 'react-dom/client'
 
 import { NotificationsContainer } from './features/notifications'
 import './index.css'
-import { init } from './init'
+import { initApp } from './init'
 
-init()
+initApp()
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

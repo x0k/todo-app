@@ -10,6 +10,7 @@ export enum TaskStatus {
 
 export interface Task {
   id: TaskId
+  tasksListId: TasksListId
   title: string
   status: TaskStatus
   createdAt: Date
@@ -61,7 +62,6 @@ export interface AbstractEvent<T extends EventType> {
 }
 
 export interface TaskCreatedEvent extends AbstractEvent<EventType.TaskCreated> {
-  tasksListID: TasksListId
   task: Task
 }
 
@@ -88,6 +88,14 @@ export type Event =
   | TaskUpdatedEvent
   | TasksListUpdatedEvent
 
+export interface IToDoService {
+  loadTasksLists: () => Promise<TasksList[]>
+  createTask: (data: CreateTask) => Promise<Task>
+  createTasksList: (data: CreateTasksList) => Promise<TasksList>
+  updateTask: (data: UpdateTask) => Promise<void>
+  updateTasksList: (data: UpdateTasksList) => Promise<void>
+}
+
 const HANDLERS: {
   [T in EventType]: (
     state: TasksList[],
@@ -96,7 +104,7 @@ const HANDLERS: {
 } = {
   [EventType.TaskCreated]: (state, event) =>
     state.map((list) =>
-      list.id === event.tasksListID
+      list.id === event.task.tasksListId
         ? { ...list, tasks: [...list.tasks, event.task] }
         : list
     ),

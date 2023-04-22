@@ -11,4 +11,6 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
-export const appStarted = app.createEvent()
+export const started = app.createEvent()
+
+export const errorOccurred = app.createEvent<Error>()

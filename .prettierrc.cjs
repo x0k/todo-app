@@ -6,12 +6,12 @@ module.exports = {
   importOrder: [
     '^@/lib/(.*)$',
     '^@/components/(.*)$',
-    '^@/implementation/(.*)$',
     '^@/(.*)$',
     '^..?/model',
     '^..?/components',
     '^..?/domain',
     '^..?/containers',
+    '^..?/implementation/(.*)$',
     '^[./]',
   ],
   importOrderSeparation: true,

@@ -3,12 +3,12 @@ import { sample } from 'effector'
 import { errorOccurred, started } from './common/app'
 import { NotificationType, notificationShowed } from './features/notifications'
 import { initNotifications } from './features/notifications/init'
-import { type ToDoHandlers } from './features/todo'
+import { type IToDoService } from './features/todo'
 import { initToDo } from './features/todo/init'
 
-export function initApp(todoHandlers: ToDoHandlers): void {
+export function initApp(todoService: IToDoService): void {
   initNotifications()
-  initToDo(todoHandlers)
+  initToDo(todoService)
   started()
 }
 

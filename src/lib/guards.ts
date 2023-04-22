@@ -40,9 +40,9 @@ export function isRecord<T = unknown>(
   return isObject(value) && !isArray(value)
 }
 
-export function isFunction<
-  T extends (...args: readonly unknown[]) => unknown
->(value: unknown): value is T {
+export function isFunction<T extends (...args: readonly unknown[]) => unknown>(
+  value: unknown
+): value is T {
   return typeof value === 'function'
 }
 
@@ -50,6 +50,8 @@ export function makeIsArrayOf<I, T extends I>(guard: (value: I) => value is T) {
   return (value: unknown): value is T[] =>
     isArray<I>(value) && value.every(guard)
 }
+
+export const isArrayOfSomething = makeIsArrayOf(isSomething)
 
 export function isDate(value: unknown): value is Date {
   return value instanceof Date

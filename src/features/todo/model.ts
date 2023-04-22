@@ -19,6 +19,7 @@ export interface Task {
 export type WritableTaskData = Pick<Task, 'title' | 'status'>
 
 export interface CreateTask {
+  tasksListId: TasksListId
   title: string
 }
 
@@ -90,10 +91,10 @@ export type Event =
 
 export interface IToDoService {
   loadTasksLists: () => Promise<TasksList[]>
-  createTask: (data: CreateTask) => Promise<Task>
-  createTasksList: (data: CreateTasksList) => Promise<TasksList>
-  updateTask: (data: UpdateTask) => Promise<void>
-  updateTasksList: (data: UpdateTasksList) => Promise<void>
+  createTask: (data: CreateTask) => Promise<TaskCreatedEvent>
+  createTasksList: (data: CreateTasksList) => Promise<TasksListCreatedEvent>
+  updateTask: (data: UpdateTask) => Promise<TaskUpdatedEvent>
+  updateTasksList: (data: UpdateTasksList) => Promise<TasksListUpdatedEvent>
 }
 
 const HANDLERS: {

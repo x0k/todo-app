@@ -3,7 +3,9 @@ import { app } from '@/common/app'
 import {
   type CreateTask,
   type CreateTasksList,
+  type Task,
   type TaskCreatedEvent,
+  TaskStatus,
   type TaskUpdatedEvent,
   type TasksList,
   type TasksListCreatedEvent,
@@ -18,17 +20,43 @@ export const todo = app.createDomain('ToDo')
 
 export const $tasksLists = todo.createStore<TasksList[]>([])
 
-export const $tasksMap = $tasksLists.map(lists => new Map(lists.map(list => [list.id, list])))
+export const $tasksMap = $tasksLists.map(
+  (lists) => new Map(lists.map((list) => [list.id, list]))
+)
+
+export const $date = todo.createStore(new Date())
+
+export const $dashboard = $tasksLists.map((lists) => {
+  const notDoneTasks: Task[] = []
+  const doneTasks: Task[] = []
+  for (const list of lists) {
+    if (
+      list.tasks.length === 0 ||
+      list.tasks.every((task) => task.status === TaskStatus.Archived)
+    ) {
+      continue
+    }
+    const doneTask = list.tasks.find((task) => task.status === TaskStatus.Done)
+    if (doneTask === undefined) {
+      const notDoneTask = list.tasks.find(
+        (task) => task.status === TaskStatus.NotDone
+      )
+      if (notDoneTask !== undefined) {
+        notDoneTasks.push(list.tasks[0])
+      }
+    } else {
+      doneTasks.push(doneTask)
+    }
+  }
+  return {
+    doneTasks,
+    notDoneTasks,
+  }
+})
 
 // Events
 
-// export const taskCreated = todo.createEvent<CreateTask>()
-
-// export const tasksListCreated = todo.createEvent<CreateTasksList>()
-
-// export const taskUpdated = todo.createEvent<UpdateTask>()
-
-// export const TasksListUpdated = todo.createEvent<UpdateTasksList>()
+export const doneTasksArchiving = todo.createEvent()
 
 // Effects
 
@@ -47,11 +75,3 @@ export const updateTasksListFx = todo.createEffect<
   UpdateTasksList,
   TasksListUpdatedEvent
 >()
-
-export interface ToDoHandlers {
-  loadTasksLists: () => Promise<TasksList[]>
-  createTask: (data: CreateTask) => Promise<TaskCreatedEvent>
-  createTasksList: (data: CreateTasksList) => Promise<TasksListCreatedEvent>
-  updateTask: (data: UpdateTask) => Promise<TaskUpdatedEvent>
-  updateTasksList: (data: UpdateTasksList) => Promise<TasksListUpdatedEvent>
-}

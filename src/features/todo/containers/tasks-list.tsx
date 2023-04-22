@@ -1,15 +1,17 @@
 import { useStoreMap } from 'effector-react'
 
-import { type TasksListId } from '../model'
+import { type TasksList, type TasksListId } from '../model'
 
 import { $tasksMap } from '../domain'
 
 export interface TasksListContainerProps {
   tasksListId: TasksListId
+  children: (data: TasksList) => JSX.Element
 }
 
 export function TasksListContainer({
   tasksListId,
+  children
 }: TasksListContainerProps): JSX.Element | null {
   const data = useStoreMap({
     store: $tasksMap,
@@ -19,5 +21,5 @@ export function TasksListContainer({
   if (data === undefined) {
     return null
   }
-  return <h1>TasksList</h1>
+  return children(data)
 }

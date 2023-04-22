@@ -2,11 +2,10 @@ import { sample } from 'effector'
 
 import { errorOccurred, started } from '@/common/app'
 
-import { reducer } from './model'
+import { type IToDoService, reducer } from './model'
 
 import {
   $tasksLists,
-  type ToDoHandlers,
   createTaskFx,
   createTasksListFx,
   loadTasksListsFx,
@@ -14,12 +13,12 @@ import {
   updateTasksListFx,
 } from './domain'
 
-export function initToDo(handlers: ToDoHandlers): void {
-  loadTasksListsFx.use(handlers.loadTasksLists)
-  createTaskFx.use(handlers.createTask)
-  updateTaskFx.use(handlers.updateTask)
-  createTasksListFx.use(handlers.createTasksList)
-  updateTasksListFx.use(handlers.updateTasksList)
+export function initToDo(todoService: IToDoService): void {
+  loadTasksListsFx.use(todoService.loadTasksLists)
+  createTaskFx.use(todoService.createTask)
+  updateTaskFx.use(todoService.updateTask)
+  createTasksListFx.use(todoService.createTasksList)
+  updateTasksListFx.use(todoService.updateTasksList)
 }
 
 sample({

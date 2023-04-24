@@ -7,7 +7,6 @@ import {
   type TaskCreatedEvent,
   TaskStatus,
   type TaskUpdatedEvent,
-  type TasksList,
   type TasksListCreatedEvent,
   type TasksListUpdatedEvent,
   type TasksState,
@@ -23,6 +22,8 @@ export const $tasksState = todo.createStore<TasksState>({
   lists: new Map(),
   tasks: new Map(),
 })
+
+export const $listsMap = $tasksState.map((state) => state.lists)
 
 export const $tasksMap = $tasksState.map((state) => state.tasks)
 
@@ -68,7 +69,7 @@ export const doneTasksArchiving = todo.createEvent()
 
 // Effects
 
-export const loadTasksListsFx = todo.createEffect<void, TasksList[]>()
+export const loadTasksStateFx = todo.createEffect<void, TasksState>()
 
 export const createTaskFx = todo.createEffect<CreateTask, TaskCreatedEvent>()
 

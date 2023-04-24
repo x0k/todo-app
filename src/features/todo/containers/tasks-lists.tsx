@@ -2,8 +2,9 @@ import { useStoreMap } from 'effector-react'
 
 import { strictArrayComparator } from '@/common/utils'
 
-import { $tasksState } from '../domain'
 import { type TasksListId } from '../model'
+
+import { $tasksState } from '../domain'
 
 export interface TasksListsContainerProps {
   children: (listId: TasksListId) => JSX.Element
@@ -15,7 +16,7 @@ export function TasksListsContainer({
   const tasksListsIds = useStoreMap({
     store: $tasksState,
     keys: [],
-    fn: (lists) => lists.map((list) => list.id),
+    fn: (state) => Array.from(state.lists.keys()),
     updateFilter: (prev, next) => strictArrayComparator(prev, next) !== 0,
   })
   return <>{tasksListsIds.map(children)}</>

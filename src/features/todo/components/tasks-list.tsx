@@ -10,34 +10,44 @@ import {
   Typography,
 } from '@mui/material'
 
-import { type TasksList } from '../model'
+import { type Task, type TaskId } from '../model'
 
 export interface TasksListProps {
-  data: TasksList
-  onClick: () => void
-  onEdit: () => void
+  title: string
+  tasks: Task[]
+  onClick: (taskId: TaskId) => void
+  onEdit: (taskId: TaskId) => void
 }
 
 export function TasksListComponent({
-  data,
+  title,
+  tasks,
   onClick,
   onEdit,
 }: TasksListProps): JSX.Element {
   return (
     <Box display="flex" flexDirection="column" gap="1rem">
-      <Typography variant="h6">{data.title}</Typography>
+      <Typography variant="h6">{title}</Typography>
       <Paper elevation={2}>
         <List>
-          {data.tasks.map((task) => (
+          {tasks.map((task) => (
             <ListItem
               key={task.id}
               secondaryAction={
-                <IconButton onClick={onEdit}>
+                <IconButton
+                  onClick={() => {
+                    onEdit(task.id)
+                  }}
+                >
                   <Edit />
                 </IconButton>
               }
             >
-              <ListItemButton onClick={onClick}>
+              <ListItemButton
+                onClick={() => {
+                  onClick(task.id)
+                }}
+              >
                 <ListItemText primary={task.title} />
               </ListItemButton>
             </ListItem>

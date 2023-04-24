@@ -24,11 +24,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <TasksListsContainer>
       {(listId) => (
         <TasksListContainer key={listId} tasksListId={listId}>
-          {(data) => (
+          {({ list, tasks }) => (
             <TasksListComponent
+              title={list.title}
+              tasks={tasks}
               onClick={console.log}
               onEdit={console.log}
-              data={data}
             />
           )}
         </TasksListContainer>

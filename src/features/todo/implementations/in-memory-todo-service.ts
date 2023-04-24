@@ -1,49 +1,39 @@
 import { nanoid } from 'nanoid'
 
-import { isArrayOfSomething } from '@/lib/guards'
-import { makeMap } from '@/lib/iterable'
-
 import {
   type CreateTask,
   type CreateTasksList,
   EventType,
   type IToDoService,
+  TASK_STATUSES,
   type Task,
   type TaskCreatedEvent,
   type TaskId,
   TaskStatus,
   type TaskUpdatedEvent,
+  type Tasks,
   type TasksList,
   type TasksListCreatedEvent,
   type TasksListId,
   type TasksListUpdatedEvent,
+  type TasksState,
   type UpdateTask,
   type UpdateTasksList,
 } from '../model'
 
-type InMemoryTasksList = Omit<TasksList, 'tasks'> & { tasks: TaskId[] }
-
 export class InMemoryToDoService implements IToDoService {
   private readonly tasks = new Map<TaskId, Task>()
-  private readonly tasksLists = new Map<TasksListId, InMemoryTasksList>()
+  private readonly lists = new Map<TasksListId, TasksList>()
 
-  private readonly toRealTasksList = (mem: InMemoryTasksList): TasksList => {
-    const tasks = mem.tasks.map((taskId) => this.tasks.get(taskId))
-    if (isArrayOfSomething<Task>(tasks)) {
-      return {
-        ...mem,
-        tasks,
-      }
+  loadTasksState = async (): Promise<TasksState> => {
+    return {
+      tasks: this.tasks,
+      lists: this.lists,
     }
-    throw new Error('Invalid tasks list')
-  }
-
-  loadTasksLists = async (): Promise<TasksList[]> => {
-    return Array.from(makeMap(this.toRealTasksList)(this.tasksLists.values()))
   }
 
   createTask = async (data: CreateTask): Promise<TaskCreatedEvent> => {
-    const tasksList = this.tasksLists.get(data.tasksListId)
+    const tasksList = this.lists.get(data.tasksListId)
     if (tasksList === undefined) {
       throw new Error(`Tasks list with id ${data.tasksListId} not found`)
     }
@@ -54,7 +44,8 @@ export class InMemoryToDoService implements IToDoService {
       status: TaskStatus.NotDone,
     }
     this.tasks.set(task.id, task)
-    tasksList.tasks.push(task.id)
+    tasksList.tasks[task.status].add(task.id)
+    tasksList.tasksCount++
     return {
       type: EventType.TaskCreated,
       createdAt: task.createdAt,
@@ -65,15 +56,19 @@ export class InMemoryToDoService implements IToDoService {
   createTasksList = async (
     data: CreateTasksList
   ): Promise<TasksListCreatedEvent> => {
-    const tasksList: InMemoryTasksList = {
+    const tasks = Object.fromEntries(
+      TASK_STATUSES.map((s) => [s, new Set()])
+    ) as Tasks
+    const tasksList: TasksList = {
       id: nanoid() as TasksListId,
       createdAt: new Date(),
       isArchived: false,
-      tasks: [],
+      tasks,
+      tasksCount: 0,
       title: data.title,
     }
-    this.tasksLists.set(tasksList.id, tasksList)
-    await Promise.all(
+    this.lists.set(tasksList.id, tasksList)
+    const taskCreatedEvents = await Promise.all(
       data.tasks.map(
         async (title) =>
           await this.createTask({ title, tasksListId: tasksList.id })
@@ -82,7 +77,8 @@ export class InMemoryToDoService implements IToDoService {
     return {
       type: EventType.TasksListCreated,
       createdAt: tasksList.createdAt,
-      list: this.toRealTasksList(tasksList),
+      list: tasksList,
+      tasks: taskCreatedEvents.map((e) => e.task),
     }
   }
 
@@ -100,7 +96,6 @@ export class InMemoryToDoService implements IToDoService {
       createdAt: new Date(),
       change,
       taskId,
-      tasksListId: task.tasksListId,
     }
   }
 
@@ -108,11 +103,11 @@ export class InMemoryToDoService implements IToDoService {
     tasksListId,
     change,
   }: UpdateTasksList): Promise<TasksListUpdatedEvent> => {
-    const tasksList = this.tasksLists.get(tasksListId)
+    const tasksList = this.lists.get(tasksListId)
     if (tasksList === undefined) {
       throw new Error(`Tasks list with id ${tasksListId} not found`)
     }
-    this.tasksLists.set(tasksListId, { ...tasksList, ...change })
+    this.lists.set(tasksListId, { ...tasksList, ...change })
     return {
       type: EventType.TasksListUpdated,
       tasksListId,

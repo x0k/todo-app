@@ -8,6 +8,8 @@ export enum TaskStatus {
   Done = 'd',
 }
 
+export const TASK_STATUSES = Object.values(TaskStatus)
+
 export interface Task {
   id: TaskId
   tasksListId: TasksListId
@@ -107,7 +109,7 @@ export interface TasksState {
 }
 
 export interface IToDoService {
-  loadTasksLists: () => Promise<TasksList[]>
+  loadTasksState: () => Promise<TasksState>
   createTask: (data: CreateTask) => Promise<TaskCreatedEvent>
   createTasksList: (data: CreateTasksList) => Promise<TasksListCreatedEvent>
   updateTask: (data: UpdateTask) => Promise<TaskUpdatedEvent>

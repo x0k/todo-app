@@ -8,13 +8,13 @@ import {
   $tasksState,
   createTaskFx,
   createTasksListFx,
-  loadTasksListsFx,
+  loadTasksStateFx,
   updateTaskFx,
   updateTasksListFx,
 } from './domain'
 
 export function initToDo(todoService: IToDoService): void {
-  loadTasksListsFx.use(todoService.loadTasksLists)
+  loadTasksStateFx.use(todoService.loadTasksState)
   createTaskFx.use(todoService.createTask)
   updateTaskFx.use(todoService.updateTask)
   createTasksListFx.use(todoService.createTasksList)
@@ -23,12 +23,12 @@ export function initToDo(todoService: IToDoService): void {
 
 sample({
   clock: started,
-  target: loadTasksListsFx,
+  target: loadTasksStateFx,
 })
 
 sample({
   clock: [
-    loadTasksListsFx.failData,
+    loadTasksStateFx.failData,
     createTaskFx.failData,
     updateTaskFx.failData,
     createTasksListFx.failData,
@@ -38,7 +38,7 @@ sample({
 })
 
 $tasksState
-  .on(loadTasksListsFx.doneData, (_, payload) => payload)
+  .on(loadTasksStateFx.doneData, (_, payload) => payload)
   .on(
     [
       createTaskFx.doneData,

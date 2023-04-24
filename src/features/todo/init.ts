@@ -5,7 +5,7 @@ import { errorOccurred, started } from '@/common/app'
 import { type IToDoService, reducer } from './model'
 
 import {
-  $tasksLists,
+  $tasksState,
   createTaskFx,
   createTasksListFx,
   loadTasksListsFx,
@@ -37,7 +37,7 @@ sample({
   target: errorOccurred,
 })
 
-$tasksLists
+$tasksState
   .on(loadTasksListsFx.doneData, (_, payload) => payload)
   .on(
     [

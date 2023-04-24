@@ -16,7 +16,7 @@ export interface Task {
   createdAt: Date
 }
 
-export type WritableTaskData = Pick<Task, 'title' | 'status'>
+export type WritableTaskData = Pick<Task, 'title'>
 
 export interface CreateTask {
   tasksListId: TasksListId
@@ -30,11 +30,14 @@ export interface UpdateTask {
 
 export type TasksListId = Brand<'TasksListID', string>
 
+export type Tasks = Record<TaskStatus, Set<TaskId>>
+
 export interface TasksList {
   id: TasksListId
   title: string
   isArchived: boolean
-  tasks: Task[]
+  tasks: Tasks
+  tasksCount: number
   createdAt: Date
 }
 
@@ -55,6 +58,7 @@ export enum EventType {
   TasksListCreated = 'tlc',
   TaskUpdated = 'tu',
   TasksListUpdated = 'tlu',
+  TaskStatusChanged = 'tsc',
 }
 
 export interface AbstractEvent<T extends EventType> {
@@ -69,10 +73,10 @@ export interface TaskCreatedEvent extends AbstractEvent<EventType.TaskCreated> {
 export interface TasksListCreatedEvent
   extends AbstractEvent<EventType.TasksListCreated> {
   list: TasksList
+  tasks: Task[]
 }
 
 export interface TaskUpdatedEvent extends AbstractEvent<EventType.TaskUpdated> {
-  tasksListId: TasksListId
   taskId: TaskId
   change: WritableTaskData
 }
@@ -83,11 +87,24 @@ export interface TasksListUpdatedEvent
   change: WritableTasksListData
 }
 
+export interface TaskStatusChangedEvent
+  extends AbstractEvent<EventType.TaskStatusChanged> {
+  tasksListId: TasksListId
+  taskId: TaskId
+  newStatus: TaskStatus
+}
+
 export type Event =
   | TaskCreatedEvent
   | TasksListCreatedEvent
   | TaskUpdatedEvent
   | TasksListUpdatedEvent
+  | TaskStatusChangedEvent
+
+export interface TasksState {
+  lists: Map<TasksListId, TasksList>
+  tasks: Map<TaskId, Task>
+}
 
 export interface IToDoService {
   loadTasksLists: () => Promise<TasksList[]>
@@ -99,34 +116,96 @@ export interface IToDoService {
 
 const HANDLERS: {
   [T in EventType]: (
-    state: TasksList[],
+    state: TasksState,
     event: Extract<Event, AbstractEvent<T>>
-  ) => TasksList[]
+  ) => TasksState
 } = {
-  [EventType.TaskCreated]: (state, event) =>
-    state.map((list) =>
-      list.id === event.task.tasksListId
-        ? { ...list, tasks: [...list.tasks, event.task] }
-        : list
-    ),
-  [EventType.TasksListCreated]: (state, event) => state.concat(event.list),
-  [EventType.TaskUpdated]: (state, event) =>
-    state.map((list) =>
-      list.id === event.tasksListId
-        ? {
-            ...list,
-            tasks: list.tasks.map((task) =>
-              task.id === event.taskId ? { ...task, ...event.change } : task
-            ),
-          }
-        : list
-    ),
-  [EventType.TasksListUpdated]: (state, event) =>
-    state.map((list) =>
-      list.id === event.tasksListId ? { ...list, ...event.change } : list
-    ),
+  [EventType.TaskCreated]: (state, event) => {
+    const tasksList = state.lists.get(event.task.tasksListId)
+    if (tasksList === undefined) {
+      return state
+    }
+    return {
+      tasks: new Map(state.tasks).set(event.task.id, event.task),
+      lists: new Map(state.lists).set(event.task.tasksListId, {
+        ...tasksList,
+        tasksCount: tasksList.tasksCount + 1,
+        tasks: {
+          ...tasksList.tasks,
+          [event.task.status]: new Set(tasksList.tasks[event.task.status]).add(
+            event.task.id
+          ),
+        },
+      }),
+    }
+  },
+  [EventType.TasksListCreated]: (state, event) => {
+    const tasks = new Map(state.tasks)
+    for (const task of event.tasks) {
+      tasks.set(task.id, task)
+    }
+    return {
+      lists: new Map(state.lists).set(event.list.id, event.list),
+      tasks: event.tasks.length > 0 ? tasks : state.tasks,
+    }
+  },
+  [EventType.TaskUpdated]: (state, event) => {
+    const task = state.tasks.get(event.taskId)
+    if (task === undefined) {
+      return state
+    }
+    return {
+      ...state,
+      tasks: new Map(state.tasks).set(event.taskId, {
+        ...task,
+        ...event.change,
+      }),
+    }
+  },
+  [EventType.TasksListUpdated]: (state, event) => {
+    const list = state.lists.get(event.tasksListId)
+    if (list === undefined) {
+      return state
+    }
+    return {
+      ...state,
+      lists: new Map(state.lists).set(event.tasksListId, {
+        ...list,
+        ...event.change,
+      }),
+    }
+  },
+  [EventType.TaskStatusChanged]: (state, event) => {
+    const tasksList = state.lists.get(event.tasksListId)
+    if (tasksList === undefined) {
+      return state
+    }
+    const task = state.tasks.get(event.taskId)
+    if (task === undefined) {
+      return state
+    }
+    const oldStatusTasks = new Set(tasksList.tasks[task.status])
+    oldStatusTasks.delete(event.taskId)
+    return {
+      lists: new Map(state.lists).set(tasksList.id, {
+        ...tasksList,
+        tasks: {
+          ...tasksList.tasks,
+          [task.status]: oldStatusTasks,
+          [event.newStatus]: new Set(tasksList.tasks[event.newStatus]).add(
+            event.taskId
+          ),
+        },
+      }),
+
+      tasks: new Map(state.tasks).set(task.id, {
+        ...task,
+        status: event.newStatus,
+      }),
+    }
+  },
 }
 
-export function reducer(state: TasksList[], event: Event): TasksList[] {
+export function reducer(state: TasksState, event: Event): TasksState {
   return HANDLERS[event.type](state, event as never)
 }

@@ -10,6 +10,7 @@ import {
   type TasksList,
   type TasksListCreatedEvent,
   type TasksListUpdatedEvent,
+  type TasksState,
   type UpdateTask,
   type UpdateTasksList,
 } from './model'
@@ -18,34 +19,41 @@ export const todo = app.createDomain('ToDo')
 
 // Stores
 
-export const $tasksLists = todo.createStore<TasksList[]>([])
+export const $tasksState = todo.createStore<TasksState>({
+  lists: new Map(),
+  tasks: new Map(),
+})
 
-export const $tasksMap = $tasksLists.map(
-  (lists) => new Map(lists.map((list) => [list.id, list]))
-)
+export const $tasksMap = $tasksState.map((state) => state.tasks)
 
 export const $date = todo.createStore(new Date())
 
-export const $dashboard = $tasksLists.map((lists) => {
+export const $dashboard = $tasksState.map((state) => {
   const notDoneTasks: Task[] = []
   const doneTasks: Task[] = []
-  for (const list of lists) {
+  for (const list of state.lists.values()) {
+    const { tasks } = list
     if (
-      list.tasks.length === 0 ||
-      list.tasks.every((task) => task.status === TaskStatus.Archived)
+      list.tasksCount === 0 ||
+      list.tasksCount === tasks[TaskStatus.Archived].size
     ) {
       continue
     }
-    const doneTask = list.tasks.find((task) => task.status === TaskStatus.Done)
-    if (doneTask === undefined) {
-      const notDoneTask = list.tasks.find(
-        (task) => task.status === TaskStatus.NotDone
-      )
-      if (notDoneTask !== undefined) {
-        notDoneTasks.push(list.tasks[0])
+    if (tasks[TaskStatus.Done].size > 0) {
+      for (const taskId of tasks[TaskStatus.Done]) {
+        const task = state.tasks.get(taskId)
+        if (task !== undefined) {
+          doneTasks.push(task)
+        }
       }
     } else {
-      doneTasks.push(doneTask)
+      for (const taskId of tasks[TaskStatus.NotDone]) {
+        const task = state.tasks.get(taskId)
+        if (task !== undefined) {
+          notDoneTasks.push(task)
+          break
+        }
+      }
     }
   }
   return {

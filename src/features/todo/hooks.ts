@@ -44,3 +44,11 @@ export function useTasksList(tasksListId: TasksListId): TasksList | undefined {
     fn: (lists, [id]) => lists.get(id),
   })
 }
+
+export function useTask(taskId: TaskId): Task | undefined {
+  return useStoreMap({
+    store: $tasksMap,
+    keys: [taskId],
+    fn: (tasks, [id]) => tasks.get(id),
+  })
+}

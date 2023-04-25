@@ -1,7 +1,10 @@
+import { makeMap } from '@/lib/iterable'
+
 import {
+  TaskContainer,
+  type TaskId,
+  TaskItem,
   TaskStatus,
-  TasksComponent,
-  TasksContainer,
   TasksListComponent,
   TasksListContainer,
   TasksListsContainer,
@@ -16,15 +19,19 @@ export function HomePage(): JSX.Element {
             <TasksListContainer key={listId} tasksListId={listId}>
               {(list) => (
                 <TasksListComponent tasksList={list}>
-                  <TasksContainer tasksIds={list.tasks[TaskStatus.NotDone]}>
-                    {(tasks) => (
-                      <TasksComponent
-                        tasks={tasks}
-                        onClick={console.log}
-                        onEdit={console.log}
-                      />
-                    )}
-                  </TasksContainer>
+                  {Array.from(
+                    makeMap((taskId: TaskId) => (
+                      <TaskContainer key={taskId} taskId={taskId}>
+                        {(task) => (
+                          <TaskItem
+                            task={task}
+                            onClick={console.log}
+                            onEdit={console.log}
+                          />
+                        )}
+                      </TaskContainer>
+                    ))(list.tasks[TaskStatus.NotDone])
+                  )}
                 </TasksListComponent>
               )}
             </TasksListContainer>

@@ -1,4 +1,4 @@
-import { makeMap } from '@/lib/iterable'
+import { map, take } from '@/lib/iterable'
 
 import {
   TaskContainer,
@@ -17,23 +17,30 @@ export function HomePage(): JSX.Element {
         <>
           {listsIds.map((listId) => (
             <TasksListContainer key={listId} tasksListId={listId}>
-              {(list) => (
-                <TasksListComponent tasksList={list}>
-                  {Array.from(
-                    makeMap((taskId: TaskId) => (
-                      <TaskContainer key={taskId} taskId={taskId}>
-                        {(task) => (
-                          <TaskItem
-                            task={task}
-                            onClick={console.log}
-                            onEdit={console.log}
-                          />
-                        )}
-                      </TaskContainer>
-                    ))(list.tasks[TaskStatus.NotDone])
-                  )}
-                </TasksListComponent>
-              )}
+              {(list) => {
+                const tasks = list.tasks[TaskStatus.NotDone]
+                return (
+                  <TasksListComponent tasksList={list}>
+                    {take(
+                      tasks.size,
+                      map(
+                        (taskId: TaskId) => (
+                          <TaskContainer key={taskId} taskId={taskId}>
+                            {(task) => (
+                              <TaskItem
+                                task={task}
+                                onClick={console.log}
+                                onEdit={console.log}
+                              />
+                            )}
+                          </TaskContainer>
+                        ),
+                        tasks
+                      )
+                    )}
+                  </TasksListComponent>
+                )
+              }}
             </TasksListContainer>
           ))}
         </>

@@ -1,23 +1,33 @@
+export function* filter<T, R extends T = T>(
+  predicate: (value: T) => value is R,
+  items: Iterable<T>
+): Generator<R, void, unknown> {
+  for (const item of items) {
+    if (predicate(item)) {
+      yield item
+    }
+  }
+}
+
 export function makeFilter<T, R extends T = T>(
   predicate: (value: T) => value is R
 ): (items: Iterable<T>) => Generator<R, void, unknown> {
-  return function* (items) {
-    for (const item of items) {
-      if (predicate(item)) {
-        yield item
-      }
-    }
+  return (items) => filter(predicate, items)
+}
+
+export function* map<T, R>(
+  mapper: (value: T) => R,
+  items: Iterable<T>
+): Generator<R, void, unknown> {
+  for (const item of items) {
+    yield mapper(item)
   }
 }
 
 export function makeMap<T, R>(
   mapper: (value: T) => R
 ): (items: Iterable<T>) => Generator<R, void, unknown> {
-  return function* (items) {
-    for (const item of items) {
-      yield mapper(item)
-    }
-  }
+  return (items) => map(mapper, items)
 }
 
 export function* concat<T>(
@@ -56,4 +66,11 @@ export function* permuteInPlace<T>(
       ++i
     }
   }
+}
+
+export function take<T>(n: number, iterable: Iterable<T>): T[] {
+  const items = new Array<T>(n)
+  const iterator = iterable[Symbol.iterator]()
+  for (let i = 0; i < n; i++) items[i] = iterator.next().value
+  return items
 }

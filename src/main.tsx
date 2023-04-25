@@ -7,34 +7,17 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { NotificationsContainer } from './features/notifications'
-import {
-  InMemoryToDoService,
-  TasksListComponent,
-  TasksListContainer,
-  TasksListsContainer,
-} from './features/todo'
+import { InMemoryToDoService } from './features/todo'
 import './index.css'
 import { initApp } from './init'
+import { HomePage } from './pages/home'
 
 initApp(new InMemoryToDoService())
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <CssBaseline />
-    <TasksListsContainer>
-      {(listId) => (
-        <TasksListContainer key={listId} tasksListId={listId}>
-          {({ list, tasks }) => (
-            <TasksListComponent
-              title={list.title}
-              tasks={tasks}
-              onClick={console.log}
-              onEdit={console.log}
-            />
-          )}
-        </TasksListContainer>
-      )}
-    </TasksListsContainer>
+    <HomePage />
     <NotificationsContainer />
   </React.StrictMode>
 )

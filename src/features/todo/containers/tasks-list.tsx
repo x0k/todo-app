@@ -1,46 +1,17 @@
-import { useStoreMap } from 'effector-react'
+import { type TasksList, type TasksListId } from '../model'
 
-import {
-  type Task,
-  TaskStatus,
-  type TasksList,
-  type TasksListId,
-} from '../model'
-
-import { $tasksState } from '../domain'
-
-export interface TasksListData {
-  list: TasksList
-  tasks: Task[]
-}
+import { useTasksList } from '../hooks'
 
 export interface TasksListContainerProps {
   tasksListId: TasksListId
-  children: (data: TasksListData) => JSX.Element
+  children: (data: TasksList) => JSX.Element
 }
 
 export function TasksListContainer({
   tasksListId,
   children,
 }: TasksListContainerProps): JSX.Element | null {
-  const data = useStoreMap({
-    store: $tasksState,
-    keys: [tasksListId],
-    fn: ({ tasks, lists }, [id]): TasksListData | null => {
-      const list = lists.get(id)
-      if (list === undefined) {
-        return null
-      }
-      const listTasks: Task[] = []
-      for (const taskId of list.tasks[TaskStatus.NotDone]) {
-        const task = tasks.get(taskId)
-        if (task !== undefined) {
-          listTasks.push(task)
-        }
-      }
-      return { list, tasks: listTasks }
-    },
-  })
+  const tasksList = useTasksList(tasksListId)
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  return data && children(data)
+  return tasksList ? children(tasksList) : null
 }

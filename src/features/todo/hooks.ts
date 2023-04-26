@@ -28,7 +28,7 @@ export function useTasks(taskIds: Iterable<TaskId>): Task[] {
   })
 }
 
-export function useTasksLists(): TasksListId[] {
+export function useTasksListsIds(): TasksListId[] {
   return useStoreMap({
     store: $tasksState,
     keys: [],
@@ -50,5 +50,13 @@ export function useTask(taskId: TaskId): Task | undefined {
     store: $tasksMap,
     keys: [taskId],
     fn: (tasks, [id]) => tasks.get(id),
+  })
+}
+
+export function useTasksLists(): TasksList[] {
+  return useStoreMap({
+    store: $listsMap,
+    keys: [],
+    fn: (lists) => Array.from(lists.values()),
   })
 }

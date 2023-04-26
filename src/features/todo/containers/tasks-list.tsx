@@ -4,7 +4,7 @@ import { useTasksList } from '../hooks'
 
 export interface TasksListContainerProps {
   tasksListId: TasksListId
-  children: (data: TasksList) => JSX.Element
+  children: (data: TasksList) => JSX.Element | null
 }
 
 export function TasksListContainer({

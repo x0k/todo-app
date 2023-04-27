@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid'
 
 import {
   type ChangeTaskStatus,
+  type ChangeTasksStatus,
   type CreateTask,
   type CreateTasks,
   type CreateTasksList,
@@ -21,6 +22,7 @@ import {
   type TasksListId,
   type TasksListUpdatedEvent,
   type TasksState,
+  type TasksStatusChangedEvent,
   type UpdateTask,
   type UpdateTasksList,
 } from '../model'
@@ -126,6 +128,18 @@ export class InMemoryToDoService implements IToDoService {
       taskId,
       createdAt: new Date(),
       newStatus,
+    }
+  }
+
+  changeTasksStatus = async ({
+    tasksIds,
+    newStatus,
+  }: ChangeTasksStatus): Promise<TasksStatusChangedEvent> => {
+    return {
+      type: EventType.TasksStatusChanged,
+      createdAt: new Date(),
+      newStatus,
+      tasksIds,
     }
   }
 }

@@ -2,14 +2,17 @@ import { sample } from 'effector'
 
 import { errorOccurred, started } from '@/common/app'
 
-import { type IToDoService, reducer } from './model'
+import { type IToDoService, TaskStatus, reducer } from './model'
 
 import {
+  $dashboard,
   $tasksState,
   changeTaskStatusFx,
+  changeTasksStatusFx,
   createTaskFx,
   createTasksFx,
   createTasksListFx,
+  doneTasksArchiving,
   loadTasksStateFx,
   updateTaskFx,
   updateTasksListFx,
@@ -23,6 +26,7 @@ export function initToDo(todoService: IToDoService): void {
   createTasksListFx.use(todoService.createTasksList)
   updateTasksListFx.use(todoService.updateTasksList)
   changeTaskStatusFx.use(todoService.changeTaskStatus)
+  changeTasksStatusFx.use(todoService.changeTasksStatus)
 }
 
 sample({
@@ -39,6 +43,7 @@ sample({
     createTasksListFx.failData,
     updateTasksListFx.failData,
     changeTaskStatusFx.failData,
+    changeTasksStatusFx.failData,
   ],
   target: errorOccurred,
 })
@@ -53,6 +58,17 @@ $tasksState
       createTasksListFx.doneData,
       updateTasksListFx.doneData,
       changeTaskStatusFx.doneData,
+      changeTasksStatusFx.doneData,
     ],
     reducer
   )
+
+sample({
+  clock: doneTasksArchiving,
+  source: $dashboard,
+  fn: ({ doneTasks }) => ({
+    newStatus: TaskStatus.Archived,
+    tasksIds: doneTasks.map((t) => t.id),
+  }),
+  target: changeTasksStatusFx,
+})

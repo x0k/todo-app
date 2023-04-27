@@ -2,6 +2,7 @@ import { app } from '@/common/app'
 
 import {
   type ChangeTaskStatus,
+  type ChangeTasksStatus,
   type CreateTask,
   type CreateTasks,
   type CreateTasksList,
@@ -14,6 +15,7 @@ import {
   type TasksListCreatedEvent,
   type TasksListUpdatedEvent,
   type TasksState,
+  type TasksStatusChangedEvent,
   type UpdateTask,
   type UpdateTasksList,
 } from './model'
@@ -99,4 +101,9 @@ export const updateTasksListFx = todo.createEffect<
 export const changeTaskStatusFx = todo.createEffect<
   ChangeTaskStatus,
   TaskStatusChangedEvent
+>()
+
+export const changeTasksStatusFx = todo.createEffect<
+  ChangeTasksStatus,
+  TasksStatusChangedEvent
 >()

@@ -1,4 +1,5 @@
-import { Box, List, Typography } from '@mui/material'
+import { Archive } from '@mui/icons-material'
+import { Box, IconButton, List, Typography } from '@mui/material'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 
@@ -10,7 +11,7 @@ import { type TaskId, TaskStatus } from '../model'
 
 import { TaskItem } from '../components'
 
-import { $dashboard, changeTaskStatusFx } from '../domain'
+import { $dashboard, changeTaskStatusFx, doneTasksArchiving } from '../domain'
 
 function completeTask(taskId: TaskId): void {
   changeTaskStatusFx({ taskId, newStatus: TaskStatus.Done })
@@ -22,6 +23,10 @@ function reopenTask(taskId: TaskId): void {
 
 function archiveTask(taskId: TaskId): void {
   changeTaskStatusFx({ taskId, newStatus: TaskStatus.Archived })
+}
+
+function archiveDoneTasks(): void {
+  doneTasksArchiving()
 }
 
 export function DashboardContainer(): JSX.Element {
@@ -65,7 +70,15 @@ export function DashboardContainer(): JSX.Element {
         </TitledPanel>
       )}
       {doneTasks.length > 0 && (
-        <TitledPanel title="Completed" key="competed">
+        <TitledPanel
+          title="Completed"
+          key="competed"
+          actions={
+            <IconButton onClick={archiveDoneTasks}>
+              <Archive />
+            </IconButton>
+          }
+        >
           <List dense>
             {doneTasks.map((task) => (
               <TaskItem

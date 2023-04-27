@@ -150,6 +150,7 @@ export interface IToDoService {
   updateTask: (data: UpdateTask) => Promise<TaskUpdatedEvent>
   updateTasksList: (data: UpdateTasksList) => Promise<TasksListUpdatedEvent>
   changeTaskStatus: (data: ChangeTaskStatus) => Promise<TaskStatusChangedEvent>
+  changeTasksStatus: (data: ChangeTasksStatus) => Promise<TasksStatusChangedEvent>
 }
 
 const HANDLERS: {

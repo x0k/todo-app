@@ -40,6 +40,11 @@ export interface ChangeTaskStatus {
   newStatus: TaskStatus
 }
 
+export interface ChangeTasksStatus {
+  tasksIds: TaskId[]
+  newStatus: TaskStatus
+}
+
 export type TasksListId = Brand<'TasksListID', string>
 
 export type Tasks = Record<TaskStatus, Set<TaskId>>
@@ -74,6 +79,7 @@ export enum EventType {
   TaskUpdated = 'tu',
   TasksListUpdated = 'tlu',
   TaskStatusChanged = 'tsc',
+  TasksStatusChanged = 'tsc2',
 }
 
 export interface AbstractEvent<T extends EventType> {
@@ -115,6 +121,12 @@ export interface TaskStatusChangedEvent
   newStatus: TaskStatus
 }
 
+export interface TasksStatusChangedEvent
+  extends AbstractEvent<EventType.TasksStatusChanged> {
+  tasksIds: TaskId[]
+  newStatus: TaskStatus
+}
+
 export type Event =
   | TaskCreatedEvent
   | TasksCreatedEvent
@@ -122,10 +134,12 @@ export type Event =
   | TaskUpdatedEvent
   | TasksListUpdatedEvent
   | TaskStatusChangedEvent
+  | TasksStatusChangedEvent
 
 export interface TasksState {
   lists: Map<TasksListId, TasksList>
   tasks: Map<TaskId, Task>
+  events: Event[]
 }
 
 export interface IToDoService {
@@ -161,6 +175,7 @@ const HANDLERS: {
           ),
         },
       }),
+      events: state.events.concat(event),
     }
   },
   [EventType.TasksCreated]: (state, event) => {
@@ -187,6 +202,7 @@ const HANDLERS: {
           [TaskStatus.NotDone]: notDoneTasks,
         },
       }),
+      events: state.events.concat(event),
     }
   },
   [EventType.TasksListCreated]: (state, event) => {
@@ -197,6 +213,7 @@ const HANDLERS: {
     return {
       lists: new Map(state.lists).set(event.list.id, event.list),
       tasks: event.tasks.length > 0 ? tasks : state.tasks,
+      events: state.events.concat(event),
     }
   },
   [EventType.TaskUpdated]: (state, event) => {
@@ -205,11 +222,12 @@ const HANDLERS: {
       return state
     }
     return {
-      ...state,
+      lists: state.lists,
       tasks: new Map(state.tasks).set(event.taskId, {
         ...task,
         ...event.change,
       }),
+      events: state.events.concat(event),
     }
   },
   [EventType.TasksListUpdated]: (state, event) => {
@@ -218,11 +236,12 @@ const HANDLERS: {
       return state
     }
     return {
-      ...state,
+      tasks: state.tasks,
       lists: new Map(state.lists).set(event.tasksListId, {
         ...list,
         ...event.change,
       }),
+      events: state.events.concat(event),
     }
   },
   [EventType.TaskStatusChanged]: (state, event) => {
@@ -251,6 +270,42 @@ const HANDLERS: {
         ...task,
         status: event.newStatus,
       }),
+      events: state.events.concat(event),
+    }
+  },
+  [EventType.TasksStatusChanged]: (state, event) => {
+    const lists = new Map(state.lists)
+    const tasks = new Map(state.tasks)
+    for (const taskId of event.tasksIds) {
+      const task = state.tasks.get(taskId)
+      if (task === undefined) {
+        continue
+      }
+      const tasksList = state.lists.get(task.tasksListId)
+      if (tasksList === undefined) {
+        continue
+      }
+      tasks.set(taskId, {
+        ...task,
+        status: event.newStatus,
+      })
+      const oldStatusTasks = new Set(tasksList.tasks[task.status])
+      oldStatusTasks.delete(taskId)
+      lists.set(tasksList.id, {
+        ...tasksList,
+        tasks: {
+          ...tasksList.tasks,
+          [task.status]: oldStatusTasks,
+          [event.newStatus]: new Set(tasksList.tasks[event.newStatus]).add(
+            taskId
+          ),
+        },
+      })
+    }
+    return {
+      lists,
+      tasks,
+      events: state.events.concat(event),
     }
   },
 }

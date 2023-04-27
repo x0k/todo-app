@@ -1,5 +1,6 @@
-import { Edit } from '@mui/icons-material'
+import { Archive, Edit } from '@mui/icons-material'
 import {
+  Box,
   IconButton,
   ListItem,
   ListItemButton,
@@ -14,20 +15,27 @@ export interface TaskItemProps {
   secondary?: ReactNode
   onClick: () => void
   onEdit: () => void
+  onArchive: () => void
 }
 export function TaskItem({
   task,
+  secondary,
   onClick,
   onEdit,
-  secondary,
+  onArchive,
 }: TaskItemProps): JSX.Element {
   return (
     <ListItem
       key={task.id}
       secondaryAction={
-        <IconButton onClick={onEdit}>
-          <Edit />
-        </IconButton>
+        <Box display="flex" alignItems="center" gap={1}>
+          <IconButton onClick={onEdit}>
+            <Edit />
+          </IconButton>
+          <IconButton onClick={onArchive}>
+            <Archive />
+          </IconButton>
+        </Box>
       }
     >
       <ListItemButton onClick={onClick}>

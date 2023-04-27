@@ -8,8 +8,8 @@ import { TitledPanel } from '@/components/titled-panel'
 import {
   CreateTasksContainer,
   DashboardContainer,
-  type Task,
   TaskContainer,
+  type TaskContainerRenderProps,
   type TaskId,
   TaskItem,
   TaskStatus,
@@ -20,8 +20,19 @@ import {
   TasksListsIdsContainer,
 } from '@/features/todo'
 
-function renderTask(task: Task): JSX.Element {
-  return <TaskItem task={task} onClick={console.log} onEdit={console.log} />
+function renderTask({
+  task,
+  archiveTask,
+  completeTask,
+}: TaskContainerRenderProps): JSX.Element {
+  return (
+    <TaskItem
+      task={task}
+      onClick={completeTask}
+      onEdit={console.log}
+      onArchive={archiveTask}
+    />
+  )
 }
 
 function renderTasksList({

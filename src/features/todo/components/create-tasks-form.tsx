@@ -116,6 +116,9 @@ export function CreateTasksForm({
               ref={ref}
               value={value}
               getOptionLabel={getOptionLabel}
+              onInputChange={(_, value) => {
+                onChange(value)
+              }}
               onChange={(_, value) => {
                 if (value === null) {
                   onChange('')

@@ -39,6 +39,7 @@ export class InMemoryToDoService implements IToDoService {
     return {
       tasks: new Map(),
       lists: new Map(),
+      events: [],
     }
   }
 

@@ -20,6 +20,10 @@ function reopenTask(taskId: TaskId): void {
   changeTaskStatusFx({ taskId, newStatus: TaskStatus.NotDone })
 }
 
+function archiveTask(taskId: TaskId): void {
+  changeTaskStatusFx({ taskId, newStatus: TaskStatus.Archived })
+}
+
 export function DashboardContainer(): JSX.Element {
   const { doneTasks, notDoneTasks, tasksLists } = useStore($dashboard)
   const secondaryTexts = useMemo(
@@ -51,6 +55,9 @@ export function DashboardContainer(): JSX.Element {
                 onClick={() => {
                   completeTask(task.id)
                 }}
+                onArchive={() => {
+                  archiveTask(task.id)
+                }}
                 onEdit={console.log}
               />
             ))}
@@ -67,6 +74,9 @@ export function DashboardContainer(): JSX.Element {
                 secondary={secondaryTexts[task.id]}
                 onClick={() => {
                   reopenTask(task.id)
+                }}
+                onArchive={() => {
+                  archiveTask(task.id)
                 }}
                 onEdit={console.log}
               />

@@ -18,18 +18,21 @@ import {
   type UpdateTasksList,
 } from './model'
 
-export const todo = app.createDomain('ToDo')
+export const todo = app.createDomain('todo')
 
 // Stores
 
 export const $tasksState = todo.createStore<TasksState>({
   lists: new Map(),
   tasks: new Map(),
+  events: [],
 })
 
 export const $listsMap = $tasksState.map((state) => state.lists)
 
 export const $tasksMap = $tasksState.map((state) => state.tasks)
+
+export const $events = $tasksState.map((state) => state.events)
 
 export const $date = todo.createStore(new Date())
 

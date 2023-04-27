@@ -1,6 +1,6 @@
 import { useStoreMap } from 'effector-react'
 
-import { strictArrayComparator } from '@/common/utils'
+import { isArrayNotEqual } from '@/common/utils'
 
 import {
   type Task,
@@ -33,7 +33,7 @@ export function useTasksListsIds(): TasksListId[] {
     store: $tasksState,
     keys: [],
     fn: (state) => Array.from(state.lists.keys()),
-    updateFilter: (prev, next) => strictArrayComparator(prev, next) !== 0,
+    updateFilter: isArrayNotEqual,
   })
 }
 

@@ -17,7 +17,7 @@ module.exports = {
     '@typescript-eslint/strict-boolean-expressions': 'warn',
     'key-spacing': 'off',
     '@typescript-eslint/no-misused-promises': 'warn',
-    'react/prop-types': 'off'
+    'react/prop-types': 'off',
+    '@typescript-eslint/no-floating-promises': 'warn',
   },
 }
-

@@ -12,7 +12,6 @@ export const TASK_STATUSES = Object.values(TaskStatus)
 
 export interface Task {
   id: TaskId
-  tasksListId: TasksListId
   title: string
   status: TaskStatus
   createdAt: Date
@@ -23,6 +22,11 @@ export type WritableTaskData = Pick<Task, 'title'>
 export interface CreateTask {
   tasksListId: TasksListId
   title: string
+}
+
+export interface CreateTasks {
+  tasksListId: TasksListId
+  tasks: string[]
 }
 
 export interface UpdateTask {
@@ -57,6 +61,7 @@ export interface UpdateTasksList {
 
 export enum EventType {
   TaskCreated = 'tc',
+  TasksCreated = 'tc2',
   TasksListCreated = 'tlc',
   TaskUpdated = 'tu',
   TasksListUpdated = 'tlu',
@@ -69,7 +74,14 @@ export interface AbstractEvent<T extends EventType> {
 }
 
 export interface TaskCreatedEvent extends AbstractEvent<EventType.TaskCreated> {
+  tasksListId: TasksListId
   task: Task
+}
+
+export interface TasksCreatedEvent
+  extends AbstractEvent<EventType.TasksCreated> {
+  tasksListId: TasksListId
+  tasks: Task[]
 }
 
 export interface TasksListCreatedEvent
@@ -98,6 +110,7 @@ export interface TaskStatusChangedEvent
 
 export type Event =
   | TaskCreatedEvent
+  | TasksCreatedEvent
   | TasksListCreatedEvent
   | TaskUpdatedEvent
   | TasksListUpdatedEvent
@@ -111,6 +124,7 @@ export interface TasksState {
 export interface IToDoService {
   loadTasksState: () => Promise<TasksState>
   createTask: (data: CreateTask) => Promise<TaskCreatedEvent>
+  createTasks: (data: CreateTasks) => Promise<TasksCreatedEvent>
   createTasksList: (data: CreateTasksList) => Promise<TasksListCreatedEvent>
   updateTask: (data: UpdateTask) => Promise<TaskUpdatedEvent>
   updateTasksList: (data: UpdateTasksList) => Promise<TasksListUpdatedEvent>
@@ -123,13 +137,13 @@ const HANDLERS: {
   ) => TasksState
 } = {
   [EventType.TaskCreated]: (state, event) => {
-    const tasksList = state.lists.get(event.task.tasksListId)
+    const tasksList = state.lists.get(event.tasksListId)
     if (tasksList === undefined) {
       return state
     }
     return {
       tasks: new Map(state.tasks).set(event.task.id, event.task),
-      lists: new Map(state.lists).set(event.task.tasksListId, {
+      lists: new Map(state.lists).set(event.tasksListId, {
         ...tasksList,
         tasksCount: tasksList.tasksCount + 1,
         tasks: {
@@ -137,6 +151,32 @@ const HANDLERS: {
           [event.task.status]: new Set(tasksList.tasks[event.task.status]).add(
             event.task.id
           ),
+        },
+      }),
+    }
+  },
+  [EventType.TasksCreated]: (state, event) => {
+    if (event.tasks.some((t) => t.status !== TaskStatus.NotDone)) {
+      throw new Error('Created tasks must be not done')
+    }
+    const tasksList = state.lists.get(event.tasksListId)
+    if (tasksList === undefined) {
+      return state
+    }
+    const tasks = new Map(state.tasks)
+    const notDoneTasks = new Set(tasksList.tasks[TaskStatus.NotDone])
+    for (const task of event.tasks) {
+      tasks.set(task.id, task)
+      notDoneTasks.add(task.id)
+    }
+    return {
+      tasks,
+      lists: new Map(state.lists).set(event.tasksListId, {
+        ...tasksList,
+        tasksCount: tasksList.tasksCount + event.tasks.length,
+        tasks: {
+          ...tasksList.tasks,
+          [TaskStatus.NotDone]: notDoneTasks,
         },
       }),
     }

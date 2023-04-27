@@ -1,9 +1,10 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
+import Grid from '@mui/material/Unstable_Grid2'
 
 import { map, take } from '@/lib/iterable'
 
 import {
-  CreateTasksForm,
+  CreateTasksContainer,
   type Task,
   TaskContainer,
   type TaskId,
@@ -13,7 +14,6 @@ import {
   TasksListComponent,
   TasksListContainer,
   type TasksListId,
-  TasksListsContainer,
   TasksListsIdsContainer,
 } from '@/features/todo'
 
@@ -41,26 +41,30 @@ function renderTasksList(tasksList: TasksList): JSX.Element {
 }
 
 function renderTasksLists(tasksListsIds: TasksListId[]): JSX.Element {
-  return (
-    <>
+  return tasksListsIds.length > 0 ? (
+    <Box display="flex" flexDirection="column" gap={2}>
       {tasksListsIds.map((listId) => (
         <TasksListContainer key={listId} tasksListId={listId}>
           {renderTasksList}
         </TasksListContainer>
       ))}
-    </>
+    </Box>
+  ) : (
+    <Typography variant="h4">No tasks lists</Typography>
   )
-}
-
-function renderForm(tasksLists: TasksList[]): JSX.Element {
-  return <CreateTasksForm tasksLists={tasksLists} onSubmit={console.log} />
 }
 
 export function HomePage(): JSX.Element {
   return (
-    <Box display="flex" flexDirection="column" gap={2}>
-      <TasksListsIdsContainer>{renderTasksLists}</TasksListsIdsContainer>
-      <TasksListsContainer>{renderForm}</TasksListsContainer>
+    <Box flex="1 1 100%" maxWidth="xl" marginX="auto" gap={2} padding={2}>
+      <Grid container spacing={2}>
+        <Grid xs>
+          <TasksListsIdsContainer>{renderTasksLists}</TasksListsIdsContainer>
+        </Grid>
+        <Grid xs>
+          <CreateTasksContainer />
+        </Grid>
+      </Grid>
     </Box>
   )
 }

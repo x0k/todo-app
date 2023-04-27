@@ -1,4 +1,5 @@
-import { Autocomplete, Box, Button, TextField } from '@mui/material'
+import { Autocomplete, Box, TextField } from '@mui/material'
+import { useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
 import { REQUIRED_FIELD_MESSAGE } from '@/common/validation'
@@ -7,7 +8,7 @@ import { type TasksList } from '../model'
 
 export interface CreateTasksFormProps {
   tasksLists: TasksList[]
-  onSubmit: (data: FormData) => void
+  onSubmit: (data: CreateTasksFormData) => void
 }
 
 interface TaskData {
@@ -16,7 +17,7 @@ interface TaskData {
 
 type TasksListData = string | TasksList
 
-export interface FormData {
+export interface CreateTasksFormData {
   tasks: TaskData[]
   tasksList: TasksListData
 }
@@ -33,8 +34,9 @@ export function CreateTasksForm({
     control,
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
+    reset,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<CreateTasksFormData>({
     defaultValues: {
       tasks: [{ title: '' }],
       tasksList: '',
@@ -45,6 +47,7 @@ export function CreateTasksForm({
     name: 'tasks',
     rules: { minLength: 1 },
   })
+  useEffect(reset, [isSubmitSuccessful])
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box display="flex" flexDirection="column" gap={2}>
@@ -53,6 +56,7 @@ export function CreateTasksForm({
             {...register(`tasks.${index}.title`, {
               required: REQUIRED_FIELD_MESSAGE,
             })}
+            variant="standard"
             inputProps={{
               onKeyDown: (e) => {
                 switch (e.key) {
@@ -115,6 +119,7 @@ export function CreateTasksForm({
                   {...params}
                   name={name}
                   label="Tasks List"
+                  variant="standard"
                   error={Boolean(error)}
                   helperText={error?.message}
                 />
@@ -122,9 +127,6 @@ export function CreateTasksForm({
             />
           )}
         />
-        <Button variant="contained" type="submit">
-          Create
-        </Button>
       </Box>
     </form>
   )

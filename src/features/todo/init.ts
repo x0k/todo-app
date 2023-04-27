@@ -7,6 +7,7 @@ import { type IToDoService, reducer } from './model'
 import {
   $tasksState,
   createTaskFx,
+  createTasksFx,
   createTasksListFx,
   loadTasksStateFx,
   updateTaskFx,
@@ -16,6 +17,7 @@ import {
 export function initToDo(todoService: IToDoService): void {
   loadTasksStateFx.use(todoService.loadTasksState)
   createTaskFx.use(todoService.createTask)
+  createTasksFx.use(todoService.createTasks)
   updateTaskFx.use(todoService.updateTask)
   createTasksListFx.use(todoService.createTasksList)
   updateTasksListFx.use(todoService.updateTasksList)
@@ -30,6 +32,7 @@ sample({
   clock: [
     loadTasksStateFx.failData,
     createTaskFx.failData,
+    createTasksFx.failData,
     updateTaskFx.failData,
     createTasksListFx.failData,
     updateTasksListFx.failData,
@@ -42,6 +45,7 @@ $tasksState
   .on(
     [
       createTaskFx.doneData,
+      createTasksFx.doneData,
       updateTaskFx.doneData,
       createTasksListFx.doneData,
       updateTasksListFx.doneData,

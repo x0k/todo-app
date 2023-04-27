@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid'
 
 import {
   type CreateTask,
+  type CreateTasks,
   type CreateTasksList,
   EventType,
   type IToDoService,
@@ -12,6 +13,7 @@ import {
   TaskStatus,
   type TaskUpdatedEvent,
   type Tasks,
+  type TasksCreatedEvent,
   type TasksList,
   type TasksListCreatedEvent,
   type TasksListId,
@@ -50,6 +52,33 @@ export class InMemoryToDoService implements IToDoService {
       type: EventType.TaskCreated,
       createdAt: task.createdAt,
       task,
+      tasksListId: tasksList.id,
+    }
+  }
+
+  createTasks = async (data: CreateTasks): Promise<TasksCreatedEvent> => {
+    const tasksList = this.lists.get(data.tasksListId)
+    if (tasksList === undefined) {
+      throw new Error(`Tasks list with id ${data.tasksListId} not found`)
+    }
+    const tasks: Task[] = []
+    for (const title of data.tasks) {
+      const task = {
+        title,
+        id: nanoid() as TaskId,
+        createdAt: new Date(),
+        status: TaskStatus.NotDone,
+      }
+      this.tasks.set(task.id, task)
+      tasksList.tasks[task.status].add(task.id)
+      tasks.push(task)
+    }
+    tasksList.tasksCount += tasks.length
+    return {
+      type: EventType.TasksCreated,
+      createdAt: new Date(),
+      tasks,
+      tasksListId: tasksList.id,
     }
   }
 

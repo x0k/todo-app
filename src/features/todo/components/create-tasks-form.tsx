@@ -54,7 +54,10 @@ export function CreateTasksForm({
     name: 'tasks',
     rules: { minLength: 1 },
   })
-  useEffect(reset, [isSubmitSuccessful])
+  useEffect(() => {
+    reset()
+    tryFocusTaskInputByIndex(0)
+  }, [isSubmitSuccessful])
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box display="flex" flexDirection="column" gap={2}>
@@ -78,7 +81,7 @@ export function CreateTasksForm({
                     // @ts-expect-error wtf
                     if (e.target.value === '' && index > 0) {
                       e.preventDefault()
-                      tryFocusTaskInputByIndex(index -1)
+                      tryFocusTaskInputByIndex(index - 1)
                       remove(index)
                     }
                     break
@@ -133,7 +136,7 @@ export function CreateTasksForm({
             />
           )}
         />
-        <Button variant="contained" type="submit">
+        <Button variant="outlined" type="submit">
           Create
         </Button>
       </Box>

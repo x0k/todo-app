@@ -13,9 +13,9 @@ import {
   type TaskId,
   TaskItem,
   TaskStatus,
-  type TasksList,
   TasksListComponent,
   TasksListContainer,
+  type TasksListContainerRenderProps,
   type TasksListId,
   TasksListsIdsContainer,
 } from '@/features/todo'
@@ -24,10 +24,17 @@ function renderTask(task: Task): JSX.Element {
   return <TaskItem task={task} onClick={console.log} onEdit={console.log} />
 }
 
-function renderTasksList(tasksList: TasksList): JSX.Element {
+function renderTasksList({
+  tasksList,
+  archiveTasksList,
+}: TasksListContainerRenderProps): JSX.Element {
   const tasks = tasksList.tasks[TaskStatus.NotDone]
   return (
-    <TasksListComponent tasksList={tasksList}>
+    <TasksListComponent
+      tasksList={tasksList}
+      onArchive={archiveTasksList}
+      onEdit={console.log}
+    >
       {take(
         tasks.size,
         map(

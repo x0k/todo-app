@@ -1,10 +1,16 @@
 import { type TasksList, type TasksListId } from '../model'
 
+import { updateTasksListFx } from '../domain'
+
 import { useTasksList } from '../hooks'
 
+export interface TasksListContainerRenderProps {
+  tasksList: TasksList
+  archiveTasksList: () => void
+}
 export interface TasksListContainerProps {
   tasksListId: TasksListId
-  children: (data: TasksList) => JSX.Element | null
+  children: (props: TasksListContainerRenderProps) => JSX.Element | null
 }
 
 export function TasksListContainer({
@@ -13,5 +19,15 @@ export function TasksListContainer({
 }: TasksListContainerProps): JSX.Element | null {
   const tasksList = useTasksList(tasksListId)
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  return tasksList ? children(tasksList) : null
+  return tasksList
+    ? children({
+        tasksList,
+        archiveTasksList: () => {
+          updateTasksListFx({
+            tasksListId: tasksList.id,
+            change: { isArchived: true },
+          })
+        },
+      })
+    : null
 }

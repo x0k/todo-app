@@ -6,6 +6,7 @@ import { type IToDoService, reducer } from './model'
 
 import {
   $tasksState,
+  changeTaskStatusFx,
   createTaskFx,
   createTasksFx,
   createTasksListFx,
@@ -21,6 +22,7 @@ export function initToDo(todoService: IToDoService): void {
   updateTaskFx.use(todoService.updateTask)
   createTasksListFx.use(todoService.createTasksList)
   updateTasksListFx.use(todoService.updateTasksList)
+  changeTaskStatusFx.use(todoService.changeTaskStatus)
 }
 
 sample({
@@ -36,6 +38,7 @@ sample({
     updateTaskFx.failData,
     createTasksListFx.failData,
     updateTasksListFx.failData,
+    changeTaskStatusFx.failData,
   ],
   target: errorOccurred,
 })
@@ -49,6 +52,7 @@ $tasksState
       updateTaskFx.doneData,
       createTasksListFx.doneData,
       updateTasksListFx.doneData,
+      changeTaskStatusFx.doneData,
     ],
     reducer
   )

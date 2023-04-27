@@ -12,6 +12,7 @@ export const TASK_STATUSES = Object.values(TaskStatus)
 
 export interface Task {
   id: TaskId
+  tasksListId: TasksListId
   title: string
   status: TaskStatus
   createdAt: Date
@@ -32,6 +33,11 @@ export interface CreateTasks {
 export interface UpdateTask {
   taskId: TaskId
   change: WritableTaskData
+}
+
+export interface ChangeTaskStatus {
+  taskId: TaskId
+  newStatus: TaskStatus
 }
 
 export type TasksListId = Brand<'TasksListID', string>
@@ -105,7 +111,6 @@ export interface TasksListUpdatedEvent
 
 export interface TaskStatusChangedEvent
   extends AbstractEvent<EventType.TaskStatusChanged> {
-  tasksListId: TasksListId
   taskId: TaskId
   newStatus: TaskStatus
 }
@@ -130,6 +135,7 @@ export interface IToDoService {
   createTasksList: (data: CreateTasksList) => Promise<TasksListCreatedEvent>
   updateTask: (data: UpdateTask) => Promise<TaskUpdatedEvent>
   updateTasksList: (data: UpdateTasksList) => Promise<TasksListUpdatedEvent>
+  changeTaskStatus: (data: ChangeTaskStatus) => Promise<TaskStatusChangedEvent>
 }
 
 const HANDLERS: {
@@ -220,12 +226,12 @@ const HANDLERS: {
     }
   },
   [EventType.TaskStatusChanged]: (state, event) => {
-    const tasksList = state.lists.get(event.tasksListId)
-    if (tasksList === undefined) {
-      return state
-    }
     const task = state.tasks.get(event.taskId)
     if (task === undefined) {
+      return state
+    }
+    const tasksList = state.lists.get(task.tasksListId)
+    if (tasksList === undefined) {
       return state
     }
     const oldStatusTasks = new Set(tasksList.tasks[task.status])
@@ -241,7 +247,6 @@ const HANDLERS: {
           ),
         },
       }),
-
       tasks: new Map(state.tasks).set(task.id, {
         ...task,
         status: event.newStatus,

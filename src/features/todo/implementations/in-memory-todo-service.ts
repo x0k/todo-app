@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid'
 
 import {
+  type ChangeTaskStatus,
   type CreateTask,
   type CreateTasks,
   type CreateTasksList,
@@ -11,6 +12,7 @@ import {
   type TaskCreatedEvent,
   type TaskId,
   TaskStatus,
+  type TaskStatusChangedEvent,
   type TaskUpdatedEvent,
   type Tasks,
   type TasksCreatedEvent,
@@ -23,91 +25,70 @@ import {
   type UpdateTasksList,
 } from '../model'
 
+function createTask(tasksListId: TasksListId, title: string): Task {
+  return {
+    id: nanoid() as TaskId,
+    title,
+    createdAt: new Date(),
+    status: TaskStatus.NotDone,
+    tasksListId,
+  }
+}
 export class InMemoryToDoService implements IToDoService {
-  private readonly tasks = new Map<TaskId, Task>()
-  private readonly lists = new Map<TasksListId, TasksList>()
-
   loadTasksState = async (): Promise<TasksState> => {
     return {
-      tasks: this.tasks,
-      lists: this.lists,
+      tasks: new Map(),
+      lists: new Map(),
     }
   }
 
-  createTask = async (data: CreateTask): Promise<TaskCreatedEvent> => {
-    const tasksList = this.lists.get(data.tasksListId)
-    if (tasksList === undefined) {
-      throw new Error(`Tasks list with id ${data.tasksListId} not found`)
-    }
-    const task: Task = {
-      ...data,
-      id: nanoid() as TaskId,
-      createdAt: new Date(),
-      status: TaskStatus.NotDone,
-    }
-    this.tasks.set(task.id, task)
-    tasksList.tasks[task.status].add(task.id)
-    tasksList.tasksCount++
+  createTask = async ({
+    tasksListId,
+    title,
+  }: CreateTask): Promise<TaskCreatedEvent> => {
     return {
       type: EventType.TaskCreated,
-      createdAt: task.createdAt,
-      task,
-      tasksListId: tasksList.id,
+      task: createTask(tasksListId, title),
+      createdAt: new Date(),
+      tasksListId,
     }
   }
 
-  createTasks = async (data: CreateTasks): Promise<TasksCreatedEvent> => {
-    const tasksList = this.lists.get(data.tasksListId)
-    if (tasksList === undefined) {
-      throw new Error(`Tasks list with id ${data.tasksListId} not found`)
-    }
-    const tasks: Task[] = []
-    for (const title of data.tasks) {
-      const task = {
-        title,
-        id: nanoid() as TaskId,
-        createdAt: new Date(),
-        status: TaskStatus.NotDone,
-      }
-      this.tasks.set(task.id, task)
-      tasksList.tasks[task.status].add(task.id)
-      tasks.push(task)
-    }
-    tasksList.tasksCount += tasks.length
+  createTasks = async ({
+    tasks,
+    tasksListId,
+  }: CreateTasks): Promise<TasksCreatedEvent> => {
     return {
       type: EventType.TasksCreated,
       createdAt: new Date(),
-      tasks,
-      tasksListId: tasksList.id,
+      tasks: tasks.map((title) => createTask(tasksListId, title)),
+      tasksListId,
     }
   }
 
-  createTasksList = async (
-    data: CreateTasksList
-  ): Promise<TasksListCreatedEvent> => {
-    const tasks = Object.fromEntries(
-      TASK_STATUSES.map((s) => [s, new Set()])
-    ) as Tasks
+  createTasksList = async ({
+    title,
+    tasks: tasksTitles,
+  }: CreateTasksList): Promise<TasksListCreatedEvent> => {
     const tasksList: TasksList = {
       id: nanoid() as TasksListId,
       createdAt: new Date(),
       isArchived: false,
-      tasks,
-      tasksCount: 0,
-      title: data.title,
+      tasks: Object.fromEntries(
+        TASK_STATUSES.map((s) => [s, new Set()])
+      ) as Tasks,
+      tasksCount: tasksTitles.length,
+      title,
     }
-    this.lists.set(tasksList.id, tasksList)
-    const taskCreatedEvents = await Promise.all(
-      data.tasks.map(
-        async (title) =>
-          await this.createTask({ title, tasksListId: tasksList.id })
-      )
-    )
+    const tasks = tasksTitles.map((title) => createTask(tasksList.id, title))
+    for (const task of tasks) {
+      tasksList.tasks[task.status].add(task.id)
+    }
     return {
       type: EventType.TasksListCreated,
       createdAt: tasksList.createdAt,
       list: tasksList,
-      tasks: taskCreatedEvents.map((e) => e.task),
+      tasks,
     }
   }
 
@@ -115,11 +96,6 @@ export class InMemoryToDoService implements IToDoService {
     taskId,
     change,
   }: UpdateTask): Promise<TaskUpdatedEvent> => {
-    const task = this.tasks.get(taskId)
-    if (task === undefined) {
-      throw new Error(`Task with id ${taskId} not found`)
-    }
-    this.tasks.set(taskId, { ...task, ...change })
     return {
       type: EventType.TaskUpdated,
       createdAt: new Date(),
@@ -132,16 +108,23 @@ export class InMemoryToDoService implements IToDoService {
     tasksListId,
     change,
   }: UpdateTasksList): Promise<TasksListUpdatedEvent> => {
-    const tasksList = this.lists.get(tasksListId)
-    if (tasksList === undefined) {
-      throw new Error(`Tasks list with id ${tasksListId} not found`)
-    }
-    this.lists.set(tasksListId, { ...tasksList, ...change })
     return {
       type: EventType.TasksListUpdated,
       tasksListId,
       createdAt: new Date(),
       change,
+    }
+  }
+
+  changeTaskStatus = async ({
+    taskId,
+    newStatus,
+  }: ChangeTaskStatus): Promise<TaskStatusChangedEvent> => {
+    return {
+      type: EventType.TaskStatusChanged,
+      taskId,
+      createdAt: new Date(),
+      newStatus,
     }
   }
 }

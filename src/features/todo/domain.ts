@@ -1,12 +1,14 @@
 import { app } from '@/common/app'
 
 import {
+  type ChangeTaskStatus,
   type CreateTask,
   type CreateTasks,
   type CreateTasksList,
   type Task,
   type TaskCreatedEvent,
   TaskStatus,
+  type TaskStatusChangedEvent,
   type TaskUpdatedEvent,
   type TasksCreatedEvent,
   type TasksListCreatedEvent,
@@ -37,6 +39,7 @@ export const $dashboard = $tasksState.map((state) => {
   for (const list of state.lists.values()) {
     const { tasks } = list
     if (
+      list.isArchived ||
       list.tasksCount === 0 ||
       list.tasksCount === tasks[TaskStatus.Archived].size
     ) {
@@ -62,6 +65,7 @@ export const $dashboard = $tasksState.map((state) => {
   return {
     doneTasks,
     notDoneTasks,
+    tasksLists: state.lists,
   }
 })
 
@@ -87,4 +91,9 @@ export const updateTaskFx = todo.createEffect<UpdateTask, TaskUpdatedEvent>()
 export const updateTasksListFx = todo.createEffect<
   UpdateTasksList,
   TasksListUpdatedEvent
+>()
+
+export const changeTaskStatusFx = todo.createEffect<
+  ChangeTaskStatus,
+  TaskStatusChangedEvent
 >()

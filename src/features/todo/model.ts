@@ -17,7 +17,7 @@ export interface Task {
   createdAt: Date
 }
 
-export type WritableTaskData = Pick<Task, 'title'>
+export type WritableTaskData = Partial<Pick<Task, 'title'>>
 
 export interface CreateTask {
   tasksListId: TasksListId
@@ -47,7 +47,9 @@ export interface TasksList {
   createdAt: Date
 }
 
-export type WritableTasksListData = Pick<TasksList, 'title' | 'isArchived'>
+export type WritableTasksListData = Partial<
+  Pick<TasksList, 'title' | 'isArchived'>
+>
 
 export interface CreateTasksList {
   title: string

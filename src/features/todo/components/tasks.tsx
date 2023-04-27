@@ -21,7 +21,7 @@ export function TasksComponent({
   onEdit,
 }: TasksProps): JSX.Element {
   return (
-    <List>
+    <List dense>
       {tasks.map((task) => (
         <ListItem
           key={task.id}

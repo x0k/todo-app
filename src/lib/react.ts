@@ -1,4 +1,3 @@
-import useResizeObserver from '@react-hook/resize-observer'
 import {
   type ChangeEvent,
   type DependencyList,
@@ -6,7 +5,6 @@ import {
   type MutableRefObject,
   type SetStateAction,
   useCallback,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -56,21 +54,6 @@ export function useFieldChangeHandler<T>(
     },
     [field, onChange]
   )
-}
-
-export function useSize<T extends HTMLElement>(
-  target: MutableRefObject<T | null>
-): DOMRectReadOnly | undefined {
-  const [size, setSize] = useState<DOMRectReadOnly>()
-  useLayoutEffect(() => {
-    if (target.current !== null) {
-      setSize(target.current.getBoundingClientRect())
-    }
-  }, [target])
-  useResizeObserver(target, (entry) => {
-    setSize(entry.contentRect)
-  })
-  return size
 }
 
 export function memoizeInRef<T>(

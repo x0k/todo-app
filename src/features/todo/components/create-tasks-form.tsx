@@ -1,4 +1,4 @@
-import { Autocomplete, Box, TextField } from '@mui/material'
+import { Autocomplete, Box, Button, TextField } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
@@ -24,6 +24,13 @@ export interface CreateTasksFormData {
 
 function getOptionLabel(option: string | TasksListData): string {
   return typeof option === 'string' ? option : option.title
+}
+
+function tryFocusTaskInputByIndex(index: number): void {
+  const input = document.querySelector(`[name="tasks.${index}.title"]`)
+  if (input instanceof HTMLElement) {
+    input.focus()
+  }
 }
 
 export function CreateTasksForm({
@@ -70,12 +77,8 @@ export function CreateTasksForm({
                   case 'Backspace':
                     // @ts-expect-error wtf
                     if (e.target.value === '' && index > 0) {
-                      const el = document.querySelector(
-                        `[name="tasks.${index - 1}.title"]`
-                      )
-                      if (el instanceof HTMLElement) {
-                        el.focus()
-                      }
+                      e.preventDefault()
+                      tryFocusTaskInputByIndex(index -1)
                       remove(index)
                     }
                     break
@@ -101,6 +104,9 @@ export function CreateTasksForm({
             <Autocomplete
               selectOnFocus
               handleHomeEndKeys
+              openOnFocus
+              autoComplete
+              autoHighlight
               freeSolo
               options={tasksLists}
               onBlur={onBlur}
@@ -127,6 +133,9 @@ export function CreateTasksForm({
             />
           )}
         />
+        <Button variant="contained" type="submit">
+          Create
+        </Button>
       </Box>
     </form>
   )

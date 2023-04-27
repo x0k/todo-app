@@ -1,10 +1,13 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 
 import { map, take } from '@/lib/iterable'
 
+import { TitledPanel } from '@/components/titled-panel'
+
 import {
   CreateTasksContainer,
+  DashboardContainer,
   type Task,
   TaskContainer,
   type TaskId,
@@ -41,16 +44,14 @@ function renderTasksList(tasksList: TasksList): JSX.Element {
 }
 
 function renderTasksLists(tasksListsIds: TasksListId[]): JSX.Element {
-  return tasksListsIds.length > 0 ? (
-    <Box display="flex" flexDirection="column" gap={2}>
+  return (
+    <Box display="flex" flexDirection="column" gap={2} marginTop={2}>
       {tasksListsIds.map((listId) => (
         <TasksListContainer key={listId} tasksListId={listId}>
           {renderTasksList}
         </TasksListContainer>
       ))}
     </Box>
-  ) : (
-    <Typography variant="h4">No tasks lists</Typography>
   )
 }
 
@@ -59,10 +60,15 @@ export function HomePage(): JSX.Element {
     <Box flex="1 1 100%" maxWidth="xl" marginX="auto" gap={2} padding={2}>
       <Grid container spacing={2}>
         <Grid xs>
-          <TasksListsIdsContainer>{renderTasksLists}</TasksListsIdsContainer>
+          <DashboardContainer />
         </Grid>
         <Grid xs>
-          <CreateTasksContainer />
+          <TitledPanel title="Create Tasks">
+            <Box padding={2}>
+              <CreateTasksContainer />
+            </Box>
+          </TitledPanel>
+          <TasksListsIdsContainer>{renderTasksLists}</TasksListsIdsContainer>
         </Grid>
       </Grid>
     </Box>

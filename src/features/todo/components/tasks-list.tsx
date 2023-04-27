@@ -1,6 +1,11 @@
-import { Box, Paper, Typography } from '@mui/material'
+import { Archive } from '@mui/icons-material'
+import { IconButton } from '@mui/material'
+
+import { TitledPanel } from '@/components/titled-panel'
 
 import { type TasksList } from '../model'
+
+import { updateTasksListFx } from '..'
 
 export interface TasksListProps {
   tasksList: TasksList
@@ -12,9 +17,22 @@ export function TasksListComponent({
   children,
 }: TasksListProps): JSX.Element {
   return (
-    <Box display="flex" flexDirection="column" gap="1rem">
-      <Typography variant="h6">{tasksList.title}</Typography>
-      <Paper elevation={2}>{children}</Paper>
-    </Box>
+    <TitledPanel
+      title={tasksList.title}
+      actions={
+        <IconButton
+          onClick={() => {
+            updateTasksListFx({
+              tasksListId: tasksList.id,
+              change: { isArchived: true },
+            })
+          }}
+        >
+          <Archive />
+        </IconButton>
+      }
+    >
+      {children}
+    </TitledPanel>
   )
 }

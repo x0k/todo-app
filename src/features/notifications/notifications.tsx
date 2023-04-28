@@ -2,8 +2,9 @@ import { useStore } from 'effector-react'
 import { type VariantType, useSnackbar } from 'notistack'
 import { useEffect, useRef } from 'react'
 
+import { type NotificationId, NotificationType } from '@/domain/notification'
+
 import { $notifications, notificationRemoved } from './domain'
-import { type NotificationId, NotificationType } from './model'
 
 const NOTIFICATION_TYPE_TO_STATUS_MAP: Record<NotificationType, VariantType> = {
   [NotificationType.Success]: 'success',

@@ -2,8 +2,7 @@ import {
   type Notification,
   type NotificationCreate,
   type NotificationId,
-} from './model'
-
+} from '@/domain/notification'
 import { app } from '@/shared/app'
 
 /* Notifications */

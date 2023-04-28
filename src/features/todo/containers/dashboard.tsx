@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 
 import { concat, map, take } from '@/shared/lib/iterable'
 
-import { TitledPanel } from '@/components/titled-panel'
+import { TitledPanel } from '@/shared/components'
 
 import { type TaskId, TaskStatus } from '../model'
 

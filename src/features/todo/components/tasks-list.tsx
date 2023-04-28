@@ -1,7 +1,7 @@
 import { Archive, Edit } from '@mui/icons-material'
 import { Box, IconButton } from '@mui/material'
 
-import { TitledPanel } from '@/components/titled-panel'
+import { TitledPanel } from '@/shared/components'
 
 import { type TasksList } from '../model'
 

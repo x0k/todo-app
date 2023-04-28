@@ -17,20 +17,21 @@ function renderPositiveEvents({
   events,
   tasks,
 }: PositiveEventsContainerRenderProps): JSX.Element {
-  if (events.length === 0) {
-    return <Typography variant="h6">No events</Typography>
-  }
   return (
     <Box display="flex" flexDirection="column" padding={2} gap={2}>
-      {reverseMap(
-        (event) => (
-          <PositiveEventComponent
-            key={event.createdAt.toString()}
-            event={event}
-            tasks={tasks}
-          />
-        ),
-        events
+      {events.length > 0 ? (
+        reverseMap(
+          (event) => (
+            <PositiveEventComponent
+              key={event.createdAt.toString()}
+              event={event}
+              tasks={tasks}
+            />
+          ),
+          events
+        )
+      ) : (
+        <Typography variant="h6">No events</Typography>
       )}
     </Box>
   )

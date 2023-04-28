@@ -45,7 +45,7 @@ export function DashboardContainer(): JSX.Element {
     [doneTasks, notDoneTasks, tasksLists]
   ) as Record<TaskId, string>
   if (doneTasks.length === 0 && notDoneTasks.length === 0) {
-    return <Typography variant="h4">No tasks found.</Typography>
+    return <Typography variant="h5">No tasks found.</Typography>
   }
   return (
     <Box display="flex" flexDirection="column" gap={2}>

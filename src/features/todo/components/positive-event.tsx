@@ -1,4 +1,7 @@
 import { Box, Typography } from '@mui/material'
+import { formatDistanceToNow } from 'date-fns'
+
+import { pluralize } from '@/lib/intl'
 
 import {
   EventType,
@@ -21,16 +24,20 @@ export function PositiveEventComponent({
     event.type === EventType.TaskStatusChanged ? [event.taskId] : event.tasksIds
   return (
     <Box>
-      <Typography variant="h6">{event.createdAt.toLocaleString()}</Typography>
-      {event.newStatus === TaskStatus.Archived ? (
-        <Typography>
-          You finalize round with {ids.length} completed tasks
+      <Box display="flex" alignItems="baseline">
+        <Typography variant="h6">
+          {event.newStatus === TaskStatus.Archived
+            ? `You finalize round with ${ids.length} completed tasks`
+            : `You completed ${pluralize(ids.length, 'task')}`}
         </Typography>
-      ) : (
-        ids.map((id) => (
-          <Typography key={id}>Task completed: {tasks[id].title}</Typography>
-        ))
-      )}
+        <Box flexGrow={1} />
+        <Typography variant="overline">
+          {formatDistanceToNow(event.createdAt, { addSuffix: true })}
+        </Typography>
+      </Box>
+      {ids.map((id) => (
+        <Typography key={id}>{tasks[id].title}</Typography>
+      ))}
     </Box>
   )
 }

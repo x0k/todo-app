@@ -1,4 +1,4 @@
-import { type Task, type TaskId } from '../model'
+import { type Task, type TaskId } from '@/domain/todo'
 
 import { useTasks } from '../hooks'
 

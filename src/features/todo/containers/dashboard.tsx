@@ -7,7 +7,7 @@ import { concat, map, take } from '@/shared/lib/iterable'
 
 import { TitledPanel } from '@/shared/components'
 
-import { type TaskId, TaskStatus } from '../model'
+import { type TaskId, TaskStatus } from '@/domain/todo'
 
 import { TaskItem } from '../components'
 

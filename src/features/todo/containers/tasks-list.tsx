@@ -1,4 +1,4 @@
-import { type TasksList, type TasksListId } from '../model'
+import { type TasksList, type TasksListId } from '@/domain/todo'
 
 import { updateTasksListFx } from '../domain'
 

@@ -1,4 +1,4 @@
-import { makeArrayComparator } from '@/lib/array'
+import { makeArrayComparator } from '@/shared/lib/array'
 
 export const strictArrayComparator = makeArrayComparator((a, b) =>
   a === b ? 0 : 1

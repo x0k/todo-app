@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 
-import { noop } from '@/lib/function'
+import { noop } from '@/shared/lib/function'
 
 import {
   $notifications,

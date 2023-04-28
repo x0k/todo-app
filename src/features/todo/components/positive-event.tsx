@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material'
 import { formatDistanceToNow } from 'date-fns'
 
-import { pluralize } from '@/lib/intl'
+import { pluralize } from '@/shared/lib/intl'
 
 import {
   EventType,

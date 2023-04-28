@@ -3,7 +3,7 @@ import { Box, IconButton, List, Typography } from '@mui/material'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 
-import { concat, map, take } from '@/lib/iterable'
+import { concat, map, take } from '@/shared/lib/iterable'
 
 import { TitledPanel } from '@/components/titled-panel'
 

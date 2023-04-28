@@ -1,74 +1,37 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 
-import { map, take } from '@/lib/iterable'
+import { reverseMap } from '@/lib/array'
 
 import { TitledPanel } from '@/components/titled-panel'
 
 import {
   CreateTasksContainer,
   DashboardContainer,
-  TaskContainer,
-  type TaskContainerRenderProps,
-  type TaskId,
-  TaskItem,
-  TaskStatus,
-  TasksListComponent,
-  TasksListContainer,
-  type TasksListContainerRenderProps,
-  type TasksListId,
-  TasksListsIdsContainer,
+  PositiveEventComponent,
+  PositiveEventsContainer,
+  type PositiveEventsContainerRenderProps,
 } from '@/features/todo'
 
-function renderTask({
-  task,
-  archiveTask,
-  completeTask,
-}: TaskContainerRenderProps): JSX.Element {
+function renderPositiveEvents({
+  events,
+  tasks,
+}: PositiveEventsContainerRenderProps): JSX.Element {
+  if (events.length === 0) {
+    return <Typography variant="h6">No events</Typography>
+  }
   return (
-    <TaskItem
-      task={task}
-      onClick={completeTask}
-      onEdit={console.log}
-      onArchive={archiveTask}
-    />
-  )
-}
-
-function renderTasksList({
-  tasksList,
-  archiveTasksList,
-}: TasksListContainerRenderProps): JSX.Element {
-  const tasks = tasksList.tasks[TaskStatus.NotDone]
-  return (
-    <TasksListComponent
-      tasksList={tasksList}
-      onArchive={archiveTasksList}
-      onEdit={console.log}
-    >
-      {take(
-        tasks.size,
-        map(
-          (taskId: TaskId) => (
-            <TaskContainer key={taskId} taskId={taskId}>
-              {renderTask}
-            </TaskContainer>
-          ),
-          tasks
-        )
+    <Box display="flex" flexDirection="column" padding={2} gap={2}>
+      {reverseMap(
+        (event) => (
+          <PositiveEventComponent
+            key={event.createdAt.toString()}
+            event={event}
+            tasks={tasks}
+          />
+        ),
+        events
       )}
-    </TasksListComponent>
-  )
-}
-
-function renderTasksLists(tasksListsIds: TasksListId[]): JSX.Element {
-  return (
-    <Box display="flex" flexDirection="column" gap={2} marginTop={2}>
-      {tasksListsIds.map((listId) => (
-        <TasksListContainer key={listId} tasksListId={listId}>
-          {renderTasksList}
-        </TasksListContainer>
-      ))}
     </Box>
   )
 }
@@ -81,12 +44,18 @@ export function HomePage(): JSX.Element {
           <DashboardContainer />
         </Grid>
         <Grid xs>
-          <TitledPanel title="Create Tasks">
-            <Box padding={2}>
-              <CreateTasksContainer />
-            </Box>
-          </TitledPanel>
-          <TasksListsIdsContainer>{renderTasksLists}</TasksListsIdsContainer>
+          <Box display="flex" flexDirection="column" gap={2}>
+            <TitledPanel title="Create Tasks">
+              <Box padding={2}>
+                <CreateTasksContainer />
+              </Box>
+            </TitledPanel>
+            <TitledPanel title="Recent events">
+              <PositiveEventsContainer>
+                {renderPositiveEvents}
+              </PositiveEventsContainer>
+            </TitledPanel>
+          </Box>
         </Grid>
       </Grid>
     </Box>

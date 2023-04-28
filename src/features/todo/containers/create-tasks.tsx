@@ -5,7 +5,6 @@ import { createTasksFx, createTasksListFx } from '../domain'
 import { useTasksLists } from '../hooks'
 
 function handleSubmit({ tasks, tasksList }: CreateTasksFormData): void {
-  console.log('SUBMIT')
   if (typeof tasksList === 'string') {
     createTasksListFx({
       title: tasksList,

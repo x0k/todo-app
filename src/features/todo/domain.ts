@@ -18,6 +18,7 @@ import {
   type TasksStatusChangedEvent,
   type UpdateTask,
   type UpdateTasksList,
+  isPositiveEvent,
 } from './model'
 
 export const todo = app.createDomain('todo')
@@ -73,6 +74,10 @@ export const $dashboard = $tasksState.map((state) => {
     tasksLists: state.lists,
   }
 })
+
+export const $positiveEvents = $events.map((events) =>
+  events.filter(isPositiveEvent)
+)
 
 // Events
 

@@ -74,7 +74,7 @@ export function DashboardContainer(): JSX.Element {
           title="Completed"
           key="competed"
           actions={
-            <IconButton onClick={archiveDoneTasks}>
+            <IconButton onClick={archiveDoneTasks} sx={{ marginRight: 2 }}>
               <Archive />
             </IconButton>
           }

@@ -4,6 +4,14 @@ export function map<T, R>(fn: (value: T) => R) {
   return (array: T[]) => array.map(fn)
 }
 
+export function reverseMap<T, R>(fn: (value: T) => R, items: T[]): R[] {
+  const result = new Array<R>(items.length)
+  for (let i = items.length - 1, x = 0; i >= 0; i--, x++) {
+    result[x] = fn(items[i])
+  }
+  return result
+}
+
 export function makeGroupBy<T, Keys extends readonly RecordKeyType[]>(
   keys: Keys,
   classify: (value: T) => Keys[number]

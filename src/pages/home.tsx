@@ -12,6 +12,8 @@ import {
   type PositiveEventsContainerRenderProps,
 } from '@/features/todo'
 
+import { HeaderWidget } from '@/widgets/header'
+
 function renderPositiveEvents({
   events,
   tasks,
@@ -39,6 +41,7 @@ function renderPositiveEvents({
 export function HomePage(): JSX.Element {
   return (
     <Box flex="1 1 100%" maxWidth="xl" marginX="auto" gap={2} padding={2}>
+      <HeaderWidget />
       <Grid container spacing={2}>
         <Grid xs>
           <DashboardContainer />

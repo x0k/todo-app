@@ -1,6 +1,6 @@
 import { sample } from 'effector'
 
-import { errorOccurred, started } from './common/app'
+import { errorOccurred, started } from './shared/app'
 import { NotificationType, notificationShowed } from './features/notifications'
 import { initNotifications } from './features/notifications/init'
 import { type IToDoService } from './features/todo'

@@ -1,6 +1,6 @@
 import { useStoreMap } from 'effector-react'
 
-import { isArrayNotEqual } from '@/common/utils'
+import { isArrayNotEqual } from '@/shared/utils'
 
 import {
   type Task,

@@ -2,7 +2,7 @@ import { Autocomplete, Box, Button, TextField } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
-import { REQUIRED_FIELD_MESSAGE } from '@/common/validation'
+import { REQUIRED_FIELD_MESSAGE } from '@/shared/validation'
 
 import { type TasksList } from '../model'
 

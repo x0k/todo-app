@@ -4,7 +4,7 @@ import {
   type NotificationId,
 } from './model'
 
-import { app } from '@/common/app'
+import { app } from '@/shared/app'
 
 /* Notifications */
 

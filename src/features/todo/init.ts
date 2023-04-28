@@ -1,6 +1,6 @@
 import { sample } from 'effector'
 
-import { errorOccurred, started } from '@/common/app'
+import { errorOccurred, started } from '@/shared/app'
 
 import { type IToDoService, TaskStatus, reducer } from './model'
 

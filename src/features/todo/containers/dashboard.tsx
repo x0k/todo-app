@@ -3,14 +3,12 @@ import { Box, IconButton, List, Typography } from '@mui/material'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 
-import { concat, map, take } from '@/shared/lib/iterable'
-
 import { TitledPanel } from '@/shared/components'
+import { concat, map, take } from '@/shared/lib/iterable'
 
 import { type TaskId, TaskStatus } from '@/domain/todo'
 
 import { TaskItem } from '../components'
-
 import { $dashboard, changeTaskStatusFx, doneTasksArchiving } from '../domain'
 
 function completeTask(taskId: TaskId): void {

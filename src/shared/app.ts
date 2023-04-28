@@ -7,7 +7,7 @@ if (process.env.NODE_ENV === 'development') {
   attachLogger(app, {
     reduxDevtools: 'enabled',
     console: 'enabled',
-    inspector: 'enabled'
+    inspector: 'enabled',
   })
 }
 

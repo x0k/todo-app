@@ -1,3 +1,5 @@
+import { app } from '@/shared/app'
+
 import {
   type ChangeTaskStatus,
   type ChangeTasksStatus,
@@ -18,7 +20,6 @@ import {
   type UpdateTasksList,
   isPositiveEvent,
 } from '@/domain/todo'
-import { app } from '@/shared/app'
 
 export const todo = app.createDomain('todo')
 

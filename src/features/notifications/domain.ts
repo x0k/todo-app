@@ -1,9 +1,10 @@
+import { app } from '@/shared/app'
+
 import {
   type Notification,
   type NotificationCreate,
   type NotificationId,
 } from '@/domain/notification'
-import { app } from '@/shared/app'
 
 /* Notifications */
 

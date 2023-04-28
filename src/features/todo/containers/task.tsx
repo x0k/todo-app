@@ -3,7 +3,6 @@ import { useMemo } from 'react'
 import { type Task, type TaskId, TaskStatus } from '@/domain/todo'
 
 import { changeTaskStatusFx } from '../domain'
-
 import { useTask } from '../hooks'
 
 export interface TaskContainerRenderProps {

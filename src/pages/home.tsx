@@ -1,9 +1,8 @@
 import { Box, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 
-import { reverseMap } from '@/shared/lib/array'
-
 import { TitledPanel } from '@/shared/components'
+import { reverseMap } from '@/shared/lib/array'
 
 import {
   CreateTasksContainer,

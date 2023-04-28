@@ -130,7 +130,7 @@ export function CreateTasksForm({
                 <TextField
                   {...params}
                   name={name}
-                  label="Tasks List"
+                  label="Tasks list"
                   variant="standard"
                   error={Boolean(error)}
                   helperText={error?.message}

@@ -24,20 +24,20 @@ export function PositiveEventComponent({
     event.type === EventType.TaskStatusChanged ? [event.taskId] : event.tasksIds
   return (
     <Box>
-      <Box display="flex" alignItems="baseline">
-        <Typography variant="h6">
-          {event.newStatus === TaskStatus.Archived
-            ? `You finalize round with ${ids.length} completed tasks`
-            : `You completed ${pluralize(ids.length, 'task')}`}
+      <Typography variant="overline">
+        {formatDistanceToNow(event.createdAt, { addSuffix: true })}
+      </Typography>
+      {event.newStatus === TaskStatus.Archived ? (
+        <Typography variant="subtitle1">
+          You finalized round with {pluralize(ids.length, 'completed task')}
         </Typography>
-        <Box flexGrow={1} />
-        <Typography variant="overline">
-          {formatDistanceToNow(event.createdAt, { addSuffix: true })}
-        </Typography>
-      </Box>
-      {ids.map((id) => (
-        <Typography key={id}>{tasks[id].title}</Typography>
-      ))}
+      ) : (
+        ids.map((id) => (
+          <Typography key={id} variant="subtitle1">
+            {tasks[id].title} is competed
+          </Typography>
+        ))
+      )}
     </Box>
   )
 }

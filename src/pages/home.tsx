@@ -30,7 +30,7 @@ function renderPositiveEvents({
           events
         )
       ) : (
-        <Typography variant="h6">No events</Typography>
+        <Typography variant="body1">No events</Typography>
       )}
     </Box>
   )

@@ -1,4 +1,4 @@
-import { Archive } from '@mui/icons-material'
+import { Check } from '@mui/icons-material'
 import { Box, IconButton, List, Typography } from '@mui/material'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
@@ -48,7 +48,7 @@ export function DashboardContainer(): JSX.Element {
     <Box display="flex" flexDirection="column" gap={2}>
       {notDoneTasks.length > 0 && (
         <TitledPanel title="To Do" key="todo">
-          <List dense>
+          <List>
             {notDoneTasks.map((task) => (
               <TaskItem
                 key={task.id}
@@ -60,7 +60,6 @@ export function DashboardContainer(): JSX.Element {
                 onArchive={() => {
                   archiveTask(task.id)
                 }}
-                onEdit={console.log}
               />
             ))}
           </List>
@@ -72,11 +71,12 @@ export function DashboardContainer(): JSX.Element {
           key="competed"
           actions={
             <IconButton onClick={archiveDoneTasks} sx={{ marginRight: 2 }}>
-              <Archive />
+              {/* <Archive /> */}
+              <Check />
             </IconButton>
           }
         >
-          <List dense>
+          <List>
             {doneTasks.map((task) => (
               <TaskItem
                 key={task.id}
@@ -88,7 +88,6 @@ export function DashboardContainer(): JSX.Element {
                 onArchive={() => {
                   archiveTask(task.id)
                 }}
-                onEdit={console.log}
               />
             ))}
           </List>

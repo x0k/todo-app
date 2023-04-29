@@ -1,43 +1,14 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 
 import { TitledPanel } from '@/shared/components'
-import { reverseMap } from '@/shared/lib/array'
 
-import { PositiveEventComponent } from '@/entities/todo'
-import {
-  DashboardContainer,
-  PositiveEventsContainer,
-  type PositiveEventsContainerRenderProps,
-} from '@/entities/todo'
+import { DashboardContainer } from '@/entities/todo'
 
 import { CreateTasksPanel } from '@/features/create-tasks-panel'
+import { PositiveEventsLog } from '@/features/positive-events-log'
 
 import { HeaderWidget } from '@/widgets/header'
-
-function renderPositiveEvents({
-  events,
-  tasks,
-}: PositiveEventsContainerRenderProps): JSX.Element {
-  return (
-    <Box display="flex" flexDirection="column" padding={2} gap={2}>
-      {events.length > 0 ? (
-        reverseMap(
-          (event) => (
-            <PositiveEventComponent
-              key={event.createdAt.toString()}
-              event={event}
-              tasks={tasks}
-            />
-          ),
-          events
-        )
-      ) : (
-        <Typography variant="body1">No events</Typography>
-      )}
-    </Box>
-  )
-}
 
 export function HomePage(): JSX.Element {
   return (
@@ -50,18 +21,16 @@ export function HomePage(): JSX.Element {
       marginBottom="72px"
     >
       <HeaderWidget />
-      <Grid container spacing={2}>
+      <Grid container spacing={4}>
         <Grid xs>
           <DashboardContainer />
         </Grid>
         <Grid xs>
-          <Box display="flex" flexDirection="column" gap={2}>
-            <TitledPanel title="Recent events">
-              <PositiveEventsContainer>
-                {renderPositiveEvents}
-              </PositiveEventsContainer>
-            </TitledPanel>
-          </Box>
+          <TitledPanel title="Events">
+            <Box padding={2}>
+              <PositiveEventsLog />
+            </Box>
+          </TitledPanel>
         </Grid>
       </Grid>
       <CreateTasksPanel />

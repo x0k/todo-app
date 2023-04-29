@@ -16,3 +16,5 @@ export const colorModeToggled = toggleTheme.createEvent()
 $colorMode.on(colorModeToggled, (state) =>
   state === ColorMode.Dark ? ColorMode.Light : ColorMode.Dark
 )
+
+$colorMode.subscribe(r.themeService.setColorMode)

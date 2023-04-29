@@ -4,10 +4,11 @@ import Grid from '@mui/material/Unstable_Grid2'
 import { TitledPanel } from '@/shared/components'
 import { reverseMap } from '@/shared/lib/array'
 
+import { PositiveEventComponent } from '@/entities/todo'
+
 import {
   CreateTasksContainer,
   DashboardContainer,
-  PositiveEventComponent,
   PositiveEventsContainer,
   type PositiveEventsContainerRenderProps,
 } from '@/features/todo'

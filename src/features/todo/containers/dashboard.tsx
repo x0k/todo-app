@@ -7,9 +7,12 @@ import { TitledPanel } from '@/shared/components'
 import { concat, map, take } from '@/shared/lib/iterable'
 
 import { type TaskId, TaskStatus } from '@/entities/todo'
-
-import { TaskItem } from '../components'
-import { $dashboard, changeTaskStatusFx, doneTasksArchiving } from '@/entities/todo'
+import {
+  $dashboard,
+  changeTaskStatusFx,
+  doneTasksArchiving,
+} from '@/entities/todo'
+import { TaskItem } from '@/entities/todo/components'
 
 function completeTask(taskId: TaskId): void {
   changeTaskStatusFx({ taskId, newStatus: TaskStatus.Done })

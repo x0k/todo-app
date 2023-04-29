@@ -1,4 +1,4 @@
-import { CreateTasksForm, type CreateTasksFormData } from '../components'
+import { CreateTasksForm, type CreateTasksFormData } from '@/entities/todo/components'
 import { createTasksFx, createTasksListFx } from '@/entities/todo'
 import { useTasksLists } from '../hooks'
 

@@ -1,4 +1,4 @@
-import { type TasksList, type TasksListId } from '@/models/todo'
+import { type TasksList, type TasksListId } from '@/entities/todo'
 
 import { updateTasksListFx } from '@/entities/todo'
 import { useTasksList } from '../hooks'

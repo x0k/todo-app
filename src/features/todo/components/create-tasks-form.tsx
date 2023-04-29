@@ -4,7 +4,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
 import { REQUIRED_FIELD_MESSAGE } from '@/shared/validation'
 
-import { type TasksList } from '@/models/todo'
+import { type TasksList } from '@/entities/todo'
 
 export interface CreateTasksFormProps {
   tasksLists: TasksList[]

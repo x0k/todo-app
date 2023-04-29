@@ -9,7 +9,7 @@ import {
   type TasksState,
   isPositiveEvent,
   reducer,
-} from '@/models/todo'
+} from './types'
 
 import './registry'
 

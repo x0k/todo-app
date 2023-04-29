@@ -7,7 +7,7 @@ import {
   type TaskId,
   type TasksList,
   type TasksListId,
-} from '@/models/todo'
+} from '@/entities/todo'
 
 import { $listsMap, $tasksMap, $tasksState } from '@/entities/todo'
 

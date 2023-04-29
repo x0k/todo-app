@@ -1,8 +1,7 @@
 import { defineService, singleton } from '@/shared/registry'
 
-import { type IToDoService } from '@/models/todo'
-
 import { InMemoryToDoService } from './in-memory-todo-service'
+import { type IToDoService } from './types'
 
 declare module '@/shared/registry' {
   interface Registry {

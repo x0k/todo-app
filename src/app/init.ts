@@ -1,8 +1,8 @@
 import { sample } from 'effector'
 
-import { notificationShowed } from '../features/notifications'
-import { NotificationType } from '../models/notification'
-import { errorOccurred, started } from '../shared/app'
+import { errorOccurred, started } from '@/shared/app'
+
+import { NotificationType, notificationShowed } from '@/features/notifications'
 
 sample({
   clock: errorOccurred,

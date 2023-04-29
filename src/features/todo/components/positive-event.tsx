@@ -9,7 +9,7 @@ import {
   type Task,
   type TaskId,
   TaskStatus,
-} from '@/models/todo'
+} from '@/entities/todo'
 
 export interface PositiveEventProps {
   event: PositiveEvent

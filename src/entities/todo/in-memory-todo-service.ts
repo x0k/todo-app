@@ -25,7 +25,7 @@ import {
   type TasksStatusChangedEvent,
   type UpdateTask,
   type UpdateTasksList,
-} from '@/models/todo'
+} from './types'
 
 function createTask(tasksListId: TasksListId, title: string): Task {
   return {

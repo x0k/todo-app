@@ -6,7 +6,7 @@ import {
   type Notification,
   type NotificationCreate,
   type NotificationId,
-} from '@/models/notification'
+} from './types'
 
 /* Notifications */
 

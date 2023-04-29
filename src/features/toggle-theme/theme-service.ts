@@ -1,4 +1,4 @@
-import { type IStorageService } from '@/models/storage'
+import { type IStorageService } from '@/shared/storage'
 
 import { type IThemeService, type ColorMode } from './types'
 

@@ -1,6 +1,6 @@
 import { useStore, useStoreMap } from 'effector-react'
 
-import { type PositiveEvent, type Task, type TaskId } from '@/models/todo'
+import { type PositiveEvent, type Task, type TaskId } from '@/entities/todo'
 
 import { $positiveEvents, $tasksMap } from '@/entities/todo'
 

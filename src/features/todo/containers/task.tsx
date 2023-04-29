@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { type Task, type TaskId, TaskStatus } from '@/models/todo'
+import { type Task, type TaskId, TaskStatus } from '@/entities/todo'
 
 import { changeTaskStatusFx } from '@/entities/todo'
 import { useTask } from '../hooks'

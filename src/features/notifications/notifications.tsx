@@ -11,7 +11,7 @@ const NOTIFICATION_TYPE_TO_STATUS_MAP: Record<NotificationType, VariantType> = {
   [NotificationType.Info]: 'info',
 }
 
-export function NotificationsContainer(): null {
+export function Notifications(): null {
   const notifications = useStore($notifications)
   const { current: displayed } = useRef(new Set<NotificationId>())
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()

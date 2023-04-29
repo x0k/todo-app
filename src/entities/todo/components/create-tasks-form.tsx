@@ -1,5 +1,5 @@
 import { Autocomplete, Box, Button, TextField } from '@mui/material'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
 import { REQUIRED_FIELD_MESSAGE } from '@/shared/validation'
@@ -9,6 +9,7 @@ import { type TasksList } from '@/entities/todo'
 export interface CreateTasksFormProps {
   tasksLists: TasksList[]
   onSubmit: (data: CreateTasksFormData) => void
+  onTouched?: (isDirty: boolean) => void
 }
 
 interface TaskData {
@@ -26,8 +27,14 @@ function getOptionLabel(option: string | TasksListData): string {
   return typeof option === 'string' ? option : option.title
 }
 
-function tryFocusTaskInputByIndex(index: number): void {
-  const input = document.querySelector(`[name="tasks.${index}.title"]`)
+function tryFocusTaskInputByIndex(
+  { current }: React.RefObject<HTMLFormElement>,
+  index: number
+): void {
+  if (current === null) {
+    return
+  }
+  const input = current.querySelector(`[name="tasks.${index}.title"]`)
   if (input instanceof HTMLElement) {
     input.focus()
   }
@@ -36,13 +43,14 @@ function tryFocusTaskInputByIndex(index: number): void {
 export function CreateTasksForm({
   tasksLists,
   onSubmit,
+  onTouched,
 }: CreateTasksFormProps): JSX.Element {
   const {
     control,
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors, isSubmitSuccessful, isDirty },
   } = useForm<CreateTasksFormData>({
     defaultValues: {
       tasks: [{ title: '' }],
@@ -54,12 +62,16 @@ export function CreateTasksForm({
     name: 'tasks',
     rules: { minLength: 1 },
   })
+  const formRef = useRef<HTMLFormElement>(null)
+  useEffect(() => {
+    onTouched?.(isDirty)
+  }, [isDirty, onTouched])
   useEffect(() => {
     reset()
-    tryFocusTaskInputByIndex(0)
+    tryFocusTaskInputByIndex(formRef, 0)
   }, [isSubmitSuccessful])
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
       <Box display="flex" flexDirection="column" gap={2}>
         {fields.map((field, index) => (
           <TextField
@@ -81,7 +93,7 @@ export function CreateTasksForm({
                     // @ts-expect-error wtf
                     if (e.target.value === '' && index > 0) {
                       e.preventDefault()
-                      tryFocusTaskInputByIndex(index - 1)
+                      tryFocusTaskInputByIndex(formRef, index - 1)
                       remove(index)
                     }
                     break
@@ -89,7 +101,7 @@ export function CreateTasksForm({
               },
             }}
             key={field.id}
-            label="Task"
+            label="New task"
             error={Boolean(errors.tasks?.[index]?.title)}
             helperText={errors.tasks?.[index]?.title?.message}
           />
@@ -139,9 +151,21 @@ export function CreateTasksForm({
             />
           )}
         />
-        <Button variant="outlined" type="submit">
-          Create
-        </Button>
+        <Box display="flex" gap={2} justifyContent="stretch">
+          <Button variant="outlined" type="submit" fullWidth>
+            Create
+          </Button>
+          <Button
+            type="reset"
+            color="error"
+            fullWidth
+            onClick={() => {
+              reset()
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
       </Box>
     </form>
   )

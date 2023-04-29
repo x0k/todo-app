@@ -4,12 +4,14 @@ import Grid from '@mui/material/Unstable_Grid2'
 import { TitledPanel } from '@/shared/components'
 import { reverseMap } from '@/shared/lib/array'
 
-import { CreateTasksContainer, PositiveEventComponent } from '@/entities/todo'
+import { PositiveEventComponent } from '@/entities/todo'
 import {
   DashboardContainer,
   PositiveEventsContainer,
   type PositiveEventsContainerRenderProps,
 } from '@/entities/todo'
+
+import { CreateTasksPanel } from '@/features/create-tasks-panel'
 
 import { HeaderWidget } from '@/widgets/header'
 
@@ -39,7 +41,14 @@ function renderPositiveEvents({
 
 export function HomePage(): JSX.Element {
   return (
-    <Box flex="1 1 100%" maxWidth="xl" marginX="auto" gap={2} padding={2}>
+    <Box
+      flex="1 1 100%"
+      maxWidth="xl"
+      marginX="auto"
+      gap={2}
+      padding={2}
+      marginBottom="72px"
+    >
       <HeaderWidget />
       <Grid container spacing={2}>
         <Grid xs>
@@ -47,11 +56,6 @@ export function HomePage(): JSX.Element {
         </Grid>
         <Grid xs>
           <Box display="flex" flexDirection="column" gap={2}>
-            <TitledPanel title="Create Tasks">
-              <Box padding={2}>
-                <CreateTasksContainer />
-              </Box>
-            </TitledPanel>
             <TitledPanel title="Recent events">
               <PositiveEventsContainer>
                 {renderPositiveEvents}
@@ -60,6 +64,7 @@ export function HomePage(): JSX.Element {
           </Box>
         </Grid>
       </Grid>
+      <CreateTasksPanel />
     </Box>
   )
 }

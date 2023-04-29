@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import { CssBaseline } from '@mui/material'
 
-import { NotificationsContainer } from '@/features/notifications'
+import { Notifications } from '@/features/notifications'
 
 import { HomePage } from '@/pages/home'
 
@@ -17,7 +17,7 @@ export default function App(): JSX.Element {
     <Providers>
       <CssBaseline />
       <HomePage />
-      <NotificationsContainer />
+      <Notifications />
     </Providers>
   )
 }

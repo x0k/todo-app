@@ -1,6 +1,6 @@
 import { r } from '@/shared/registry'
 
-import { app } from '@/entities/app'
+import { app } from '@/shared/app'
 
 import { ColorMode } from './types'
 

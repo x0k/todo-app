@@ -1,5 +1,5 @@
 import { CreateTasksForm, type CreateTasksFormData } from '../components'
-import { createTasksFx, createTasksListFx } from '../domain'
+import { createTasksFx, createTasksListFx } from '@/entities/todo'
 import { useTasksLists } from '../hooks'
 
 function handleSubmit({ tasks, tasksList }: CreateTasksFormData): void {

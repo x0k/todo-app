@@ -1,6 +1,6 @@
 import { type TasksList, type TasksListId } from '@/models/todo'
 
-import { updateTasksListFx } from '../domain'
+import { updateTasksListFx } from '@/entities/todo'
 import { useTasksList } from '../hooks'
 
 export interface TasksListContainerRenderProps {

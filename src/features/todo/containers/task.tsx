@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import { type Task, type TaskId, TaskStatus } from '@/models/todo'
 
-import { changeTaskStatusFx } from '../domain'
+import { changeTaskStatusFx } from '@/entities/todo'
 import { useTask } from '../hooks'
 
 export interface TaskContainerRenderProps {

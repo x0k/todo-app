@@ -9,7 +9,7 @@ import { concat, map, take } from '@/shared/lib/iterable'
 import { type TaskId, TaskStatus } from '@/models/todo'
 
 import { TaskItem } from '../components'
-import { $dashboard, changeTaskStatusFx, doneTasksArchiving } from '../domain'
+import { $dashboard, changeTaskStatusFx, doneTasksArchiving } from '@/entities/todo'
 
 function completeTask(taskId: TaskId): void {
   changeTaskStatusFx({ taskId, newStatus: TaskStatus.Done })

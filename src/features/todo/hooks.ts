@@ -9,7 +9,7 @@ import {
   type TasksListId,
 } from '@/models/todo'
 
-import { $listsMap, $tasksMap, $tasksState } from './domain'
+import { $listsMap, $tasksMap, $tasksState } from '@/entities/todo'
 
 export function useTasks(taskIds: Iterable<TaskId>): Task[] {
   return useStoreMap({

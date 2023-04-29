@@ -11,14 +11,15 @@ import { HomePage } from '@/pages/home'
 
 import './index.css'
 import { initApp } from './init'
+import { Providers } from './providers'
 
-export function App(): JSX.Element {
+export default function App(): JSX.Element {
   initApp(new InMemoryToDoService())
   return (
-    <>
+    <Providers>
       <CssBaseline />
       <HomePage />
       <NotificationsContainer />
-    </>
+    </Providers>
   )
 }

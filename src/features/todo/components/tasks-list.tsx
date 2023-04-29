@@ -3,7 +3,7 @@ import { Box, IconButton } from '@mui/material'
 
 import { TitledPanel } from '@/shared/components'
 
-import { type TasksList } from '@/domain/todo'
+import { type TasksList } from '@/models/todo'
 
 export interface TasksListProps {
   tasksList: TasksList

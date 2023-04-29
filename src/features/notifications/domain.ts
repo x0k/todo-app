@@ -4,7 +4,7 @@ import {
   type Notification,
   type NotificationCreate,
   type NotificationId,
-} from '@/domain/notification'
+} from '@/models/notification'
 
 /* Notifications */
 

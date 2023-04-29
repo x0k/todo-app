@@ -5,7 +5,8 @@ module.exports = {
   singleQuote: true,
   importOrder: [
     '^@/shared/(.*)$',
-    '^@/domain/(.*)$',
+    '^@/models/(.*)$',
+    '^@/implementations/(.*)$',
     '^@/entities/(.*)$',
     '^@/features/(.*)$',
     '^@/widgets/(.*)$',

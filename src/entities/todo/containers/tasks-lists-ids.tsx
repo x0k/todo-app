@@ -1,6 +1,5 @@
-import { type TasksListId } from '@/entities/todo'
-
 import { useTasksListsIds } from '../hooks'
+import { type TasksListId } from '../types'
 
 export interface TasksListsIdsContainerProps {
   children: (listsIds: TasksListId[]) => JSX.Element

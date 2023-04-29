@@ -6,13 +6,9 @@ import { useMemo } from 'react'
 import { TitledPanel } from '@/shared/components'
 import { concat, map, take } from '@/shared/lib/iterable'
 
-import { type TaskId, TaskStatus } from '@/entities/todo'
-import {
-  $dashboard,
-  changeTaskStatusFx,
-  doneTasksArchiving,
-} from '@/entities/todo'
-import { TaskItem } from '@/entities/todo/components'
+import { TaskItem } from '../components'
+import { $dashboard, changeTaskStatusFx, doneTasksArchiving } from '../model'
+import { type TaskId, TaskStatus } from '../types'
 
 function completeTask(taskId: TaskId): void {
   changeTaskStatusFx({ taskId, newStatus: TaskStatus.Done })

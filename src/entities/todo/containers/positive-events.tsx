@@ -1,8 +1,7 @@
 import { useStore, useStoreMap } from 'effector-react'
 
-import { type PositiveEvent, type Task, type TaskId } from '@/entities/todo'
-
-import { $positiveEvents, $tasksMap } from '@/entities/todo'
+import { $positiveEvents, $tasksMap } from '../model'
+import { type PositiveEvent, type Task, type TaskId } from '../types'
 
 export interface PositiveEventsContainerRenderProps {
   events: PositiveEvent[]

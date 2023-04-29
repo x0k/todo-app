@@ -1,7 +1,6 @@
-import { type TasksList, type TasksListId } from '@/entities/todo'
-
-import { updateTasksListFx } from '@/entities/todo'
 import { useTasksList } from '../hooks'
+import { updateTasksListFx } from '../model'
+import { type TasksList, type TasksListId } from '../types'
 
 export interface TasksListContainerRenderProps {
   tasksList: TasksList

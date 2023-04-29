@@ -1,6 +1,10 @@
-import { CreateTasksForm, type CreateTasksFormData } from '@/entities/todo/components'
-import { createTasksFx, createTasksListFx } from '@/entities/todo'
-import { useTasksLists } from '../hooks'
+import {
+  CreateTasksForm,
+  type CreateTasksFormData,
+  createTasksFx,
+  createTasksListFx,
+  useTasksLists,
+} from '@/entities/todo'
 
 function handleSubmit({ tasks, tasksList }: CreateTasksFormData): void {
   if (typeof tasksList === 'string') {

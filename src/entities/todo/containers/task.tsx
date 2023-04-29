@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 
 import { type Task, type TaskId, TaskStatus } from '@/entities/todo'
 
-import { changeTaskStatusFx } from '@/entities/todo'
 import { useTask } from '../hooks'
+import { changeTaskStatusFx } from '../model'
 
 export interface TaskContainerRenderProps {
   task: Task

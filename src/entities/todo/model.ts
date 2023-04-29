@@ -11,6 +11,8 @@ import {
   reducer,
 } from '@/models/todo'
 
+import './registry'
+
 export const todo = app.createDomain('todo')
 
 // Stores
@@ -75,7 +77,7 @@ export const doneTasksArchiving = todo.createEvent()
 
 // Effects
 
-export const loadTasksStateFx = todo.createEffect<void, TasksState>()
+export const loadTasksStateFx = todo.createEffect(r.todoService.loadTasksState)
 
 export const createTaskFx = todo.createEffect(r.todoService.createTask)
 

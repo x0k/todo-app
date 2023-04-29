@@ -1,7 +1,7 @@
+import { app } from '@/shared/app'
 import { r } from '@/shared/registry'
 
-import { app } from '@/shared/app'
-
+import './registry'
 import { ColorMode } from './types'
 
 const toggleTheme = app.createDomain('toggle-theme')

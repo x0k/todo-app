@@ -7,7 +7,7 @@ import {
   type TaskId,
   type TasksList,
   type TasksListId,
-} from '@/domain/todo'
+} from '@/models/todo'
 
 import { $listsMap, $tasksMap, $tasksState } from './domain'
 

@@ -19,7 +19,7 @@ import {
   type UpdateTask,
   type UpdateTasksList,
   isPositiveEvent,
-} from '@/domain/todo'
+} from '@/models/todo'
 
 export const todo = app.createDomain('todo')
 

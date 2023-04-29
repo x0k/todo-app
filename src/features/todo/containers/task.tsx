@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { type Task, type TaskId, TaskStatus } from '@/domain/todo'
+import { type Task, type TaskId, TaskStatus } from '@/models/todo'
 
 import { changeTaskStatusFx } from '../domain'
 import { useTask } from '../hooks'

@@ -2,7 +2,7 @@ import { sample } from 'effector'
 
 import { errorOccurred, started } from '@/shared/app'
 
-import { type IToDoService, TaskStatus, reducer } from '@/domain/todo'
+import { type IToDoService, TaskStatus, reducer } from '@/models/todo'
 
 import {
   $dashboard,

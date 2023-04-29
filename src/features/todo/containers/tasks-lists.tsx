@@ -1,4 +1,4 @@
-import { type TasksList } from '@/domain/todo'
+import { type TasksList } from '@/models/todo'
 
 import { useTasksLists } from '../hooks'
 

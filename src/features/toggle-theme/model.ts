@@ -1,23 +1,10 @@
-import { sr } from '@/shared/service-registry'
+import { r } from '@/shared/registry'
 
 import { app } from '@/entities/app'
 
-export enum Theme {
-  Light = 'l',
-  Dark = 'd',
-}
-
-export interface IThemeService {
-  getTheme: () => Theme
-  setTheme: (theme: Theme) => void
-}
-
-declare module '@/shared/service-registry' {
-  interface ServiceRegistry {
-    themeService: IThemeService
-  }
-}
+import { type Theme } from './types'
 
 const toggleTheme = app.createDomain('toggle-theme')
 
-export const $theme = toggleTheme.createStore<Theme>(sr.themeService.getTheme())
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const theme$ = toggleTheme.createStore<Theme>(r.themeService.getTheme())

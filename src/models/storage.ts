@@ -1,4 +1,4 @@
-export interface ISyncStorage<T> {
+export interface IStorageService<T> {
   load: () => T
   save: (data: T) => void
   clear: () => void

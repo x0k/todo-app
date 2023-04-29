@@ -1,13 +1,13 @@
-import { type ISyncStorage } from '@/models/storage'
+import { type IStorageService } from '@/models/storage'
 
-import { type IThemeService, type Theme } from './types'
+import { type IThemeService, type ColorMode } from './types'
 
 export class ThemeService implements IThemeService {
-  constructor(private readonly storageService: ISyncStorage<Theme>) {}
+  constructor(private readonly storageService: IStorageService<ColorMode>) {}
 
-  getTheme = (): Theme => this.storageService.load()
+  getColorMode = (): ColorMode => this.storageService.load()
 
-  setTheme = (theme: Theme): void => {
+  setColorMode = (theme: ColorMode): void => {
     this.storageService.save(theme)
   }
 }

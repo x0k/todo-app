@@ -1,6 +1,6 @@
-import { type ISyncStorage } from '@/models/storage'
+import { type IStorageService } from '@/models/storage'
 
-export class PersistentSyncStorageService<T> implements ISyncStorage<T> {
+export class PersistentStorageService<T> implements IStorageService<T> {
   constructor(
     private readonly store: Storage,
     private readonly key: string,

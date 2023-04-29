@@ -1,10 +1,21 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 
-import { App } from './app'
+import { defineConfig } from '@/shared/registry'
+
+defineConfig({
+  themeStorage: localStorage,
+  themeStorageKey: 'theme',
+  isDarkColorSchemePreferred: window.matchMedia('(prefers-color-scheme: dark)')
+    .matches,
+})
+
+const App = React.lazy(async () => await import('./app'))
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <Suspense>
+      <App />
+    </Suspense>
   </React.StrictMode>
 )

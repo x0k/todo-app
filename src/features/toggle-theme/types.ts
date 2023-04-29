@@ -1,9 +1,9 @@
-export enum Theme {
+export enum ColorMode {
   Light = 'l',
   Dark = 'd',
 }
 
 export interface IThemeService {
-  getTheme: () => Theme
-  setTheme: (theme: Theme) => void
+  getColorMode: () => ColorMode
+  setColorMode: (colorMode: ColorMode) => void
 }

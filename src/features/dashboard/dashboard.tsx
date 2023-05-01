@@ -6,9 +6,14 @@ import { useMemo } from 'react'
 import { TitledPanel } from '@/shared/components'
 import { concat, map, take } from '@/shared/lib/iterable'
 
-import { TaskItem } from '../components'
-import { $dashboard, changeTaskStatusFx, doneTasksArchiving } from '../model'
-import { type TaskId, TaskStatus } from '../types'
+import {
+  type TaskId,
+  TaskItem,
+  TaskStatus,
+  changeTaskStatusFx,
+} from '@/entities/todo'
+
+import { $dashboard, doneTasksArchiving } from './model'
 
 function completeTask(taskId: TaskId): void {
   changeTaskStatusFx({ taskId, newStatus: TaskStatus.Done })
@@ -71,7 +76,6 @@ export function DashboardContainer(): JSX.Element {
           key="competed"
           actions={
             <IconButton onClick={archiveDoneTasks} sx={{ marginRight: 2 }}>
-              {/* <Archive /> */}
               <Check />
             </IconButton>
           }

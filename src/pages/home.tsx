@@ -3,9 +3,8 @@ import Grid from '@mui/material/Unstable_Grid2'
 
 import { TitledPanel } from '@/shared/components'
 
-import { DashboardContainer } from '@/entities/todo'
-
 import { CreateTasksPanel } from '@/features/create-tasks-panel'
+import { DashboardContainer } from '@/features/dashboard'
 import { PositiveEventsLog } from '@/features/positive-events-log'
 
 import { HeaderWidget } from '@/widgets/header'

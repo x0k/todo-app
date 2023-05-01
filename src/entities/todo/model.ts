@@ -3,15 +3,8 @@ import { sample } from 'effector'
 import { app, errorOccurred, started } from '@/shared/app'
 import { r } from '@/shared/registry'
 
-import {
-  type Task,
-  TaskStatus,
-  type TasksState,
-  isPositiveEvent,
-  reducer,
-} from './types'
-
 import './registry'
+import { type TasksState, isPositiveEvent, reducer } from './types'
 
 export const todo = app.createDomain('todo')
 
@@ -31,49 +24,9 @@ export const $events = $tasksState.map((state) => state.events)
 
 export const $date = todo.createStore(new Date())
 
-export const $dashboard = $tasksState.map((state) => {
-  const notDoneTasks: Task[] = []
-  const doneTasks: Task[] = []
-  for (const list of state.lists.values()) {
-    const { tasks } = list
-    if (
-      list.isArchived ||
-      list.tasksCount === 0 ||
-      list.tasksCount === tasks[TaskStatus.Archived].size
-    ) {
-      continue
-    }
-    if (tasks[TaskStatus.Done].size > 0) {
-      for (const taskId of tasks[TaskStatus.Done]) {
-        const task = state.tasks.get(taskId)
-        if (task !== undefined) {
-          doneTasks.push(task)
-        }
-      }
-    } else {
-      for (const taskId of tasks[TaskStatus.NotDone]) {
-        const task = state.tasks.get(taskId)
-        if (task !== undefined) {
-          notDoneTasks.push(task)
-          break
-        }
-      }
-    }
-  }
-  return {
-    doneTasks,
-    notDoneTasks,
-    tasksLists: state.lists,
-  }
-})
-
 export const $positiveEvents = $events.map((events) =>
   events.filter(isPositiveEvent)
 )
-
-// Events
-
-export const doneTasksArchiving = todo.createEvent()
 
 // Effects
 
@@ -136,13 +89,3 @@ $tasksState
     ],
     reducer
   )
-
-sample({
-  clock: doneTasksArchiving,
-  source: $dashboard,
-  fn: ({ doneTasks }) => ({
-    newStatus: TaskStatus.Archived,
-    tasksIds: doneTasks.map((t) => t.id),
-  }),
-  target: changeTasksStatusFx,
-})

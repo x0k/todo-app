@@ -1,19 +1,17 @@
 import { Box, Typography } from '@mui/material'
-import { useStore, useStoreMap } from 'effector-react'
+import { useStore } from 'effector-react'
 
 import { reverseMap } from '@/shared/lib/array'
 
-import {
-  $listsMap,
-  $positiveEvents,
-  $tasksMap,
-  PositiveEventComponent,
-} from '@/entities/todo'
+import { $lists, $tasks } from '@/entities/todo'
+
+import { $positiveEvents } from './model'
+import { PositiveEventComponent } from './positive-event'
 
 export function PositiveEventsLog(): JSX.Element {
   const events = useStore($positiveEvents)
-  const tasks = useStoreMap($tasksMap, (map) => Object.fromEntries(map))
-  const lists = useStoreMap($listsMap, (map) => Object.fromEntries(map))
+  const lists = useStore($lists)
+  const tasks = useStore($tasks)
   return (
     <Box display="flex" flexDirection="column" gap={2}>
       {events.length > 0 ? (

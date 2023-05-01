@@ -136,12 +136,6 @@ export type Event =
   | TaskStatusChangedEvent
   | TasksStatusChangedEvent
 
-export type PositiveEventType =
-  | EventType.TaskStatusChanged
-  | EventType.TasksStatusChanged
-
-export type PositiveEvent = Extract<Event, AbstractEvent<PositiveEventType>>
-
 export interface TasksState {
   lists: Map<TasksListId, TasksList>
   tasks: Map<TaskId, Task>
@@ -321,14 +315,4 @@ const HANDLERS: {
 
 export function reducer(state: TasksState, event: Event): TasksState {
   return HANDLERS[event.type](state, event as never)
-}
-
-export function isPositiveEvent(event: Event): event is PositiveEvent {
-  return (
-    (event.type === EventType.TaskStatusChanged &&
-      event.newStatus === TaskStatus.Done) ||
-    (event.type === EventType.TasksStatusChanged &&
-      (event.newStatus === TaskStatus.Done ||
-        event.newStatus === TaskStatus.Archived))
-  )
 }

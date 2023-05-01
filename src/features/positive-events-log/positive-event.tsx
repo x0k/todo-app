@@ -6,13 +6,14 @@ import { pluralize } from '@/shared/lib/intl'
 
 import {
   EventType,
-  type PositiveEvent,
   type Task,
   type TaskId,
   TaskStatus,
   type TasksList,
   type TasksListId,
 } from '@/entities/todo'
+
+import { type PositiveEvent } from './types'
 
 export interface PositiveEventProps {
   event: PositiveEvent
@@ -39,7 +40,9 @@ export function PositiveEventComponent({
       ) : (
         ids.map((id) => (
           <Fragment key={id}>
-            <Typography variant="subtitle1">{tasks[id].title} is competed</Typography>
+            <Typography variant="subtitle1">
+              {tasks[id].title} is competed
+            </Typography>
             <Typography color="text.secondary">
               {lists[tasks[id].tasksListId].title}
             </Typography>

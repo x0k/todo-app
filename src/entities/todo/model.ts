@@ -4,7 +4,14 @@ import { app, errorOccurred, started } from '@/shared/app'
 import { r } from '@/shared/registry'
 
 import './registry'
-import { type TasksState, isPositiveEvent, reducer } from './types'
+import {
+  type Task,
+  type TaskId,
+  type TasksList,
+  type TasksListId,
+  type TasksState,
+  reducer,
+} from './types'
 
 export const todo = app.createDomain('todo')
 
@@ -18,15 +25,17 @@ export const $tasksState = todo.createStore<TasksState>({
 
 export const $listsMap = $tasksState.map((state) => state.lists)
 
+export const $lists = $listsMap.map(
+  (map) => Object.fromEntries(map) as Record<TasksListId, TasksList>
+)
+
 export const $tasksMap = $tasksState.map((state) => state.tasks)
 
-export const $events = $tasksState.map((state) => state.events)
-
-export const $date = todo.createStore(new Date())
-
-export const $positiveEvents = $events.map((events) =>
-  events.filter(isPositiveEvent)
+export const $tasks = $tasksMap.map(
+  (map) => Object.fromEntries(map) as Record<TaskId, Task>
 )
+
+export const $events = $tasksState.map((state) => state.events)
 
 // Effects
 

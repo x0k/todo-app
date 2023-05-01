@@ -13,7 +13,7 @@ export interface TaskItemProps {
   task: Task
   secondary?: ReactNode
   onClick: () => void
-  onArchive: () => void
+  onArchive?: () => void
 }
 export function TaskItem({
   task,
@@ -29,13 +29,15 @@ export function TaskItem({
         '&:hover': { '& .task-secondary-action': { visibility: 'visible' } },
       }}
       secondaryAction={
-        <IconButton className="task-secondary-action" onClick={onArchive}>
-          <Archive />
-        </IconButton>
+        onArchive && (
+          <IconButton className="task-secondary-action" onClick={onArchive}>
+            <Archive />
+          </IconButton>
+        )
       }
       disablePadding
     >
-      <ListItemButton onClick={onClick} >
+      <ListItemButton onClick={onClick}>
         <ListItemText primary={task.title} secondary={secondary} />
       </ListItemButton>
     </ListItem>

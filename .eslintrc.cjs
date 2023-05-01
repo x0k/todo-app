@@ -14,7 +14,7 @@ module.exports = {
   rules: {
     'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/no-invalid-void-type': 'warn',
-    '@typescript-eslint/strict-boolean-expressions': 'warn',
+    '@typescript-eslint/strict-boolean-expressions': 'off',
     'key-spacing': 'off',
     '@typescript-eslint/no-misused-promises': 'warn',
     'react/prop-types': 'off',

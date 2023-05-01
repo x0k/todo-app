@@ -18,7 +18,7 @@ export function PositiveEventsLog(): JSX.Element {
         reverseMap(
           (event) => (
             <PositiveEventComponent
-              key={event.createdAt.toString()}
+              key={event.createdAt.getTime()}
               event={event}
               tasks={tasks}
               lists={lists}

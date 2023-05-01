@@ -89,9 +89,6 @@ export function DashboardContainer(): JSX.Element {
                 onClick={() => {
                   reopenTask(task.id)
                 }}
-                onArchive={() => {
-                  archiveTask(task.id)
-                }}
               />
             ))}
           </List>

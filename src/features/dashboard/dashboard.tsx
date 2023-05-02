@@ -9,22 +9,18 @@ import { concat, map, take } from '@/shared/lib/iterable'
 import {
   type TaskId,
   TaskItem,
-  TaskStatus,
-  changeTaskStatusFx,
+  archiveTasksFx,
+  completeTaskFx,
 } from '@/entities/todo'
 
 import { $dashboard, doneTasksArchiving } from './model'
 
 function completeTask(taskId: TaskId): void {
-  changeTaskStatusFx({ taskId, newStatus: TaskStatus.Done })
-}
-
-function reopenTask(taskId: TaskId): void {
-  changeTaskStatusFx({ taskId, newStatus: TaskStatus.NotDone })
+  completeTaskFx({ taskId, message: '' })
 }
 
 function archiveTask(taskId: TaskId): void {
-  changeTaskStatusFx({ taskId, newStatus: TaskStatus.Archived })
+  archiveTasksFx({ tasksIds: [taskId] })
 }
 
 function archiveDoneTasks(): void {
@@ -86,9 +82,7 @@ export function DashboardContainer(): JSX.Element {
                 key={task.id}
                 task={task}
                 secondary={secondaryTexts[task.id]}
-                onClick={() => {
-                  reopenTask(task.id)
-                }}
+                onClick={console.log}
               />
             ))}
           </List>

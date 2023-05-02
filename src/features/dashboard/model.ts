@@ -6,7 +6,7 @@ import {
   $tasksState,
   type Task,
   TaskStatus,
-  changeTasksStatusFx,
+  archiveTasksFx,
 } from '@/entities/todo'
 
 const d = app.createDomain('dashboard')
@@ -60,5 +60,5 @@ sample({
     newStatus: TaskStatus.Archived,
     tasksIds: doneTasks.map((t) => t.id),
   }),
-  target: changeTasksStatusFx,
+  target: archiveTasksFx,
 })

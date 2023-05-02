@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid'
 
 import {
-  type ChangeTaskStatus,
-  type ChangeTasksStatus,
+  type ArchiveTasks,
+  type CompleteTask,
   type CreateTask,
   type CreateTasks,
   type CreateTasksList,
@@ -10,19 +10,19 @@ import {
   type IToDoService,
   TASK_STATUSES,
   type Task,
+  type TaskCompletedEvent,
   type TaskCreatedEvent,
   type TaskId,
   TaskStatus,
-  type TaskStatusChangedEvent,
   type TaskUpdatedEvent,
   type Tasks,
+  type TasksArchivedEvent,
   type TasksCreatedEvent,
   type TasksList,
   type TasksListCreatedEvent,
   type TasksListId,
   type TasksListUpdatedEvent,
   type TasksState,
-  type TasksStatusChangedEvent,
   type UpdateTask,
   type UpdateTasksList,
 } from './types'
@@ -119,26 +119,24 @@ export class InMemoryToDoService implements IToDoService {
     }
   }
 
-  changeTaskStatus = async ({
+  completeTask = async ({
     taskId,
-    newStatus,
-  }: ChangeTaskStatus): Promise<TaskStatusChangedEvent> => {
+    message,
+  }: CompleteTask): Promise<TaskCompletedEvent> => {
     return {
-      type: EventType.TaskStatusChanged,
+      type: EventType.TaskCompleted,
       taskId,
       createdAt: new Date(),
-      newStatus,
+      message,
     }
   }
 
-  changeTasksStatus = async ({
+  archiveTasks = async ({
     tasksIds,
-    newStatus,
-  }: ChangeTasksStatus): Promise<TasksStatusChangedEvent> => {
+  }: ArchiveTasks): Promise<TasksArchivedEvent> => {
     return {
-      type: EventType.TasksStatusChanged,
+      type: EventType.TasksArchived,
       createdAt: new Date(),
-      newStatus,
       tasksIds,
     }
   }

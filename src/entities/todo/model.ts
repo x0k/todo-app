@@ -55,12 +55,12 @@ export const updateTasksListFx = todo.createEffect(
   r.todoService.updateTasksList
 )
 
-export const changeTaskStatusFx = todo.createEffect(
-  r.todoService.changeTaskStatus
+export const completeTaskFx = todo.createEffect(
+  r.todoService.completeTask
 )
 
-export const changeTasksStatusFx = todo.createEffect(
-  r.todoService.changeTasksStatus
+export const archiveTasksFx = todo.createEffect(
+  r.todoService.archiveTasks
 )
 
 // Init
@@ -78,8 +78,8 @@ sample({
     updateTaskFx.failData,
     createTasksListFx.failData,
     updateTasksListFx.failData,
-    changeTaskStatusFx.failData,
-    changeTasksStatusFx.failData,
+    completeTaskFx.failData,
+    archiveTasksFx.failData,
   ],
   target: errorOccurred,
 })
@@ -93,8 +93,8 @@ $tasksState
       updateTaskFx.doneData,
       createTasksListFx.doneData,
       updateTasksListFx.doneData,
-      changeTaskStatusFx.doneData,
-      changeTasksStatusFx.doneData,
+      completeTaskFx.doneData,
+      archiveTasksFx.doneData,
     ],
     reducer
   )

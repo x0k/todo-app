@@ -35,14 +35,13 @@ export interface UpdateTask {
   change: WritableTaskData
 }
 
-export interface ChangeTaskStatus {
+export interface CompleteTask {
   taskId: TaskId
-  newStatus: TaskStatus
+  message: string
 }
 
-export interface ChangeTasksStatus {
+export interface ArchiveTasks {
   tasksIds: TaskId[]
-  newStatus: TaskStatus
 }
 
 export type TasksListId = Brand<'TasksListID', string>
@@ -73,13 +72,13 @@ export interface UpdateTasksList {
 }
 
 export enum EventType {
-  TaskCreated = 'tc',
-  TasksCreated = 'tc2',
-  TasksListCreated = 'tlc',
-  TaskUpdated = 'tu',
-  TasksListUpdated = 'tlu',
-  TaskStatusChanged = 'tsc',
-  TasksStatusChanged = 'tsc2',
+  TaskCreated = 'taskCreated',
+  TasksCreated = 'tasksCreated',
+  TasksListCreated = 'tasksListCreated',
+  TaskUpdated = 'taskUpdated',
+  TasksListUpdated = 'tasksListUpdated',
+  TaskCompleted = 'taskCompleted',
+  TasksArchived = 'tasksArchived',
 }
 
 export interface AbstractEvent<T extends EventType> {
@@ -115,16 +114,15 @@ export interface TasksListUpdatedEvent
   change: WritableTasksListData
 }
 
-export interface TaskStatusChangedEvent
-  extends AbstractEvent<EventType.TaskStatusChanged> {
+export interface TaskCompletedEvent
+  extends AbstractEvent<EventType.TaskCompleted> {
   taskId: TaskId
-  newStatus: TaskStatus
+  message: string
 }
 
-export interface TasksStatusChangedEvent
-  extends AbstractEvent<EventType.TasksStatusChanged> {
+export interface TasksArchivedEvent
+  extends AbstractEvent<EventType.TasksArchived> {
   tasksIds: TaskId[]
-  newStatus: TaskStatus
 }
 
 export type Event =
@@ -133,8 +131,8 @@ export type Event =
   | TasksListCreatedEvent
   | TaskUpdatedEvent
   | TasksListUpdatedEvent
-  | TaskStatusChangedEvent
-  | TasksStatusChangedEvent
+  | TaskCompletedEvent
+  | TasksArchivedEvent
 
 export interface TasksState {
   lists: Map<TasksListId, TasksList>
@@ -149,10 +147,8 @@ export interface IToDoService {
   createTasksList: (data: CreateTasksList) => Promise<TasksListCreatedEvent>
   updateTask: (data: UpdateTask) => Promise<TaskUpdatedEvent>
   updateTasksList: (data: UpdateTasksList) => Promise<TasksListUpdatedEvent>
-  changeTaskStatus: (data: ChangeTaskStatus) => Promise<TaskStatusChangedEvent>
-  changeTasksStatus: (
-    data: ChangeTasksStatus
-  ) => Promise<TasksStatusChangedEvent>
+  completeTask: (data: CompleteTask) => Promise<TaskCompletedEvent>
+  archiveTasks: (data: ArchiveTasks) => Promise<TasksArchivedEvent>
 }
 
 const HANDLERS: {
@@ -247,7 +243,7 @@ const HANDLERS: {
       events: state.events.concat(event),
     }
   },
-  [EventType.TaskStatusChanged]: (state, event) => {
+  [EventType.TaskCompleted]: (state, event) => {
     const task = state.tasks.get(event.taskId)
     if (task === undefined) {
       return state
@@ -264,19 +260,19 @@ const HANDLERS: {
         tasks: {
           ...tasksList.tasks,
           [task.status]: oldStatusTasks,
-          [event.newStatus]: new Set(tasksList.tasks[event.newStatus]).add(
+          [TaskStatus.Done]: new Set(tasksList.tasks[TaskStatus.Done]).add(
             event.taskId
           ),
         },
       }),
       tasks: new Map(state.tasks).set(task.id, {
         ...task,
-        status: event.newStatus,
+        status: TaskStatus.Done,
       }),
       events: state.events.concat(event),
     }
   },
-  [EventType.TasksStatusChanged]: (state, event) => {
+  [EventType.TasksArchived]: (state, event) => {
     const lists = new Map(state.lists)
     const tasks = new Map(state.tasks)
     for (const taskId of event.tasksIds) {
@@ -290,7 +286,7 @@ const HANDLERS: {
       }
       tasks.set(taskId, {
         ...task,
-        status: event.newStatus,
+        status: TaskStatus.Archived,
       })
       const oldStatusTasks = new Set(tasksList.tasks[task.status])
       oldStatusTasks.delete(taskId)
@@ -299,9 +295,9 @@ const HANDLERS: {
         tasks: {
           ...tasksList.tasks,
           [task.status]: oldStatusTasks,
-          [event.newStatus]: new Set(tasksList.tasks[event.newStatus]).add(
-            taskId
-          ),
+          [TaskStatus.Archived]: new Set(
+            tasksList.tasks[TaskStatus.Archived]
+          ).add(taskId),
         },
       })
     }

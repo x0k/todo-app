@@ -3,8 +3,12 @@ import Grid from '@mui/material/Unstable_Grid2'
 
 import { TitledPanel } from '@/shared/components'
 
+import {
+  CompleteTaskDialog,
+  completeTaskDialogModel,
+} from '@/features/complete-task-dialog'
 import { CreateTasksPanel } from '@/features/create-tasks-panel'
-import { DashboardContainer } from '@/features/dashboard'
+import { Dashboard } from '@/features/dashboard'
 import { PositiveEventsLog } from '@/features/positive-events-log'
 
 import { HeaderWidget } from '@/widgets/header'
@@ -22,7 +26,10 @@ export function HomePage(): JSX.Element {
       <HeaderWidget />
       <Grid container spacing={4}>
         <Grid xs>
-          <DashboardContainer />
+          <Dashboard
+            onUnDoneTaskClick={completeTaskDialogModel.open}
+            onDoneTaskClick={console.log}
+          />
         </Grid>
         <Grid xs>
           <TitledPanel title="Events">
@@ -33,6 +40,7 @@ export function HomePage(): JSX.Element {
         </Grid>
       </Grid>
       <CreateTasksPanel />
+      <CompleteTaskDialog />
     </Box>
   )
 }

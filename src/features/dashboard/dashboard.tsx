@@ -7,17 +7,13 @@ import { TitledPanel } from '@/shared/components'
 import { concat, map, take } from '@/shared/lib/iterable'
 
 import {
+  type Task,
   type TaskId,
   TaskItem,
   archiveTasksFx,
-  completeTaskFx,
 } from '@/entities/todo'
 
 import { $dashboard, doneTasksArchiving } from './model'
-
-function completeTask(taskId: TaskId): void {
-  completeTaskFx({ taskId, message: '' })
-}
 
 function archiveTask(taskId: TaskId): void {
   archiveTasksFx({ tasksIds: [taskId] })
@@ -27,7 +23,15 @@ function archiveDoneTasks(): void {
   doneTasksArchiving()
 }
 
-export function DashboardContainer(): JSX.Element {
+export interface DashboardProps {
+  onUnDoneTaskClick: (task: Task) => void
+  onDoneTaskClick: (task: Task) => void
+}
+
+export function Dashboard({
+  onUnDoneTaskClick,
+  onDoneTaskClick,
+}: DashboardProps): JSX.Element {
   const { doneTasks, notDoneTasks, tasksLists } = useStore($dashboard)
   const secondaryTexts = useMemo(
     () =>
@@ -56,7 +60,7 @@ export function DashboardContainer(): JSX.Element {
                 task={task}
                 secondary={secondaryTexts[task.id]}
                 onClick={() => {
-                  completeTask(task.id)
+                  onUnDoneTaskClick(task)
                 }}
                 onArchive={() => {
                   archiveTask(task.id)
@@ -82,7 +86,9 @@ export function DashboardContainer(): JSX.Element {
                 key={task.id}
                 task={task}
                 secondary={secondaryTexts[task.id]}
-                onClick={console.log}
+                onClick={() => {
+                  onDoneTaskClick(task)
+                }}
               />
             ))}
           </List>

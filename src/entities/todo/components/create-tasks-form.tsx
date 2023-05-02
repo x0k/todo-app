@@ -152,9 +152,6 @@ export function CreateTasksForm({
           )}
         />
         <Box display="flex" gap={2} justifyContent="stretch">
-          <Button variant="outlined" type="submit" fullWidth>
-            Create
-          </Button>
           <Button
             type="reset"
             color="error"
@@ -164,6 +161,9 @@ export function CreateTasksForm({
             }}
           >
             Cancel
+          </Button>
+          <Button variant="outlined" type="submit" fullWidth>
+            Create
           </Button>
         </Box>
       </Box>

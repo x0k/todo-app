@@ -10,8 +10,6 @@ import { useStore } from 'effector-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { REQUIRED_FIELD_MESSAGE } from '@/shared/validation'
-
 import { type TaskId, completeTaskFx } from '@/entities/todo'
 
 import { $currentTask, close } from './model'
@@ -36,7 +34,11 @@ export function CompleteTaskDialog(): JSX.Element {
     reset,
     setValue,
     formState: { isSubmitSuccessful },
-  } = useForm<CompleteTaskDialogFormData>()
+  } = useForm<CompleteTaskDialogFormData>({
+    defaultValues: {
+      result: '',
+    },
+  })
   useEffect(() => {
     if (task) {
       setValue('taskId', task.id)
@@ -73,7 +75,7 @@ export function CompleteTaskDialog(): JSX.Element {
       <DialogTitle>Complete {task?.title}</DialogTitle>
       <DialogContent>
         <TextField
-          {...register('result', { required: REQUIRED_FIELD_MESSAGE })}
+          {...register('result')}
           label="Result"
           fullWidth
           multiline

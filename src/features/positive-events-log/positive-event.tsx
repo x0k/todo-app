@@ -42,9 +42,9 @@ export function PositiveEventComponent({
           <Typography color="text.secondary">
             {lists[tasks[event.taskId].tasksListId].title}
           </Typography>
-          <Typography variant="body1">
-            {event.message}
-          </Typography>
+          {event.message && (
+            <Typography variant="body1">{event.message}</Typography>
+          )}
         </>
       )}
     </Box>

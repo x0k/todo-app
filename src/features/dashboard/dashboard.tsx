@@ -46,13 +46,10 @@ export function Dashboard({
       ),
     [doneTasks, notDoneTasks, tasksLists]
   ) as Record<TaskId, string>
-  if (doneTasks.length === 0 && notDoneTasks.length === 0) {
-    return <Typography variant="h5">No tasks found.</Typography>
-  }
   return (
     <Box display="flex" flexDirection="column" gap={2}>
-      {notDoneTasks.length > 0 && (
-        <TitledPanel title="To Do" key="todo">
+      <TitledPanel title="To Do" key="todo">
+        {notDoneTasks.length > 0 ? (
           <List>
             {notDoneTasks.map((task) => (
               <TaskItem
@@ -68,8 +65,12 @@ export function Dashboard({
               />
             ))}
           </List>
-        </TitledPanel>
-      )}
+        ) : (
+          <Box padding={2}>
+            <Typography variant="body1">No uncompleted tasks</Typography>
+          </Box>
+        )}
+      </TitledPanel>
       {doneTasks.length > 0 && (
         <TitledPanel
           title="Completed"

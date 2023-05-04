@@ -4,6 +4,8 @@ import { app, errorOccurred, started } from '@/shared/app'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import { r } from '@/shared/registry'
 
+import './registry'
+
 const d = app.createDomain('workspace')
 
 // Stores

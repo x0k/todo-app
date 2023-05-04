@@ -14,11 +14,7 @@ export function WorkspaceListItem({
   onClick,
 }: WorkspaceListItemProps): JSX.Element {
   return (
-    <ListItem
-      key={workspace.id}
-      secondaryAction={secondaryAction}
-      disablePadding
-    >
+    <ListItem secondaryAction={secondaryAction} disablePadding>
       <ListItemButton onClick={onClick}>
         <ListItemText primary={workspace.title} />
       </ListItemButton>

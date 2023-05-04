@@ -14,7 +14,7 @@ import { REQUIRED_FIELD_MESSAGE } from '@/shared/validation'
 
 import { createWorkspaceFx } from '@/entities/workspace/model'
 
-import { $isOpen } from '../create-tasks-panel'
+import { $isOpen, close } from './model'
 
 interface CreateWorkspaceDialogFormData {
   title: string
@@ -69,6 +69,7 @@ export function CreateWorkspaceDialog(): JSX.Element {
         <TextField
           {...register('title', { required: REQUIRED_FIELD_MESSAGE })}
           label="Title"
+          fullWidth
           error={Boolean(errors.title)}
           helperText={errors.title?.message}
         />
@@ -77,7 +78,7 @@ export function CreateWorkspaceDialog(): JSX.Element {
         <Button type="reset" onClick={closeAndReset}>
           Cancel
         </Button>
-        <Button type="submit">Complete</Button>
+        <Button type="submit">Create</Button>
       </DialogActions>
     </Dialog>
   )

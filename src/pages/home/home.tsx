@@ -1,8 +1,16 @@
 import { Box, Button, Paper, Typography } from '@mui/material'
 
+import {
+  CreateWorkspaceDialog,
+  createWorkspaceDialogModel,
+} from '@/features/create-workspace-dialog'
 import { WorkspacesList } from '@/features/workspaces-list'
 
 import { HeaderWidget } from '@/widgets/header'
+
+function openDialog(): void {
+  createWorkspaceDialogModel.open()
+}
 
 export function HomePage(): JSX.Element {
   return (
@@ -15,12 +23,19 @@ export function HomePage(): JSX.Element {
         height="calc(100vh - 64px)"
       >
         <Paper>
-          <Box padding={2}>
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap={2}
+            padding={2}
+            minWidth="300px"
+          >
             <WorkspacesList />
-            <Button>Create workspace</Button>
+            <Button onClick={openDialog}>Create workspace</Button>
           </Box>
         </Paper>
       </Box>
+      <CreateWorkspaceDialog />
     </Box>
   )
 }

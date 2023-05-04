@@ -54,4 +54,25 @@ sample({
   target: errorOccurred,
 })
 
-$workspacesMap.on(loadWorkspacesFx.doneData, (_, data) => data)
+$workspacesMap
+  .on(loadWorkspacesFx.doneData, (_, data) => data)
+  .on(
+    [
+      loadWorkspaceFx.doneData,
+      createWorkspaceFx.doneData,
+      updateWorkspaceFx.doneData,
+    ],
+    (map, data) => {
+      return new Map(map).set(data.id, data)
+    }
+  )
+
+sample({
+  clock: deleteWorkspaceFx.done,
+  source: $workspacesMap,
+  fn: (map, { params: { id } }) => {
+    const newMap = new Map(map)
+    return newMap.delete(id) ? newMap : map
+  },
+  target: $workspacesMap,
+})

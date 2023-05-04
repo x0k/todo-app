@@ -1,6 +1,6 @@
 import { defineService, singleton } from '@/shared/registry'
 
-import { InMemoryToDoService } from './in-memory-todo-service'
+import { TestToDoService } from './test-todo-service'
 import { type IToDoService } from './types'
 
 declare module '@/shared/registry' {
@@ -11,5 +11,5 @@ declare module '@/shared/registry' {
 
 defineService(
   'todoService',
-  singleton(() => new InMemoryToDoService())
+  singleton(() => new TestToDoService())
 )

@@ -36,7 +36,7 @@ function createTask(tasksListId: TasksListId, title: string): Task {
     tasksListId,
   }
 }
-export class InMemoryToDoService implements IToDoService {
+export class TestToDoService implements IToDoService {
   loadTasksState = async (): Promise<TasksState> => {
     return {
       tasks: new Map(),

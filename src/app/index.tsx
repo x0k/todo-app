@@ -6,17 +6,16 @@ import { CssBaseline } from '@mui/material'
 
 import { Notifications } from '@/features/notifications'
 
-import { HomePage } from '@/pages/home'
-
 import './index.css'
 import './init'
 import { Providers } from './providers'
+import { Routes } from './routes'
 
 export default function App(): JSX.Element {
   return (
     <Providers>
       <CssBaseline />
-      <HomePage />
+      <Routes />
       <Notifications />
     </Providers>
   )

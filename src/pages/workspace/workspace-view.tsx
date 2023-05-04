@@ -13,7 +13,7 @@ import { PositiveEventsLog } from '@/features/positive-events-log'
 
 import { HeaderWidget } from '@/widgets/header'
 
-export function HomePage(): JSX.Element {
+export function WorkspaceViewPage(): JSX.Element {
   return (
     <Box
       flex="1 1 100%"

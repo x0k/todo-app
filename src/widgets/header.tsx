@@ -1,16 +1,15 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 
 import { ToggleTheme } from '@/features/toggle-theme'
 
-export function HeaderWidget(): JSX.Element {
+export interface HeaderWidgetProps {
+  title: React.ReactNode
+}
+
+export function HeaderWidget({ title }: HeaderWidgetProps): JSX.Element {
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      width="100%"
-      pb={2}
-    >
-      <Typography variant="h4">DB name</Typography>
+    <Box display="flex" alignItems="center" width="100%" pb={2}>
+      {title}
       <Box flexGrow={1} />
       <ToggleTheme />
     </Box>

@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 
 import { TitledPanel } from '@/shared/components'
@@ -23,7 +23,7 @@ export function WorkspaceViewPage(): JSX.Element {
       padding={2}
       marginBottom="72px"
     >
-      <HeaderWidget />
+      <HeaderWidget title={<Typography variant="h4">Workspace</Typography>} />
       <Grid container spacing={4}>
         <Grid xs>
           <Dashboard

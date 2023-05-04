@@ -1,17 +1,16 @@
 import { sample } from 'effector'
 
 import { app, errorOccurred, started } from '@/shared/app'
-import { r } from '@/shared/registry'
-
-import './registry'
 import {
   type Task,
   type TaskId,
   type TasksList,
   type TasksListId,
-  type TasksState,
-  reducer,
-} from './types'
+} from '@/shared/kernel'
+import { r } from '@/shared/registry'
+
+import { type TasksState, reducer } from './core'
+import './registry'
 
 export const todo = app.createDomain('todo')
 
@@ -55,13 +54,9 @@ export const updateTasksListFx = todo.createEffect(
   r.todoService.updateTasksList
 )
 
-export const completeTaskFx = todo.createEffect(
-  r.todoService.completeTask
-)
+export const completeTaskFx = todo.createEffect(r.todoService.completeTask)
 
-export const archiveTasksFx = todo.createEffect(
-  r.todoService.archiveTasks
-)
+export const archiveTasksFx = todo.createEffect(r.todoService.archiveTasks)
 
 // Init
 

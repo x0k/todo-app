@@ -10,7 +10,9 @@ import { useStore } from 'effector-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { type TaskId, completeTaskFx } from '@/entities/todo'
+import { type TaskId } from '@/shared/kernel'
+
+import { completeTaskFx } from '@/entities/todo'
 
 import { $currentTask, close } from './model'
 

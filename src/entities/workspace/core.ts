@@ -1,13 +1,8 @@
-import { type Brand } from '@/shared/lib/type'
-
-export type WorkspaceId = Brand<'WorkspaceId', string>
-
-export interface Workspace {
-  id: WorkspaceId
-  title: string
-}
-
-export type WritableWorkspaceData = Partial<Pick<Workspace, 'title'>>
+import {
+  type Workspace,
+  type WorkspaceId,
+  type WritableWorkspaceData,
+} from '@/shared/kernel'
 
 export interface CreateWorkspace {
   title: string

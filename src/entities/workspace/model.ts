@@ -1,15 +1,16 @@
 import { sample } from 'effector'
 
 import { app, errorOccurred, started } from '@/shared/app'
+import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import { r } from '@/shared/registry'
-
-import { type Workspace, type WorkspaceId } from './types'
 
 const d = app.createDomain('workspace')
 
 // Stores
 
-export const $workspaces = d.createStore(new Map<WorkspaceId, Workspace>())
+export const $workspacesMap = d.createStore(new Map<WorkspaceId, Workspace>())
+
+export const $workspaces = $workspacesMap.map((map) => Array.from(map.values()))
 
 // Events
 
@@ -51,4 +52,4 @@ sample({
   target: errorOccurred,
 })
 
-$workspaces.on(loadWorkspacesFx.doneData, (_, data) => data)
+$workspacesMap.on(loadWorkspacesFx.doneData, (_, data) => data)

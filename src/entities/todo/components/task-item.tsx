@@ -7,7 +7,7 @@ import {
 } from '@mui/material'
 import { type ReactNode } from 'react'
 
-import { type Task } from '@/entities/todo'
+import { type Task } from '@/shared/kernel'
 
 export interface TaskItemProps {
   task: Task

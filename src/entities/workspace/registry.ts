@@ -1,7 +1,7 @@
 import { defineService, singleton } from '@/shared/registry'
 
 import { TestWorkspaceService } from './test-workspace-service'
-import { type IWorkspaceService } from './types'
+import { type IWorkspaceService } from './core'
 
 declare module '@/shared/registry' {
   interface Registry {

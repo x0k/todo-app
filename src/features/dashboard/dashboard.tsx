@@ -4,14 +4,10 @@ import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 
 import { TitledPanel } from '@/shared/components'
+import { type Task, type TaskId } from '@/shared/kernel'
 import { concat, map, take } from '@/shared/lib/iterable'
 
-import {
-  type Task,
-  type TaskId,
-  TaskItem,
-  archiveTasksFx,
-} from '@/entities/todo'
+import { TaskItem, archiveTasksFx } from '@/entities/todo'
 
 import { $dashboard, doneTasksArchiving } from './model'
 

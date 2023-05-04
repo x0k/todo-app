@@ -1,6 +1,5 @@
 import { app } from '@/shared/app'
-
-import { type Task } from '@/entities/todo'
+import { type Task } from '@/shared/kernel'
 
 const d = app.createDomain('complete-task-dialog')
 

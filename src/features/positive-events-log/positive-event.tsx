@@ -1,15 +1,14 @@
 import { Box, Typography } from '@mui/material'
 import { formatDistanceToNow } from 'date-fns'
 
-import { pluralize } from '@/shared/lib/intl'
-
 import {
   EventType,
   type Task,
   type TaskId,
   type TasksList,
   type TasksListId,
-} from '@/entities/todo'
+} from '@/shared/kernel'
+import { pluralize } from '@/shared/lib/intl'
 
 import { type PositiveEvent } from './types'
 

@@ -1,13 +1,13 @@
 import { nanoid } from 'nanoid'
 
+import { type Workspace, type WorkspaceId } from '@/shared/kernel'
+
 import {
   type CreateWorkspace,
   type DeleteWorkspace,
   type IWorkspaceService,
   type UpdateWorkspace,
-  type Workspace,
-  type WorkspaceId,
-} from './types'
+} from './core'
 
 export class TestWorkspaceService implements IWorkspaceService {
   private readonly workspaces = new Map<WorkspaceId, Workspace>()

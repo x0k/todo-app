@@ -1,13 +1,12 @@
 import { useStoreMap } from 'effector-react'
 
-import { isArrayNotEqual } from '@/shared/utils'
-
 import {
   type Task,
   type TaskId,
   type TasksList,
   type TasksListId,
-} from '@/entities/todo'
+} from '@/shared/kernel'
+import { isArrayNotEqual } from '@/shared/utils'
 
 import { $listsMap, $tasksMap, $tasksState } from '@/entities/todo'
 

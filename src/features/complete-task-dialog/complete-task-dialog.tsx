@@ -57,40 +57,28 @@ export function CompleteTaskDialog(): JSX.Element {
       onClose={closeAndReset}
       maxWidth="md"
       fullWidth
-      slots={{
-        root: 'form',
-      }}
-      slotProps={{
-        root: {
-          style: {
-            position: 'fixed',
-            zIndex: 1300,
-            right: 0,
-            bottom: 0,
-            top: 0,
-            left: 0,
-          },
-          onSubmit: handleSubmit(onSubmit),
-        },
-      }}
+      disableRestoreFocus
     >
-      <DialogTitle>Complete {task?.title}</DialogTitle>
-      <DialogContent>
-        <TextField
-          {...register('result')}
-          label="Result"
-          fullWidth
-          multiline
-          rows={4}
-          variant="outlined"
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button type="reset" onClick={closeAndReset}>
-          Cancel
-        </Button>
-        <Button type="submit">Complete</Button>
-      </DialogActions>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle>Complete {task?.title}</DialogTitle>
+        <DialogContent>
+          <TextField
+            {...register('result')}
+            label="Result"
+            fullWidth
+            multiline
+            rows={4}
+            variant="outlined"
+            autoFocus
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button type="reset" onClick={closeAndReset}>
+            Cancel
+          </Button>
+          <Button type="submit">Complete</Button>
+        </DialogActions>
+      </form>
     </Dialog>
   )
 }

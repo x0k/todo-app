@@ -47,39 +47,27 @@ export function CreateWorkspaceDialog(): JSX.Element {
       onClose={closeAndReset}
       maxWidth="md"
       fullWidth
-      slots={{
-        root: 'form',
-      }}
-      slotProps={{
-        root: {
-          style: {
-            position: 'fixed',
-            zIndex: 1300,
-            right: 0,
-            bottom: 0,
-            top: 0,
-            left: 0,
-          },
-          onSubmit: handleSubmit(onSubmit),
-        },
-      }}
+      disableRestoreFocus
     >
-      <DialogTitle>Create workspace</DialogTitle>
-      <DialogContent>
-        <TextField
-          {...register('title', { required: REQUIRED_FIELD_MESSAGE })}
-          label="Title"
-          fullWidth
-          error={Boolean(errors.title)}
-          helperText={errors.title?.message}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button type="reset" onClick={closeAndReset}>
-          Cancel
-        </Button>
-        <Button type="submit">Create</Button>
-      </DialogActions>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle>Create workspace</DialogTitle>
+        <DialogContent>
+          <TextField
+            {...register('title', { required: REQUIRED_FIELD_MESSAGE })}
+            label="Title"
+            fullWidth
+            autoFocus
+            error={Boolean(errors.title)}
+            helperText={errors.title?.message}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button type="reset" onClick={closeAndReset}>
+            Cancel
+          </Button>
+          <Button type="submit">Create</Button>
+        </DialogActions>
+      </form>
     </Dialog>
   )
 }

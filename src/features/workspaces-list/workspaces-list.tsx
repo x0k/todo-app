@@ -7,11 +7,7 @@ export function WorkspacesList(): JSX.Element | null {
   return workspaces.length > 0 ? (
     <List>
       {workspaces.map((workspace) => (
-        <WorkspaceListItem
-          key={workspace.id}
-          workspace={workspace}
-          onClick={console.log}
-        />
+        <WorkspaceListItem key={workspace.id} workspace={workspace} />
       ))}
     </List>
   ) : null

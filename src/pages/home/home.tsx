@@ -20,7 +20,7 @@ export function HomePage(): JSX.Element {
         display="flex"
         alignItems="center"
         justifyContent="center"
-        height="calc(100vh - 64px)"
+        height="calc(100vh - 92px)"
       >
         <Paper>
           <Box

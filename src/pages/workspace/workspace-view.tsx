@@ -1,7 +1,9 @@
-import { Box, Typography } from '@mui/material'
+import { Box, CircularProgress, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
+import { useStore } from 'effector-react'
 
-import { TitledPanel } from '@/shared/components'
+import { Center, TitledPanel } from '@/shared/components'
+import { type Workspace } from '@/shared/kernel'
 
 import {
   CompleteTaskDialog,
@@ -13,7 +15,13 @@ import { PositiveEventsLog } from '@/features/positive-events-log'
 
 import { HeaderWidget } from '@/widgets/header'
 
-export function WorkspaceViewPage(): JSX.Element {
+import { $currentWorkspace, loadedWorkspaceViewRoute } from './model'
+
+interface ViewProps {
+  workspace: Workspace
+}
+
+function View({ workspace }: ViewProps): JSX.Element {
   return (
     <Box
       flex="1 1 100%"
@@ -23,7 +31,9 @@ export function WorkspaceViewPage(): JSX.Element {
       padding={2}
       marginBottom="72px"
     >
-      <HeaderWidget title={<Typography variant="h4">Workspace</Typography>} />
+      <HeaderWidget
+        title={<Typography variant="h4">{workspace.title}</Typography>}
+      />
       <Grid container spacing={4}>
         <Grid xs>
           <Dashboard
@@ -42,5 +52,17 @@ export function WorkspaceViewPage(): JSX.Element {
       <CreateTasksPanel />
       <CompleteTaskDialog />
     </Box>
+  )
+}
+
+export function WorkspaceViewPage(): JSX.Element {
+  const isPageLoaded = useStore(loadedWorkspaceViewRoute.$isOpened)
+  const workspace = useStore($currentWorkspace)
+  return !isPageLoaded || workspace === null ? (
+    <Center>
+      <CircularProgress size={64} />
+    </Center>
+  ) : (
+    <View workspace={workspace} />
   )
 }

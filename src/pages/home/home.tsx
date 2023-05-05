@@ -1,5 +1,7 @@
 import { Box, Button, Paper, Typography } from '@mui/material'
 
+import { Center } from '@/shared/components'
+
 import {
   CreateWorkspaceDialog,
   createWorkspaceDialogModel,
@@ -16,12 +18,7 @@ export function HomePage(): JSX.Element {
   return (
     <Box display="flex" flexDirection="column" padding={2}>
       <HeaderWidget title={<Typography variant="h4">Workspaces</Typography>} />
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        height="calc(100vh - 92px)"
-      >
+      <Center topOffset="92px">
         <Paper>
           <Box
             display="flex"
@@ -34,7 +31,7 @@ export function HomePage(): JSX.Element {
             <Button onClick={openDialog}>Create workspace</Button>
           </Box>
         </Paper>
-      </Box>
+      </Center>
       <CreateWorkspaceDialog />
     </Box>
   )

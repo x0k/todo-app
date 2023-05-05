@@ -9,7 +9,7 @@ import { createWorkspaceFx, loadWorkspaceFx } from '@/entities/workspace/model'
 
 const d = app.createDomain('workspace-page')
 
-export const currentWorkspace = d.createStore<Workspace | null>(null)
+export const $currentWorkspace = d.createStore<Workspace | null>(null)
 
 export const loadedWorkspaceViewRoute = chainRoute({
   route: routes.workspace.view,
@@ -18,6 +18,8 @@ export const loadedWorkspaceViewRoute = chainRoute({
     mapParams: ({ params }) => params.workspaceId,
   },
 })
+
+$currentWorkspace.on(loadWorkspaceFx.doneData, (_, workspace) => workspace)
 
 sample({
   clock: createWorkspaceFx.doneData,

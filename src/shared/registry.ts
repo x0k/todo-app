@@ -21,7 +21,6 @@ function wrap<T extends object>(
   root: object = obj,
   path: Array<string | symbol> = []
 ): T {
-  // TODO: Add cache by using WeakMap
   function materialize(key: string | symbol): unknown {
     let i = 0
     let node = root
@@ -30,6 +29,7 @@ function wrap<T extends object>(
     }
     return node[key as keyof object]
   }
+  // TODO: Add cache by using WeakMap
   return new Proxy(obj, {
     get(target, key, receiver) {
       const value = Reflect.get(target, key, receiver)

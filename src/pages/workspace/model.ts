@@ -1,41 +1,19 @@
-import { chainRoute, redirect } from 'atomic-router'
+import { createQuery } from '@farfetched/core'
 import { sample } from 'effector'
 
-import { app } from '@/shared/app'
-import { type Workspace } from '@/shared/kernel'
 import { routes } from '@/shared/routes'
-import { type Loadable, type States } from '@/shared/state'
 
 import { createWorkspaceFx, loadWorkspaceFx } from '@/entities/workspace/model'
 
-const d = app.createDomain('workspace-page')
-
-export const $currentWorkspace = d.createStore<
-  States<Loadable<Workspace, Error>>
->({
-  type: 'idle',
+export const workspaceQuery = createQuery({
+  handler: loadWorkspaceFx,
 })
 
-export const loadedWorkspaceViewRoute = chainRoute({
-  route: routes.workspace.view,
-  beforeOpen: {
-    effect: loadWorkspaceFx,
-    mapParams: ({ params }) => params.workspaceId,
-  },
+sample({
+  clock: routes.workspace.view.opened,
+  fn: ({ params: { workspaceId } }) => workspaceId,
+  target: workspaceQuery.start,
 })
-
-redirect({
-  clock: loadWorkspaceFx.fail,
-  route: routes.notFound,
-})
-
-$currentWorkspace
-  .on(loadWorkspaceFx, () => ({ type: 'loading' }))
-  .on(loadWorkspaceFx.finally, (_, params) =>
-    params.status === 'done'
-      ? { type: 'loaded', data: params.result }
-      : { type: 'error', error: params.error }
-  )
 
 sample({
   clock: createWorkspaceFx.doneData,

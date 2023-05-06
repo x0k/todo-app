@@ -1,9 +1,10 @@
-import { Box, CircularProgress, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
-import { useStore } from 'effector-react'
+import { useUnit } from 'effector-react'
 
 import { Center, TitledPanel } from '@/shared/components'
 import { type Workspace } from '@/shared/kernel'
+import { routes } from '@/shared/routes'
 
 import {
   CompleteTaskDialog,
@@ -15,7 +16,7 @@ import { PositiveEventsLog } from '@/features/positive-events-log'
 
 import { HeaderWidget } from '@/widgets/header'
 
-import { $currentWorkspace } from './model'
+import { workspaceQuery } from './model'
 
 interface ViewProps {
   workspace: Workspace
@@ -56,18 +57,28 @@ function View({ workspace }: ViewProps): JSX.Element {
 }
 
 export function WorkspaceViewPage(): JSX.Element {
-  const workspace = useStore($currentWorkspace)
-  switch (workspace.type) {
-    case 'idle':
-    case 'loading':
-      return (
-        <Center>
-          <CircularProgress size={64} />
-        </Center>
-      )
-    case 'error':
-      return <Center>{workspace.error.message}</Center>
-    case 'loaded':
-      return <View workspace={workspace.data} />
+  // const workspace = useStore($currentWorkspace)
+  const { data, pending, error } = useUnit(workspaceQuery)
+  if (error instanceof Error && !pending) {
+    return (
+      <Center>
+        <Typography>{error.message}</Typography>
+        <Button
+          onClick={() => {
+            routes.home.open()
+          }}
+        >
+          Back to home
+        </Button>
+      </Center>
+    )
   }
+  if (pending || data === null) {
+    return (
+      <Center>
+        <CircularProgress size={64} />
+      </Center>
+    )
+  }
+  return <View workspace={data} />
 }

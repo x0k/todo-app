@@ -17,8 +17,9 @@ export class TestWorkspaceService implements IWorkspaceService {
 
   loadWorkspace = async (id: WorkspaceId): Promise<Workspace> => {
     const workspace = this.workspaces.get(id)
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     if (workspace === undefined) {
-      throw new Error(`Workspace ${id} not found`)
+      throw new Error(`Workspace "${id}" not found`)
     }
     return workspace
   }
@@ -38,7 +39,7 @@ export class TestWorkspaceService implements IWorkspaceService {
   }: UpdateWorkspace): Promise<Workspace> => {
     const workspace = this.workspaces.get(id)
     if (workspace === undefined) {
-      throw new Error(`Workspace ${id} not found`)
+      throw new Error(`Workspace "${id}" not found`)
     }
     const updatedWorkspace = {
       ...workspace,

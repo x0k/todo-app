@@ -3,14 +3,21 @@ import { Box } from '@mui/material'
 export interface CenterProps {
   topOffset?: string
   children: React.ReactNode
+  gap?: number
 }
-export function Center({ children, topOffset: offset }: CenterProps): JSX.Element {
+export function Center({
+  children,
+  topOffset,
+  gap = 2,
+}: CenterProps): JSX.Element {
   return (
     <Box
       display="flex"
+      flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      height={offset ? `calc(100vh - 92px)` : '100vh'}
+      height={topOffset ? `calc(100vh - 92px)` : '100vh'}
+      gap={gap}
     >
       {children}
     </Box>

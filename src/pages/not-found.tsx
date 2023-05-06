@@ -1,3 +1,5 @@
+import { Center } from '@/shared/components'
+
 export function NotFoundPage(): JSX.Element {
-  return <div>Not Found Page</div>
+  return <Center>Not Found Page</Center>
 }

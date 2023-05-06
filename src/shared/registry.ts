@@ -73,5 +73,6 @@ export function defineService<K extends keyof Registry, V extends Registry[K]>(
 ): void {
   Object.defineProperty(registry, key, {
     get: factory.bind(registry, config),
+    configurable: true
   })
 }

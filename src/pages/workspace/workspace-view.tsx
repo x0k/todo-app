@@ -15,7 +15,7 @@ import { PositiveEventsLog } from '@/features/positive-events-log'
 
 import { HeaderWidget } from '@/widgets/header'
 
-import { $currentWorkspace, loadedWorkspaceViewRoute } from './model'
+import { $currentWorkspace } from './model'
 
 interface ViewProps {
   workspace: Workspace
@@ -56,13 +56,18 @@ function View({ workspace }: ViewProps): JSX.Element {
 }
 
 export function WorkspaceViewPage(): JSX.Element {
-  const isPageLoaded = useStore(loadedWorkspaceViewRoute.$isOpened)
   const workspace = useStore($currentWorkspace)
-  return !isPageLoaded || workspace === null ? (
-    <Center>
-      <CircularProgress size={64} />
-    </Center>
-  ) : (
-    <View workspace={workspace} />
-  )
+  switch (workspace.type) {
+    case 'idle':
+    case 'loading':
+      return (
+        <Center>
+          <CircularProgress size={64} />
+        </Center>
+      )
+    case 'error':
+      return <Center>{workspace.error.message}</Center>
+    case 'loaded':
+      return <View workspace={workspace.data} />
+  }
 }

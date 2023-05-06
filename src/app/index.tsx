@@ -8,8 +8,9 @@ import { Notifications } from '@/features/notifications'
 
 import './index.css'
 import './init'
-import { Providers } from './providers'
+// Routes MUST be above router for proper effector init
 import { Routes } from './routes'
+import { Providers } from './providers'
 
 export default function App(): JSX.Element {
   return (

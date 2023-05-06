@@ -1,15 +1,20 @@
-import { chainRoute } from 'atomic-router'
+import { chainRoute, redirect } from 'atomic-router'
 import { sample } from 'effector'
 
 import { app } from '@/shared/app'
 import { type Workspace } from '@/shared/kernel'
 import { routes } from '@/shared/routes'
+import { type Loadable, type States } from '@/shared/state'
 
 import { createWorkspaceFx, loadWorkspaceFx } from '@/entities/workspace/model'
 
 const d = app.createDomain('workspace-page')
 
-export const $currentWorkspace = d.createStore<Workspace | null>(null)
+export const $currentWorkspace = d.createStore<
+  States<Loadable<Workspace, Error>>
+>({
+  type: 'idle',
+})
 
 export const loadedWorkspaceViewRoute = chainRoute({
   route: routes.workspace.view,
@@ -19,7 +24,18 @@ export const loadedWorkspaceViewRoute = chainRoute({
   },
 })
 
-$currentWorkspace.on(loadWorkspaceFx.doneData, (_, workspace) => workspace)
+redirect({
+  clock: loadWorkspaceFx.fail,
+  route: routes.notFound,
+})
+
+$currentWorkspace
+  .on(loadWorkspaceFx, () => ({ type: 'loading' }))
+  .on(loadWorkspaceFx.finally, (_, params) =>
+    params.status === 'done'
+      ? { type: 'loaded', data: params.result }
+      : { type: 'error', error: params.error }
+  )
 
 sample({
   clock: createWorkspaceFx.doneData,

@@ -27,3 +27,7 @@ export function memoize<K, R>(
     return value
   }
 }
+
+export function args<Args extends unknown[]>(...arr: Args): Args {
+  return arr
+}

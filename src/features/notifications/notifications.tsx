@@ -1,4 +1,4 @@
-import { useStore } from 'effector-react'
+import { useStore } from 'effector-react/scope'
 import { type VariantType, useSnackbar } from 'notistack'
 import { useEffect, useRef } from 'react'
 

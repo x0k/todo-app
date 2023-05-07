@@ -1,6 +1,6 @@
 import { sample } from 'effector'
 
-import { app, errorOccurred, started } from '@/shared/app'
+import { app, errorOccurred, appStarted } from '@/shared/app'
 import {
   type Task,
   type TaskId,
@@ -61,7 +61,7 @@ export const archiveTasksFx = todo.createEffect(r.todoService.archiveTasks)
 // Init
 
 sample({
-  clock: started,
+  clock: appStarted,
   target: loadTasksStateFx,
 })
 

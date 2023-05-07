@@ -6,7 +6,7 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material'
-import { useStore } from 'effector-react'
+import { useStore } from 'effector-react/scope'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 

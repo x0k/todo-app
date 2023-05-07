@@ -4,6 +4,32 @@ export interface IStorageService<T> {
   clear: () => void
 }
 
+const UNCACHED_VALUE = Symbol('Uncached value')
+
+export function withCache<T>(
+  storageService: IStorageService<T>
+): IStorageService<T> {
+  let cache: T | typeof UNCACHED_VALUE = UNCACHED_VALUE
+  return {
+    load() {
+      if (cache === UNCACHED_VALUE) {
+        cache = storageService.load()
+      }
+      return cache
+    },
+    save(data) {
+      storageService.save(data)
+      cache = data
+    },
+    clear() {
+      cache = UNCACHED_VALUE
+      storageService.clear()
+    },
+  }
+}
+
+// Async
+
 export interface IAsyncStorageService<T> {
   load: () => Promise<T>
   save: (data: T) => Promise<void>
@@ -58,9 +84,8 @@ export const withMapCodec = makeWithCodec(makeMapCodec()) as <T>(
   storageService: IAsyncStorageService<Array<[string, T]>>
 ) => IAsyncStorageService<Map<string, T>>
 
-const UNCACHED_VALUE = Symbol('Uncached value')
 
-export function withCache<T>(
+export function asyncWithCache<T>(
   storageService: IAsyncStorageService<T>
 ): IAsyncStorageService<T> {
   let cache: T | typeof UNCACHED_VALUE = UNCACHED_VALUE

@@ -1,9 +1,9 @@
 import { DarkMode, LightMode } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
-import { useStore } from 'effector-react'
+import { useStore } from 'effector-react/scope'
 
 import { $colorMode, colorModeToggled } from './model'
-import { ColorMode } from './types'
+import { ColorMode } from './core'
 
 function toggle(): void {
   colorModeToggled()

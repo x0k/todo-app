@@ -1,6 +1,6 @@
 import { sample } from 'effector'
 
-import { app, errorOccurred, started } from '@/shared/app'
+import { app, errorOccurred, appStarted } from '@/shared/app'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import { r } from '@/shared/registry'
 
@@ -39,7 +39,7 @@ export const deleteWorkspaceFx = d.createEffect(
 // Init
 
 sample({
-  clock: started,
+  clock: appStarted,
   target: loadWorkspacesFx,
 })
 

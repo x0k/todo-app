@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
-import { useUnit } from 'effector-react'
+import { useUnit } from 'effector-react/scope'
 
 import { Center, TitledPanel } from '@/shared/components'
 import { type Workspace } from '@/shared/kernel'

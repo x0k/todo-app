@@ -1,6 +1,6 @@
 import { Check } from '@mui/icons-material'
 import { Box, IconButton, List, Typography } from '@mui/material'
-import { useStore } from 'effector-react'
+import { useStore } from 'effector-react/scope'
 import { useMemo } from 'react'
 
 import { TitledPanel } from '@/shared/components'

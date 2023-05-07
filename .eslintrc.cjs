@@ -19,5 +19,6 @@ module.exports = {
     '@typescript-eslint/no-misused-promises': 'warn',
     'react/prop-types': 'off',
     '@typescript-eslint/no-floating-promises': 'warn',
+    '@typescript-eslint/consistent-type-assertions': 'warn',
   },
 }

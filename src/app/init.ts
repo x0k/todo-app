@@ -1,6 +1,6 @@
 import { sample } from 'effector'
 
-import { errorOccurred, started } from '@/shared/app'
+import { errorOccurred, appStarted } from '@/shared/app'
 
 import { NotificationType, notificationShowed } from '@/features/notifications'
 
@@ -10,4 +10,4 @@ sample({
   target: notificationShowed,
 })
 
-started()
+appStarted()

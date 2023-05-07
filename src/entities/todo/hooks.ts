@@ -1,4 +1,4 @@
-import { useStoreMap } from 'effector-react'
+import { useStoreMap } from 'effector-react/scope'
 
 import {
   type Task,

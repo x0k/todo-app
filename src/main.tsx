@@ -1,21 +1,16 @@
-import React, { Suspense } from 'react'
+import { allSettled } from 'effector'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import { defineConfig } from '@/shared/registry'
+import { App, scope } from './app'
+import { appStarted } from './shared/app'
 
-defineConfig({
-  themeStorage: localStorage,
-  themeStorageKey: 'theme',
-  isDarkColorSchemePreferred: window.matchMedia('(prefers-color-scheme: dark)')
-    .matches,
-})
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
-const App = React.lazy(async () => await import('./app'))
-
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <Suspense>
+allSettled(appStarted, { scope }).then(() => {
+  root.render(
+    <React.StrictMode>
       <App />
-    </Suspense>
-  </React.StrictMode>
-)
+    </React.StrictMode>
+  )
+})

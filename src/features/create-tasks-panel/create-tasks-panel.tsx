@@ -1,5 +1,5 @@
 import { Paper } from '@mui/material'
-import { useStore } from 'effector-react'
+import { useStore } from 'effector-react/scope'
 
 import {
   CreateTasksForm,

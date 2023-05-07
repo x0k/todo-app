@@ -1,21 +1,68 @@
-import React, { Suspense } from 'react'
+import { createHistoryRouter } from 'atomic-router'
+// @ts-expect-error wtf
+import { RouterProvider } from 'atomic-router-react/scope'
+import { allSettled, fork, sample } from 'effector'
+// @ts-expect-error wtf
+import { attachLogger } from 'effector-logger'
+import { Provider } from 'effector-react/scope'
+import { createBrowserHistory } from 'history'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import { defineConfig } from '@/shared/registry'
+import { App } from './app'
+import { $todoService, TestToDoService } from './entities/todo'
+import { TestWorkspaceService } from './entities/workspace'
+import { $workspaceService } from './entities/workspace/model'
+import { $themeService, ColorMode, ThemeService } from './features/toggle-theme'
+import { PersistentStorageService } from './implementations/persistent-storage'
+import { appStarted } from './shared/app'
+import { notFoundRoute, routesMap } from './shared/routes'
+import { withCache } from './shared/storage'
 
-defineConfig({
-  themeStorage: localStorage,
-  themeStorageKey: 'theme',
-  isDarkColorSchemePreferred: window.matchMedia('(prefers-color-scheme: dark)')
-    .matches,
+export const scope = fork({
+  values: [
+    [
+      $themeService,
+      new ThemeService(
+        withCache(
+          new PersistentStorageService<ColorMode>(
+            localStorage,
+            'theme',
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? ColorMode.Dark
+              : ColorMode.Light
+          )
+        )
+      ),
+    ],
+    [$workspaceService, new TestWorkspaceService()],
+    [$todoService, new TestToDoService()],
+  ],
 })
 
-const App = React.lazy(async () => await import('./app'))
+const router = createHistoryRouter({
+  routes: routesMap,
+  notFoundRoute,
+})
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <Suspense>
-      <App />
-    </Suspense>
-  </React.StrictMode>
-)
+sample({
+  clock: appStarted,
+  fn: () => createBrowserHistory(),
+  target: router.setHistory,
+})
+
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+
+attachLogger({ scope })
+
+allSettled(appStarted, { scope }).then(() => {
+  root.render(
+    <React.StrictMode>
+      <Provider value={scope}>
+        <RouterProvider router={router}>
+          <App />
+        </RouterProvider>
+      </Provider>
+    </React.StrictMode>
+  )
+})

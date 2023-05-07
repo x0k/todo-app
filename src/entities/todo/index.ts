@@ -1,4 +1,5 @@
-export * from './types'
+export * from './core'
 export * from './components'
 export * from './model'
 export * from './hooks'
+export * from './test-todo-service'

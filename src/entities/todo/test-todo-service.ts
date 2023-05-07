@@ -1,13 +1,7 @@
 import { nanoid } from 'nanoid'
 
 import {
-  type ArchiveTasks,
-  type CompleteTask,
-  type CreateTask,
-  type CreateTasks,
-  type CreateTasksList,
   EventType,
-  type IToDoService,
   TASK_STATUSES,
   type Task,
   type TaskCompletedEvent,
@@ -22,10 +16,19 @@ import {
   type TasksListCreatedEvent,
   type TasksListId,
   type TasksListUpdatedEvent,
+} from '@/shared/kernel'
+
+import {
+  type ArchiveTasks,
+  type CompleteTask,
+  type CreateTask,
+  type CreateTasks,
+  type CreateTasksList,
+  type IToDoService,
   type TasksState,
   type UpdateTask,
   type UpdateTasksList,
-} from './types'
+} from './core'
 
 function createTask(tasksListId: TasksListId, title: string): Task {
   return {
@@ -36,7 +39,7 @@ function createTask(tasksListId: TasksListId, title: string): Task {
     tasksListId,
   }
 }
-export class InMemoryToDoService implements IToDoService {
+export class TestToDoService implements IToDoService {
   loadTasksState = async (): Promise<TasksState> => {
     return {
       tasks: new Map(),

@@ -1,13 +1,9 @@
 import { sample } from 'effector'
 
 import { app } from '@/shared/app'
+import { type Task, TaskStatus } from '@/shared/kernel'
 
-import {
-  $tasksState,
-  type Task,
-  TaskStatus,
-  archiveTasksFx,
-} from '@/entities/todo'
+import { $tasksState, archiveTasksFx } from '@/entities/todo'
 
 const d = app.createDomain('dashboard')
 

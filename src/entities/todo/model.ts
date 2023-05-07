@@ -1,23 +1,40 @@
 import { sample } from 'effector'
 
-import { app, errorOccurred, started } from '@/shared/app'
-import { r } from '@/shared/registry'
-
-import './registry'
+import { app, appStarted, errorOccurred } from '@/shared/app'
 import {
   type Task,
+  type TaskCompletedEvent,
+  type TaskCreatedEvent,
   type TaskId,
+  type TaskUpdatedEvent,
+  type TasksArchivedEvent,
+  type TasksCreatedEvent,
   type TasksList,
+  type TasksListCreatedEvent,
   type TasksListId,
-  type TasksState,
-  reducer,
-} from './types'
+  type TasksListUpdatedEvent,
+} from '@/shared/kernel'
 
-export const todo = app.createDomain('todo')
+import {
+  type ArchiveTasks,
+  type CompleteTask,
+  type CreateTask,
+  type CreateTasks,
+  type CreateTasksList,
+  type IToDoService,
+  type TasksState,
+  type UpdateTask,
+  type UpdateTasksList,
+  reducer,
+} from './core'
+
+const d = app.createDomain('todo')
 
 // Stores
 
-export const $tasksState = todo.createStore<TasksState>({
+export const $todoService = d.createStore<IToDoService>({} as IToDoService)
+
+export const $tasksState = d.createStore<TasksState>({
   lists: new Map(),
   tasks: new Map(),
   events: [],
@@ -39,36 +56,48 @@ export const $events = $tasksState.map((state) => state.events)
 
 // Effects
 
-export const loadTasksStateFx = todo.createEffect(r.todoService.loadTasksState)
+export const loadTasksStateFx = d.createEffect<void, TasksState>()
 
-export const createTaskFx = todo.createEffect(r.todoService.createTask)
+export const createTaskFx = d.createEffect<CreateTask, TaskCreatedEvent>()
 
-export const createTasksFx = todo.createEffect(r.todoService.createTasks)
+export const createTasksFx = d.createEffect<CreateTasks, TasksCreatedEvent>()
 
-export const createTasksListFx = todo.createEffect(
-  r.todoService.createTasksList
-)
+export const createTasksListFx = d.createEffect<
+  CreateTasksList,
+  TasksListCreatedEvent
+>()
 
-export const updateTaskFx = todo.createEffect(r.todoService.updateTask)
+export const updateTaskFx = d.createEffect<UpdateTask, TaskUpdatedEvent>()
 
-export const updateTasksListFx = todo.createEffect(
-  r.todoService.updateTasksList
-)
+export const updateTasksListFx = d.createEffect<
+  UpdateTasksList,
+  TasksListUpdatedEvent
+>()
 
-export const completeTaskFx = todo.createEffect(
-  r.todoService.completeTask
-)
+export const completeTaskFx = d.createEffect<
+  CompleteTask,
+  TaskCompletedEvent
+>()
 
-export const archiveTasksFx = todo.createEffect(
-  r.todoService.archiveTasks
-)
+export const archiveTasksFx = d.createEffect<
+  ArchiveTasks,
+  TasksArchivedEvent
+>()
+
+const updateFxHandlersFx = d.createEffect((todoService: IToDoService) => {
+  loadTasksStateFx.use(todoService.loadTasksState)
+  createTaskFx.use(todoService.createTask)
+  createTasksFx.use(todoService.createTasks)
+  createTasksListFx.use(todoService.createTasksList)
+  updateTaskFx.use(todoService.updateTask)
+  updateTasksListFx.use(todoService.updateTasksList)
+  completeTaskFx.use(todoService.completeTask)
+  archiveTasksFx.use(todoService.archiveTasks)
+})
+
+// Events
 
 // Init
-
-sample({
-  clock: started,
-  target: loadTasksStateFx,
-})
 
 sample({
   clock: [
@@ -98,3 +127,9 @@ $tasksState
     ],
     reducer
   )
+
+sample({
+  clock: [appStarted, $todoService.updates],
+  source: $todoService,
+  target: updateFxHandlersFx,
+})

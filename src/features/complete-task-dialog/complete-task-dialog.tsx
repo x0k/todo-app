@@ -6,24 +6,19 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material'
-import { useStore } from 'effector-react'
+import { useStore, useUnit } from 'effector-react/scope'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { type TaskId, completeTaskFx } from '@/entities/todo'
+import { type TaskId } from '@/shared/kernel'
+
+import { completeTaskFx } from '@/entities/todo'
 
 import { $currentTask, close } from './model'
 
 interface CompleteTaskDialogFormData {
-  result: string
+  message: string
   taskId: TaskId
-}
-
-async function onSubmit({
-  result,
-  taskId,
-}: CompleteTaskDialogFormData): Promise<unknown> {
-  return await completeTaskFx({ taskId, message: result })
 }
 
 export function CompleteTaskDialog(): JSX.Element {
@@ -36,7 +31,7 @@ export function CompleteTaskDialog(): JSX.Element {
     formState: { isSubmitSuccessful },
   } = useForm<CompleteTaskDialogFormData>({
     defaultValues: {
-      result: '',
+      message: '',
     },
   })
   useEffect(() => {
@@ -44,8 +39,9 @@ export function CompleteTaskDialog(): JSX.Element {
       setValue('taskId', task.id)
     }
   }, [task])
+  const handler = useUnit({ completeTaskFx, close })
   function closeAndReset(): void {
-    close()
+    handler.close()
     reset()
   }
   useEffect(closeAndReset, [isSubmitSuccessful])
@@ -55,40 +51,28 @@ export function CompleteTaskDialog(): JSX.Element {
       onClose={closeAndReset}
       maxWidth="md"
       fullWidth
-      slots={{
-        root: 'form',
-      }}
-      slotProps={{
-        root: {
-          style: {
-            position: 'fixed',
-            zIndex: 1300,
-            right: 0,
-            bottom: 0,
-            top: 0,
-            left: 0,
-          },
-          onSubmit: handleSubmit(onSubmit),
-        },
-      }}
+      disableRestoreFocus
     >
-      <DialogTitle>Complete {task?.title}</DialogTitle>
-      <DialogContent>
-        <TextField
-          {...register('result')}
-          label="Result"
-          fullWidth
-          multiline
-          rows={4}
-          variant="outlined"
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button type="reset" onClick={closeAndReset}>
-          Cancel
-        </Button>
-        <Button type="submit">Complete</Button>
-      </DialogActions>
+      <form onSubmit={handleSubmit(handler.completeTaskFx)}>
+        <DialogTitle>Complete {task?.title}</DialogTitle>
+        <DialogContent>
+          <TextField
+            {...register('message')}
+            label="Result"
+            fullWidth
+            multiline
+            rows={4}
+            variant="outlined"
+            autoFocus
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button type="reset" onClick={closeAndReset}>
+            Cancel
+          </Button>
+          <Button type="submit">Complete</Button>
+        </DialogActions>
+      </form>
     </Dialog>
   )
 }

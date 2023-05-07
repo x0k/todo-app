@@ -10,15 +10,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.8",
-    "@emotion/styled": "^11.10.8",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@farfetched/core": "^0.8.11",
     "@fontsource/roboto": "^4.5.8",
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "5.0.0-alpha.129",
     "@mui/material": "^5.12.3",
+    "@vitejs/plugin-react": "^4.0.0",
+    "atomic-router": "^0.8.0",
+    "atomic-router-react": "^0.8.1",
     "date-fns": "^2.30.0",
-    "effector": "^22.8.2",
+    "effector": "^22.8.3",
     "effector-react": "^22.5.1",
+    "history": "^5.3.0",
     "nanoid": "^4.0.2",
     "notistack": "^3.0.1",
     "react": "^18.2.0",
@@ -28,13 +33,13 @@
   "devDependencies": {
     "@effector/swc-plugin": "^0.0.9",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.1",
+    "@types/react": "^18.2.6",
+    "@types/react-dom": "^18.2.4",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
     "@vitejs/plugin-react-swc": "^3.3.0",
-    "effector-logger": "^0.13.7",
-    "eslint": "^8.39.0",
+    "effector-logger": "^0.14.0",
+    "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-config-standard-with-typescript": "^34.0.1",
     "eslint-plugin-import": "^2.27.5",
@@ -46,7 +51,7 @@
     "eslint-plugin-react-refresh": "^0.4.1",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4",
-    "vite": "^4.3.4",
-    "vitest": "^0.30.1"
+    "vite": "^4.3.5",
+    "vitest": "^0.31.0"
   }
 }

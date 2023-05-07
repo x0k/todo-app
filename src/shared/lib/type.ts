@@ -3,3 +3,5 @@ export type PickByValuesType<Record, Type> = {
 }
 
 export type Brand<T, K> = K & { __brand: T }
+
+export type Union<T> = T[keyof T]

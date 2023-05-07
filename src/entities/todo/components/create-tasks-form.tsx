@@ -2,13 +2,12 @@ import { Autocomplete, Box, Button, TextField } from '@mui/material'
 import { useEffect, useRef } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
+import { type TasksList } from '@/shared/kernel'
 import { REQUIRED_FIELD_MESSAGE } from '@/shared/validation'
-
-import { type TasksList } from '@/entities/todo'
 
 export interface CreateTasksFormProps {
   tasksLists: TasksList[]
-  onSubmit: (data: CreateTasksFormData) => void
+  onSubmit: (data: CreateTasksFormData) => Promise<unknown>
   onTouched?: (isDirty: boolean) => void
 }
 

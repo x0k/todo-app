@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material'
-import { useStore } from 'effector-react'
+import { useStore } from 'effector-react/scope'
 
 import { reverseMap } from '@/shared/lib/array'
 

@@ -1,20 +1,37 @@
-import { app } from '@/shared/app'
-import { r } from '@/shared/registry'
+import { sample } from 'effector'
 
-import './registry'
-import { ColorMode } from './types'
+import { app, appStarted } from '@/shared/app'
 
-const toggleTheme = app.createDomain('toggle-theme')
+import { ColorMode, type IThemeService } from './core'
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const $colorMode = toggleTheme.createStore<ColorMode>(
-  r.themeService.getColorMode()
-)
+const d = app.createDomain('toggle-theme')
 
-export const colorModeToggled = toggleTheme.createEvent()
+export const $themeService = d.createStore({} as IThemeService)
+
+export const $colorMode = d.createStore(ColorMode.Light)
+
+export const colorModeToggled = d.createEvent()
 
 $colorMode.on(colorModeToggled, (state) =>
   state === ColorMode.Dark ? ColorMode.Light : ColorMode.Dark
 )
 
-$colorMode.subscribe(r.themeService.setColorMode)
+const setColorModeFx = d.createEffect(
+  ([themeService, colorMode]: [IThemeService, ColorMode]) => {
+    themeService.setColorMode(colorMode)
+  }
+)
+
+sample({
+  clock: appStarted,
+  source: $themeService,
+  fn: (service) => service.getColorMode(),
+  target: $colorMode,
+})
+
+sample({
+  clock: $colorMode,
+  source: $themeService,
+  fn: (service, colorMode) => [service, colorMode] as const,
+  target: setColorModeFx,
+})

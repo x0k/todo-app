@@ -1,8 +1,4 @@
-import {
-  type AbstractEvent,
-  type Event,
-  EventType,
-} from '@/entities/todo'
+import { type AbstractEvent, type Event, EventType } from '@/shared/kernel'
 
 export type PositiveEventType =
   | EventType.TaskCompleted

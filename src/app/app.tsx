@@ -6,18 +6,17 @@ import { CssBaseline } from '@mui/material'
 
 import { Notifications } from '@/features/notifications'
 
-import { HomePage } from '@/pages/home'
-
 import './index.css'
-import './init'
-import { Providers } from './providers'
+// Routes MUST be above router for proper effector init
+import { Routes } from './routes'
+import { Theme } from './theme'
 
-export default function App(): JSX.Element {
+export function App(): JSX.Element {
   return (
-    <Providers>
+    <Theme>
       <CssBaseline />
-      <HomePage />
+      <Routes />
       <Notifications />
-    </Providers>
+    </Theme>
   )
 }

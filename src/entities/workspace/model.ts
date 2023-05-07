@@ -1,14 +1,22 @@
 import { sample } from 'effector'
 
-import { app, errorOccurred, appStarted } from '@/shared/app'
+import { app, appStarted, errorOccurred } from '@/shared/app'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
-import { r } from '@/shared/registry'
 
-import './registry'
+import {
+  type CreateWorkspace,
+  type DeleteWorkspace,
+  type IWorkspaceService,
+  type UpdateWorkspace,
+} from './core'
 
 const d = app.createDomain('workspace')
 
 // Stores
+
+export const $workspaceService = d.createStore<IWorkspaceService>(
+  {} as IWorkspaceService
+)
 
 export const $workspacesMap = d.createStore(new Map<WorkspaceId, Workspace>())
 
@@ -18,29 +26,35 @@ export const $workspaces = $workspacesMap.map((map) => Array.from(map.values()))
 
 // Effects
 
-export const loadWorkspacesFx = d.createEffect(
-  r.workspaceService.loadWorkspaces
-)
+export const loadWorkspacesFx = d.createEffect<
+  void,
+  Map<WorkspaceId, Workspace>
+>()
 
-export const loadWorkspaceFx = d.createEffect(r.workspaceService.loadWorkspace)
+export const loadWorkspaceFx = d.createEffect<WorkspaceId, Workspace>()
 
-export const createWorkspaceFx = d.createEffect(
-  r.workspaceService.createWorkspace
-)
+export const createWorkspaceFx = d.createEffect<CreateWorkspace, Workspace>()
 
-export const updateWorkspaceFx = d.createEffect(
-  r.workspaceService.updateWorkspace
-)
+export const updateWorkspaceFx = d.createEffect<UpdateWorkspace, Workspace>()
 
-export const deleteWorkspaceFx = d.createEffect(
-  r.workspaceService.deleteWorkspace
+export const deleteWorkspaceFx = d.createEffect<DeleteWorkspace, void>()
+
+const updateFxHandlersFx = d.createEffect(
+  (workspaceService: IWorkspaceService) => {
+    loadWorkspaceFx.use(workspaceService.loadWorkspace)
+    loadWorkspacesFx.use(workspaceService.loadWorkspaces)
+    createWorkspaceFx.use(workspaceService.createWorkspace)
+    updateWorkspaceFx.use(workspaceService.updateWorkspace)
+    deleteWorkspaceFx.use(workspaceService.deleteWorkspace)
+  }
 )
 
 // Init
 
 sample({
-  clock: appStarted,
-  target: loadWorkspacesFx,
+  clock: [appStarted, $workspaceService.updates],
+  source: $workspaceService,
+  target: updateFxHandlersFx,
 })
 
 sample({

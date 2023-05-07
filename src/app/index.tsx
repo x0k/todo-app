@@ -16,6 +16,10 @@ import { withCache } from '@/shared/storage'
 
 import { PersistentStorageService } from '@/implementations/persistent-storage'
 
+import { $todoService, TestToDoService } from '@/entities/todo'
+import { TestWorkspaceService } from '@/entities/workspace'
+import { $workspaceService } from '@/entities/workspace/model'
+
 import { Notifications } from '@/features/notifications'
 import { $themeService, ColorMode, ThemeService } from '@/features/toggle-theme'
 
@@ -40,6 +44,8 @@ export const scope = fork({
         )
       ),
     ],
+    [$workspaceService, new TestWorkspaceService()],
+    [$todoService, new TestToDoService()],
   ],
 })
 

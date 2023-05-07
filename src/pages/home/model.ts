@@ -1,3 +1,10 @@
-import { createRoute } from 'atomic-router'
+import { sample } from 'effector'
 
-export const homeRoute = createRoute()
+import { routes } from '@/shared/routes'
+
+import { loadWorkspacesFx } from '@/entities/workspace/model'
+
+sample({
+  clock: routes.home.opened,
+  target: loadWorkspacesFx,
+})

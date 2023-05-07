@@ -1,6 +1,6 @@
 import { Check } from '@mui/icons-material'
 import { Box, IconButton, List, Typography } from '@mui/material'
-import { useStore } from 'effector-react/scope'
+import { useStore, useUnit } from 'effector-react/scope'
 import { useMemo } from 'react'
 
 import { TitledPanel } from '@/shared/components'
@@ -13,10 +13,6 @@ import { $dashboard, doneTasksArchiving } from './model'
 
 function archiveTask(taskId: TaskId): void {
   archiveTasksFx({ tasksIds: [taskId] })
-}
-
-function archiveDoneTasks(): void {
-  doneTasksArchiving()
 }
 
 export interface DashboardProps {
@@ -42,6 +38,7 @@ export function Dashboard({
       ),
     [doneTasks, notDoneTasks, tasksLists]
   ) as Record<TaskId, string>
+  const archiveDoneTasks = useUnit(doneTasksArchiving)
   return (
     <Box display="flex" flexDirection="column" gap={2}>
       <TitledPanel title="To Do" key="todo">

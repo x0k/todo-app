@@ -17,7 +17,6 @@ export class TestWorkspaceService implements IWorkspaceService {
 
   loadWorkspace = async (id: WorkspaceId): Promise<Workspace> => {
     const workspace = this.workspaces.get(id)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
     if (workspace === undefined) {
       throw new Error(`Workspace "${id}" not found`)
     }

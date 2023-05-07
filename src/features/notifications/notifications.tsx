@@ -1,4 +1,4 @@
-import { useStore } from 'effector-react/scope'
+import { useStore, useUnit } from 'effector-react/scope'
 import { type VariantType, useSnackbar } from 'notistack'
 import { useEffect, useRef } from 'react'
 
@@ -15,6 +15,7 @@ export function Notifications(): null {
   const notifications = useStore($notifications)
   const { current: displayed } = useRef(new Set<NotificationId>())
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  const removeNotification = useUnit(notificationRemoved)
   useEffect(() => {
     notifications.forEach(({ id, closed, message, type }) => {
       if (closed) {
@@ -28,7 +29,7 @@ export function Notifications(): null {
         key: id,
         variant: NOTIFICATION_TYPE_TO_STATUS_MAP[type],
         onExit: () => {
-          notificationRemoved(id)
+          removeNotification(id)
           displayed.delete(id)
         },
       })

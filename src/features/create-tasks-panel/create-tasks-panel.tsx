@@ -1,5 +1,5 @@
 import { Paper } from '@mui/material'
-import { useStore } from 'effector-react/scope'
+import { useStore, useUnit } from 'effector-react/scope'
 
 import {
   CreateTasksForm,
@@ -11,23 +11,25 @@ import {
 
 import { $isOpen, statusChanged } from './model'
 
-function handleSubmit({ tasks, tasksList }: CreateTasksFormData): void {
-  if (typeof tasksList === 'string') {
-    createTasksListFx({
-      title: tasksList,
-      tasks: tasks.map((t) => t.title),
-    })
-  } else {
-    createTasksFx({
-      tasksListId: tasksList.id,
-      tasks: tasks.map((t) => t.title),
-    })
-  }
-}
-
 export function CreateTasksPanel(): JSX.Element {
   const tasksLists = useTasksLists()
   const isOpen = useStore($isOpen)
+  const handler = useUnit({ createTasksFx, createTasksListFx })
+  async function handleSubmit({
+    tasks,
+    tasksList,
+  }: CreateTasksFormData): Promise<unknown> {
+    return await (typeof tasksList === 'string'
+      ? handler.createTasksListFx({
+          title: tasksList,
+          tasks: tasks.map((t) => t.title),
+        })
+      : handler.createTasksFx({
+          tasksListId: tasksList.id,
+          tasks: tasks.map((t) => t.title),
+        }))
+  }
+
   return (
     <Paper
       sx={{

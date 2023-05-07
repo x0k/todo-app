@@ -7,7 +7,7 @@ import { REQUIRED_FIELD_MESSAGE } from '@/shared/validation'
 
 export interface CreateTasksFormProps {
   tasksLists: TasksList[]
-  onSubmit: (data: CreateTasksFormData) => void
+  onSubmit: (data: CreateTasksFormData) => Promise<unknown>
   onTouched?: (isDirty: boolean) => void
 }
 

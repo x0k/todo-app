@@ -6,7 +6,7 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material'
-import { useStore } from 'effector-react/scope'
+import { useStore, useUnit } from 'effector-react/scope'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -17,15 +17,8 @@ import { completeTaskFx } from '@/entities/todo'
 import { $currentTask, close } from './model'
 
 interface CompleteTaskDialogFormData {
-  result: string
+  message: string
   taskId: TaskId
-}
-
-async function onSubmit({
-  result,
-  taskId,
-}: CompleteTaskDialogFormData): Promise<unknown> {
-  return await completeTaskFx({ taskId, message: result })
 }
 
 export function CompleteTaskDialog(): JSX.Element {
@@ -38,7 +31,7 @@ export function CompleteTaskDialog(): JSX.Element {
     formState: { isSubmitSuccessful },
   } = useForm<CompleteTaskDialogFormData>({
     defaultValues: {
-      result: '',
+      message: '',
     },
   })
   useEffect(() => {
@@ -46,8 +39,9 @@ export function CompleteTaskDialog(): JSX.Element {
       setValue('taskId', task.id)
     }
   }, [task])
+  const handler = useUnit({ completeTaskFx, close })
   function closeAndReset(): void {
-    close()
+    handler.close()
     reset()
   }
   useEffect(closeAndReset, [isSubmitSuccessful])
@@ -59,11 +53,11 @@ export function CompleteTaskDialog(): JSX.Element {
       fullWidth
       disableRestoreFocus
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(handler.completeTaskFx)}>
         <DialogTitle>Complete {task?.title}</DialogTitle>
         <DialogContent>
           <TextField
-            {...register('result')}
+            {...register('message')}
             label="Result"
             fullWidth
             multiline

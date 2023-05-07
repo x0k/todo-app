@@ -26,6 +26,7 @@ sample({
   clock: appStarted,
   source: $themeService,
   fn: (service) => service.getColorMode(),
+  target: $colorMode,
 })
 
 sample({

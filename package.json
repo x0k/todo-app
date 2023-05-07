@@ -17,6 +17,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "5.0.0-alpha.129",
     "@mui/material": "^5.12.3",
+    "@vitejs/plugin-react": "^4.0.0",
     "atomic-router": "^0.8.0",
     "atomic-router-react": "^0.8.1",
     "date-fns": "^2.30.0",

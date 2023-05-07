@@ -59,17 +59,12 @@ function View({ workspace }: ViewProps): JSX.Element {
 export function WorkspaceViewPage(): JSX.Element {
   // const workspace = useStore($currentWorkspace)
   const { data, pending, error } = useUnit(workspaceQuery)
+  const openHome = useUnit(routes.home.open)
   if (error instanceof Error && !pending) {
     return (
       <Center>
         <Typography>{error.message}</Typography>
-        <Button
-          onClick={() => {
-            routes.home.open()
-          }}
-        >
-          Back to home
-        </Button>
+        <Button onClick={openHome}>Back to home</Button>
       </Center>
     )
   }

@@ -6,7 +6,7 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material'
-import { useStore } from 'effector-react/scope'
+import { useStore, useUnit } from 'effector-react/scope'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -18,10 +18,6 @@ import { $isOpen, close } from './model'
 
 interface CreateWorkspaceDialogFormData {
   title: string
-}
-
-async function onSubmit(data: CreateWorkspaceDialogFormData): Promise<unknown> {
-  return await createWorkspaceFx(data)
 }
 
 export function CreateWorkspaceDialog(): JSX.Element {
@@ -36,8 +32,9 @@ export function CreateWorkspaceDialog(): JSX.Element {
       title: '',
     },
   })
+  const handler = useUnit({ close, createWorkspaceFx })
   function closeAndReset(): void {
-    close()
+    handler.close()
     reset()
   }
   useEffect(closeAndReset, [isSubmitSuccessful])
@@ -49,7 +46,7 @@ export function CreateWorkspaceDialog(): JSX.Element {
       fullWidth
       disableRestoreFocus
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(handler.createWorkspaceFx)}>
         <DialogTitle>Create workspace</DialogTitle>
         <DialogContent>
           <TextField

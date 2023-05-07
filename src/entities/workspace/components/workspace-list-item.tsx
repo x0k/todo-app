@@ -1,6 +1,6 @@
 import { ListItem, ListItemButton, ListItemText } from '@mui/material'
 // @ts-expect-error wtf
-import { Link } from 'atomic-router-react'
+import { Link } from 'atomic-router-react/scope'
 
 import { type Workspace } from '@/shared/kernel'
 import { routes } from '@/shared/routes'

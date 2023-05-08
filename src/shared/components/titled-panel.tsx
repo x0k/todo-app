@@ -13,9 +13,15 @@ export function TitledPanel({
   actions = null,
 }: TitledPanelProps): JSX.Element {
   return (
-    <Box display="flex" flexDirection="column" gap="1rem">
-      <Box display="flex" gap={2} alignItems="center">
-        <Typography variant="h5" display="flex" alignItems="center" gap={1}>
+    <Box display="flex" flexDirection="column" gap={1}>
+      <Box display="flex" alignItems="center">
+        <Typography
+          variant="h5"
+          display="flex"
+          alignItems="center"
+          gap={1}
+          gutterBottom
+        >
           {title}
         </Typography>
         <Box display="flex" flexGrow={1} />

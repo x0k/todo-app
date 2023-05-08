@@ -11,10 +11,6 @@ import { TaskItem, archiveTasksFx } from '@/entities/todo'
 
 import { $dashboard, doneTasksArchiving } from './model'
 
-function archiveTask(taskId: TaskId): void {
-  archiveTasksFx({ tasksIds: [taskId] })
-}
-
 export interface DashboardProps {
   onUnDoneTaskClick: (task: Task) => void
   onDoneTaskClick: (task: Task) => void
@@ -38,7 +34,7 @@ export function Dashboard({
       ),
     [doneTasks, notDoneTasks, tasksLists]
   ) as Record<TaskId, string>
-  const archiveDoneTasks = useUnit(doneTasksArchiving)
+  const handlers = useUnit({ doneTasksArchiving, archiveTasksFx })
   return (
     <Box display="flex" flexDirection="column" gap={2}>
       <TitledPanel
@@ -61,7 +57,7 @@ export function Dashboard({
                   onUnDoneTaskClick(task)
                 }}
                 onArchive={() => {
-                  archiveTask(task.id)
+                  handlers.archiveTasksFx({ tasksIds: [task.id] })
                 }}
               />
             ))}
@@ -82,7 +78,10 @@ export function Dashboard({
           }
           key="competed"
           actions={
-            <IconButton onClick={archiveDoneTasks} sx={{ marginRight: 2 }}>
+            <IconButton
+              onClick={handlers.doneTasksArchiving}
+              sx={{ marginRight: 2 }}
+            >
               <DoneAll />
             </IconButton>
           }

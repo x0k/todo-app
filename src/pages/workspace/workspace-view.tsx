@@ -1,6 +1,14 @@
-import { Box, Button, CircularProgress, Typography } from '@mui/material'
+import { EventNote, FactCheck } from '@mui/icons-material'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Typography,
+} from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useUnit } from 'effector-react/scope'
+import { useState } from 'react'
 
 import { Center, TitledPanel } from '@/shared/components'
 import { type Workspace } from '@/shared/kernel'
@@ -13,6 +21,7 @@ import {
 import { CreateTasksPanel } from '@/features/create-tasks-panel'
 import { Dashboard } from '@/features/dashboard'
 import { PositiveEventsLog } from '@/features/positive-events-log'
+import { TasksListsList } from '@/features/tasks-lists-list'
 
 import { HeaderWidget } from '@/widgets/header'
 
@@ -23,6 +32,10 @@ interface ViewProps {
 }
 
 function View({ workspace }: ViewProps): JSX.Element {
+  const [isEventsLogFeature, setIseEventsLogFeature] = useState(true)
+  function toggleFeature(): void {
+    setIseEventsLogFeature((s) => !s)
+  }
   return (
     <Box
       flex="1 1 100%"
@@ -43,11 +56,41 @@ function View({ workspace }: ViewProps): JSX.Element {
           />
         </Grid>
         <Grid xs>
-          <TitledPanel title="Events">
-            <Box padding={2}>
-              <PositiveEventsLog />
-            </Box>
-          </TitledPanel>
+          {isEventsLogFeature ? (
+            <TitledPanel
+              title={
+                <>
+                  <EventNote />
+                  Events
+                </>
+              }
+              actions={
+                <IconButton onClick={toggleFeature}>
+                  <FactCheck />
+                </IconButton>
+              }
+            >
+              <Box padding={2}>
+                <PositiveEventsLog />
+              </Box>
+            </TitledPanel>
+          ) : (
+            <TitledPanel
+              title={
+                <>
+                  <FactCheck />
+                  Lists
+                </>
+              }
+              actions={
+                <IconButton onClick={toggleFeature}>
+                  <EventNote />
+                </IconButton>
+              }
+            >
+              <TasksListsList onClick={console.log} />
+            </TitledPanel>
+          )}
         </Grid>
       </Grid>
       <CreateTasksPanel />
@@ -57,7 +100,6 @@ function View({ workspace }: ViewProps): JSX.Element {
 }
 
 export function WorkspaceViewPage(): JSX.Element {
-  // const workspace = useStore($currentWorkspace)
   const { data, pending, error } = useUnit(workspaceQuery)
   const openHome = useUnit(routes.home.open)
   if (error instanceof Error && !pending) {

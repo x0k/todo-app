@@ -15,7 +15,9 @@ export function TitledPanel({
   return (
     <Box display="flex" flexDirection="column" gap="1rem">
       <Box display="flex" gap={2} alignItems="center">
-        <Typography variant="h5">{title}</Typography>
+        <Typography variant="h5" display="flex" alignItems="center" gap={1}>
+          {title}
+        </Typography>
         <Box display="flex" flexGrow={1} />
         {actions}
       </Box>

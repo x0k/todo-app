@@ -1,4 +1,4 @@
-import { Check } from '@mui/icons-material'
+import { CheckBox, CheckBoxOutlineBlank, DoneAll } from '@mui/icons-material'
 import { Box, IconButton, List, Typography } from '@mui/material'
 import { useStore, useUnit } from 'effector-react/scope'
 import { useMemo } from 'react'
@@ -41,7 +41,15 @@ export function Dashboard({
   const archiveDoneTasks = useUnit(doneTasksArchiving)
   return (
     <Box display="flex" flexDirection="column" gap={2}>
-      <TitledPanel title="To Do" key="todo">
+      <TitledPanel
+        title={
+          <>
+            <CheckBoxOutlineBlank />
+            To Do
+          </>
+        }
+        key="todo"
+      >
         {notDoneTasks.length > 0 ? (
           <List>
             {notDoneTasks.map((task) => (
@@ -66,11 +74,16 @@ export function Dashboard({
       </TitledPanel>
       {doneTasks.length > 0 && (
         <TitledPanel
-          title="Completed"
+          title={
+            <>
+              <CheckBox />
+              Completed
+            </>
+          }
           key="competed"
           actions={
             <IconButton onClick={archiveDoneTasks} sx={{ marginRight: 2 }}>
-              <Check />
+              <DoneAll />
             </IconButton>
           }
         >

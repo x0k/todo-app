@@ -42,14 +42,22 @@ export const $tasksState = d.createStore<TasksState>({
 
 export const $listsMap = $tasksState.map((state) => state.lists)
 
-export const $lists = $listsMap.map(
+export const $listsRecord = $listsMap.map(
   (map) => Object.fromEntries(map) as Record<TasksListId, TasksList>
+)
+
+export const $listsArray = $tasksState.map((state) =>
+  Array.from(state.lists.values())
 )
 
 export const $tasksMap = $tasksState.map((state) => state.tasks)
 
-export const $tasks = $tasksMap.map(
+export const $tasksRecord = $tasksMap.map(
   (map) => Object.fromEntries(map) as Record<TaskId, Task>
+)
+
+export const $tasksArray = $tasksState.map((state) =>
+  Array.from(state.tasks.values())
 )
 
 export const $events = $tasksState.map((state) => state.events)
@@ -74,15 +82,9 @@ export const updateTasksListFx = d.createEffect<
   TasksListUpdatedEvent
 >()
 
-export const completeTaskFx = d.createEffect<
-  CompleteTask,
-  TaskCompletedEvent
->()
+export const completeTaskFx = d.createEffect<CompleteTask, TaskCompletedEvent>()
 
-export const archiveTasksFx = d.createEffect<
-  ArchiveTasks,
-  TasksArchivedEvent
->()
+export const archiveTasksFx = d.createEffect<ArchiveTasks, TasksArchivedEvent>()
 
 const updateFxHandlersFx = d.createEffect((todoService: IToDoService) => {
   loadTasksStateFx.use(todoService.loadTasksState)

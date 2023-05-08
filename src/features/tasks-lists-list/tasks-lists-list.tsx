@@ -7,17 +7,17 @@ import {
 } from '@mui/material'
 import { useStore } from 'effector-react/scope'
 
-import { type TasksList } from '@/shared/kernel'
+import { TaskStatus, type TasksList } from '@/shared/kernel'
 import { pluralize } from '@/shared/lib/intl'
 
-import { $listsArray } from '@/entities/todo'
+import { $actualTasksLists } from './model'
 
 export interface TasksListsListProps {
   onClick: (list: TasksList) => void
 }
 
 export function TasksListsList({ onClick }: TasksListsListProps): JSX.Element {
-  const lists = useStore($listsArray)
+  const lists = useStore($actualTasksLists)
   return lists.length ? (
     <List>
       {lists.map((list) => (
@@ -29,7 +29,10 @@ export function TasksListsList({ onClick }: TasksListsListProps): JSX.Element {
           >
             <ListItemText
               primary={list.title}
-              secondary={pluralize(list.tasksCount, 'task')}
+              secondary={pluralize(
+                list.tasks[TaskStatus.NotDone].size,
+                'uncompleted task'
+              )}
             />
           </ListItemButton>
         </ListItem>

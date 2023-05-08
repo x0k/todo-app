@@ -1,4 +1,4 @@
-import { EventNote, FactCheck } from '@mui/icons-material'
+import { FactCheck, ViewList } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -60,7 +60,7 @@ function View({ workspace }: ViewProps): JSX.Element {
             <TitledPanel
               title={
                 <>
-                  <EventNote />
+                  <ViewList />
                   Events
                 </>
               }
@@ -84,7 +84,7 @@ function View({ workspace }: ViewProps): JSX.Element {
               }
               actions={
                 <IconButton onClick={toggleFeature}>
-                  <EventNote />
+                  <ViewList />
                 </IconButton>
               }
             >

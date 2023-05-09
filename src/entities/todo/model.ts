@@ -2,6 +2,7 @@ import { sample } from 'effector'
 
 import { app, appStarted, errorOccurred } from '@/shared/app'
 import {
+  type Event,
   type Task,
   type TaskCompletedEvent,
   type TaskCreatedEvent,
@@ -21,6 +22,7 @@ import {
   type CreateTask,
   type CreateTasks,
   type CreateTasksList,
+  EVENTS_PER_PAGE,
   type IToDoService,
   type TasksState,
   type UpdateTask,
@@ -37,7 +39,6 @@ export const $todoService = d.createStore<IToDoService>({} as IToDoService)
 export const $tasksState = d.createStore<TasksState>({
   lists: new Map(),
   tasks: new Map(),
-  events: [],
 })
 
 export const $listsMap = $tasksState.map((state) => state.lists)
@@ -60,7 +61,7 @@ export const $tasksArray = $tasksState.map((state) =>
   Array.from(state.tasks.values())
 )
 
-export const $events = $tasksState.map((state) => state.events)
+export const $events = d.createStore<Event[]>([])
 
 // Effects
 
@@ -86,6 +87,10 @@ export const completeTaskFx = d.createEffect<CompleteTask, TaskCompletedEvent>()
 
 export const archiveTasksFx = d.createEffect<ArchiveTasks, TasksArchivedEvent>()
 
+export const getEventsCountFx = d.createEffect<void, number>()
+
+export const loadEventsFx = d.createEffect<number, Event[]>()
+
 const updateFxHandlersFx = d.createEffect((todoService: IToDoService) => {
   loadTasksStateFx.use(todoService.loadTasksState)
   createTaskFx.use(todoService.createTask)
@@ -95,6 +100,8 @@ const updateFxHandlersFx = d.createEffect((todoService: IToDoService) => {
   updateTasksListFx.use(todoService.updateTasksList)
   completeTaskFx.use(todoService.completeTask)
   archiveTasksFx.use(todoService.archiveTasks)
+  getEventsCountFx.use(todoService.getEventsCount)
+  loadEventsFx.use(todoService.loadEvents)
 })
 
 // Events
@@ -129,6 +136,29 @@ $tasksState
     ],
     reducer
   )
+
+$events
+  .on(
+    [
+      createTaskFx.doneData,
+      createTasksFx.doneData,
+      updateTaskFx.doneData,
+      createTasksListFx.doneData,
+      updateTasksListFx.doneData,
+      completeTaskFx.doneData,
+      archiveTasksFx.doneData,
+    ],
+    (events, event) => events.concat(event)
+  )
+  .on(loadEventsFx.done, (events, { params, result }) => {
+    const start = (params - 1) * EVENTS_PER_PAGE
+    return events
+      .slice(0, start)
+      .concat(result)
+      .concat(events.slice(start + EVENTS_PER_PAGE))
+  })
+
+// Start
 
 sample({
   clock: [appStarted, $todoService.updates],

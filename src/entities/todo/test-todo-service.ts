@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid'
 
 import {
+  type Event,
   EventType,
   TASK_STATUSES,
   type Task,
@@ -40,11 +41,14 @@ function createTask(tasksListId: TasksListId, title: string): Task {
   }
 }
 export class TestToDoService implements IToDoService {
+  getEventsCount = async (): Promise<number> => 0
+
+  loadEvents = async (_: number): Promise<Event[]> => []
+
   loadTasksState = async (): Promise<TasksState> => {
     return {
       tasks: new Map(),
       lists: new Map(),
-      events: [],
     }
   }
 

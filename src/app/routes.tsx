@@ -11,7 +11,7 @@ export function Routes(): JSX.Element {
   return (
     <>
       <Route route={routes.home} view={HomePage} />
-      <Route route={routes.workspace.view} view={WorkspaceViewPage} />
+      <Route route={routes.workspace} view={WorkspaceViewPage} />
       <Route route={routes.notFound} view={NotFoundPage} />
     </>
   )

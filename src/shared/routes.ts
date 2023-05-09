@@ -8,15 +8,13 @@ export interface WorkspaceRouteParams {
 
 export const routes = {
   home: createRoute(),
-  workspace: {
-    view: createRoute<WorkspaceRouteParams>(),
-  },
+  workspace: createRoute<WorkspaceRouteParams>(),
   notFound: createRoute(),
 }
 
 export const routesMap = [
   { path: '/', route: routes.home },
-  { path: '/ws/:workspaceId', route: routes.workspace.view },
+  { path: '/ws/:workspaceId', route: routes.workspace },
 ]
 
 export const notFoundRoute = routes.notFound

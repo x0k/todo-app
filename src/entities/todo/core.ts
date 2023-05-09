@@ -55,7 +55,6 @@ export interface UpdateTasksList {
 export interface TasksState {
   lists: Map<TasksListId, TasksList>
   tasks: Map<TaskId, Task>
-  events: Event[]
 }
 
 export interface IToDoService {
@@ -67,7 +66,11 @@ export interface IToDoService {
   updateTasksList: (data: UpdateTasksList) => Promise<TasksListUpdatedEvent>
   completeTask: (data: CompleteTask) => Promise<TaskCompletedEvent>
   archiveTasks: (data: ArchiveTasks) => Promise<TasksArchivedEvent>
+  getEventsCount: () => Promise<number>
+  loadEvents: (page: number) => Promise<Event[]>
 }
+
+export const EVENTS_PER_PAGE = 100
 
 const HANDLERS: {
   [T in EventType]: (
@@ -92,7 +95,6 @@ const HANDLERS: {
           ),
         },
       }),
-      events: state.events.concat(event),
     }
   },
   [EventType.TasksCreated]: (state, event) => {
@@ -119,7 +121,6 @@ const HANDLERS: {
           [TaskStatus.NotDone]: notDoneTasks,
         },
       }),
-      events: state.events.concat(event),
     }
   },
   [EventType.TasksListCreated]: (state, event) => {
@@ -130,7 +131,6 @@ const HANDLERS: {
     return {
       lists: new Map(state.lists).set(event.list.id, event.list),
       tasks: event.tasks.length > 0 ? tasks : state.tasks,
-      events: state.events.concat(event),
     }
   },
   [EventType.TaskUpdated]: (state, event) => {
@@ -144,7 +144,6 @@ const HANDLERS: {
         ...task,
         ...event.change,
       }),
-      events: state.events.concat(event),
     }
   },
   [EventType.TasksListUpdated]: (state, event) => {
@@ -158,7 +157,6 @@ const HANDLERS: {
         ...list,
         ...event.change,
       }),
-      events: state.events.concat(event),
     }
   },
   [EventType.TaskCompleted]: (state, event) => {
@@ -187,7 +185,6 @@ const HANDLERS: {
         ...task,
         status: TaskStatus.Done,
       }),
-      events: state.events.concat(event),
     }
   },
   [EventType.TasksArchived]: (state, event) => {
@@ -222,7 +219,6 @@ const HANDLERS: {
     return {
       lists,
       tasks,
-      events: state.events.concat(event),
     }
   },
 }

@@ -10,7 +10,7 @@ export const workspaceQuery = createQuery({
 })
 
 sample({
-  clock: routes.workspace.view.opened,
+  clock: routes.workspace.opened,
   fn: ({ params: { workspaceId } }) => workspaceId,
   target: workspaceQuery.start,
 })
@@ -18,5 +18,5 @@ sample({
 sample({
   clock: createWorkspaceFx.doneData,
   fn: (workspace) => ({ workspaceId: workspace.id }),
-  target: routes.workspace.view.open,
+  target: routes.workspace.open,
 })

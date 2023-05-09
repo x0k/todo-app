@@ -5,7 +5,7 @@ import { reverseMap } from '@/shared/lib/array'
 
 import { $listsRecord, $tasksRecord } from '@/entities/todo'
 
-import { $positiveEvents } from './model'
+import { $positiveEvents, EventsGate } from './model'
 import { PositiveEventComponent } from './positive-event'
 
 export function PositiveEventsLog(): JSX.Element {
@@ -14,6 +14,7 @@ export function PositiveEventsLog(): JSX.Element {
   const tasks = useStore($tasksRecord)
   return (
     <Box display="flex" flexDirection="column" gap={2}>
+      <EventsGate />
       {events.length > 0 ? (
         reverseMap(
           (event) => (

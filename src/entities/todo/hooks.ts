@@ -1,14 +1,24 @@
-import { useStoreMap } from 'effector-react/scope'
+import { useStore, useStoreMap } from 'effector-react/scope'
 
 import {
   type Task,
   type TaskId,
   type TasksList,
   type TasksListId,
+  type WorkspaceId,
 } from '@/shared/kernel'
 import { isArrayNotEqual } from '@/shared/utils'
 
-import { $listsMap, $tasksMap, $tasksState } from '@/entities/todo'
+import {
+  $listsMap,
+  $tasksMap,
+  $tasksState,
+  $workspaceId,
+} from '@/entities/todo'
+
+export function useWorkspaceId(): WorkspaceId {
+  return useStore($workspaceId)
+}
 
 export function useTasks(taskIds: Iterable<TaskId>): Task[] {
   return useStoreMap({

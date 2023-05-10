@@ -20,7 +20,8 @@ export function Dashboard({
   onUnDoneTaskClick,
   onDoneTaskClick,
 }: DashboardProps): JSX.Element {
-  const { doneTasks, notDoneTasks, tasksLists } = useStore($dashboard)
+  const { workspaceId, doneTasks, notDoneTasks, tasksLists } =
+    useStore($dashboard)
   const secondaryTexts = useMemo(
     () =>
       Object.fromEntries(
@@ -57,7 +58,7 @@ export function Dashboard({
                   onUnDoneTaskClick(task)
                 }}
                 onArchive={() => {
-                  handlers.archiveTasksFx({ tasksIds: [task.id] })
+                  handlers.archiveTasksFx({ workspaceId, tasksIds: [task.id] })
                 }}
               />
             ))}

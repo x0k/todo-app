@@ -4,16 +4,10 @@ import { app, errorOccurred } from '@/shared/app'
 import {
   type Event,
   type Task,
-  type TaskCompletedEvent,
-  type TaskCreatedEvent,
   type TaskId,
-  type TaskUpdatedEvent,
-  type TasksArchivedEvent,
-  type TasksCreatedEvent,
   type TasksList,
-  type TasksListCreatedEvent,
   type TasksListId,
-  type TasksListUpdatedEvent,
+  type WorkspaceId,
 } from '@/shared/kernel'
 
 import {
@@ -24,6 +18,7 @@ import {
   type CreateTasksList,
   EVENTS_PER_PAGE,
   type IToDoService,
+  type QueryEvents,
   type TasksState,
   type UpdateTask,
   type UpdateTasksList,
@@ -37,9 +32,12 @@ const d = app.createDomain('todo')
 export const $todoService = d.createStore<IToDoService>({} as IToDoService)
 
 export const $tasksState = d.createStore<TasksState>({
+  workspaceId: 'INVALID_WORKSPACE_ID' as WorkspaceId,
   lists: new Map(),
   tasks: new Map(),
 })
+
+export const $workspaceId = $tasksState.map((state) => state.workspaceId)
 
 export const $listsMap = $tasksState.map((state) => state.lists)
 
@@ -67,32 +65,55 @@ export const $events = d.createStore<Event[]>([])
 
 export const loadTasksStateFx = attach({
   source: $todoService,
-  effect: async (s) => await s.loadTasksState(),
+  effect: async (s, workspaceId: WorkspaceId) =>
+    await s.loadTasksState(workspaceId),
 })
 
-export const createTaskFx = d.createEffect<CreateTask, TaskCreatedEvent>()
+export const createTaskFx = attach({
+  source: $todoService,
+  effect: async (s, data: CreateTask) => await s.createTask(data),
+})
 
-export const createTasksFx = d.createEffect<CreateTasks, TasksCreatedEvent>()
+export const createTasksFx = attach({
+  source: $todoService,
+  effect: async (s, data: CreateTasks) => await s.createTasks(data),
+})
 
-export const createTasksListFx = d.createEffect<
-  CreateTasksList,
-  TasksListCreatedEvent
->()
+export const createTasksListFx = attach({
+  source: $todoService,
+  effect: async (s, data: CreateTasksList) => await s.createTasksList(data),
+})
 
-export const updateTaskFx = d.createEffect<UpdateTask, TaskUpdatedEvent>()
+export const updateTaskFx = attach({
+  source: $todoService,
+  effect: async (s, data: UpdateTask) => await s.updateTask(data),
+})
 
-export const updateTasksListFx = d.createEffect<
-  UpdateTasksList,
-  TasksListUpdatedEvent
->()
+export const updateTasksListFx = attach({
+  source: $todoService,
+  effect: async (s, data: UpdateTasksList) => await s.updateTasksList(data),
+})
 
-export const completeTaskFx = d.createEffect<CompleteTask, TaskCompletedEvent>()
+export const completeTaskFx = attach({
+  source: $todoService,
+  effect: async (s, data: CompleteTask) => await s.completeTask(data),
+})
 
-export const archiveTasksFx = d.createEffect<ArchiveTasks, TasksArchivedEvent>()
+export const archiveTasksFx = attach({
+  source: $todoService,
+  effect: async (s, data: ArchiveTasks) => await s.archiveTasks(data),
+})
 
-export const getEventsCountFx = d.createEffect<void, number>()
+export const getEventsCountFx = attach({
+  source: $todoService,
+  effect: async (s, workspaceId: WorkspaceId) =>
+    await s.getEventsCount(workspaceId),
+})
 
-export const loadEventsFx = d.createEffect<number, Event[]>()
+export const loadEventsFx = attach({
+  source: $todoService,
+  effect: async (s, query: QueryEvents) => await s.loadEvents(query),
+})
 
 // Events
 
@@ -141,7 +162,7 @@ $events
     (events, event) => events.concat(event)
   )
   .on(loadEventsFx.done, (events, { params, result }) => {
-    const start = (params - 1) * EVENTS_PER_PAGE
+    const start = (params.page - 1) * EVENTS_PER_PAGE
     return events
       .slice(0, start)
       .concat(result)

@@ -1,13 +1,13 @@
 import { createRoute } from 'atomic-router'
 
-import { type WorkspaceId } from './kernel'
+import { type TasksListId, type WorkspaceId } from './kernel'
 
 export interface WorkspaceRouteParams {
   workspaceId: WorkspaceId
 }
 
 export interface WorkspaceTasksListRouteParams extends WorkspaceRouteParams {
-  tasksListId: string
+  tasksListId: TasksListId
 }
 
 export const routes = {

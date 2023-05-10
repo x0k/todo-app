@@ -10,19 +10,21 @@ import { useStore, useUnit } from 'effector-react/scope'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { type TaskId } from '@/shared/kernel'
+import { type TaskId, type WorkspaceId } from '@/shared/kernel'
 
-import { completeTaskFx } from '@/entities/todo'
+import { $workspaceId, completeTaskFx } from '@/entities/todo'
 
 import { $currentTask, close } from './model'
 
 interface CompleteTaskDialogFormData {
   message: string
   taskId: TaskId
+  workspaceId: WorkspaceId
 }
 
 export function CompleteTaskDialog(): JSX.Element {
   const task = useStore($currentTask)
+  const workspaceId = useStore($workspaceId)
   const {
     register,
     handleSubmit,
@@ -37,8 +39,9 @@ export function CompleteTaskDialog(): JSX.Element {
   useEffect(() => {
     if (task) {
       setValue('taskId', task.id)
+      setValue('workspaceId', workspaceId)
     }
-  }, [task])
+  }, [task, workspaceId])
   const handler = useUnit({ completeTaskFx, close })
   function closeAndReset(): void {
     handler.close()

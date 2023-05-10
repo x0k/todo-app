@@ -3,7 +3,7 @@ import { createGate } from 'effector-react/scope'
 
 import { app } from '@/shared/app'
 
-import { $events, loadEventsFx } from '@/entities/todo'
+import { $events, $workspaceId, loadEventsFx } from '@/entities/todo'
 
 import { isPositiveEvent } from './core'
 
@@ -17,10 +17,12 @@ export const $positiveEvents = $events.map((events) =>
   events.filter(isPositiveEvent)
 )
 
+$page.reset(EventsGate.close)
+
 // TODO: Use react query or something like it
 // to implement infinite scroll
 sample({
   clock: [EventsGate.open, $page.updates],
-  source: $page,
+  source: { page: $page, workspaceId: $workspaceId },
   target: loadEventsFx,
 })

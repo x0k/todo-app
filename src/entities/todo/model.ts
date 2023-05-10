@@ -1,6 +1,6 @@
-import { sample } from 'effector'
+import { attach, sample } from 'effector'
 
-import { app, appStarted, errorOccurred } from '@/shared/app'
+import { app, errorOccurred } from '@/shared/app'
 import {
   type Event,
   type Task,
@@ -65,7 +65,10 @@ export const $events = d.createStore<Event[]>([])
 
 // Effects
 
-export const loadTasksStateFx = d.createEffect<void, TasksState>()
+export const loadTasksStateFx = attach({
+  source: $todoService,
+  effect: async (s) => await s.loadTasksState(),
+})
 
 export const createTaskFx = d.createEffect<CreateTask, TaskCreatedEvent>()
 
@@ -90,19 +93,6 @@ export const archiveTasksFx = d.createEffect<ArchiveTasks, TasksArchivedEvent>()
 export const getEventsCountFx = d.createEffect<void, number>()
 
 export const loadEventsFx = d.createEffect<number, Event[]>()
-
-const updateFxHandlersFx = d.createEffect((todoService: IToDoService) => {
-  loadTasksStateFx.use(todoService.loadTasksState)
-  createTaskFx.use(todoService.createTask)
-  createTasksFx.use(todoService.createTasks)
-  createTasksListFx.use(todoService.createTasksList)
-  updateTaskFx.use(todoService.updateTask)
-  updateTasksListFx.use(todoService.updateTasksList)
-  completeTaskFx.use(todoService.completeTask)
-  archiveTasksFx.use(todoService.archiveTasks)
-  getEventsCountFx.use(todoService.getEventsCount)
-  loadEventsFx.use(todoService.loadEvents)
-})
 
 // Events
 
@@ -157,11 +147,3 @@ $events
       .concat(result)
       .concat(events.slice(start + EVENTS_PER_PAGE))
   })
-
-// Start
-
-sample({
-  clock: [appStarted, $todoService.updates],
-  source: $todoService,
-  target: updateFxHandlersFx,
-})

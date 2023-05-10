@@ -12,7 +12,10 @@ import { useState } from 'react'
 
 import { Center, TitledPanel } from '@/shared/components'
 import { type Workspace } from '@/shared/kernel'
+import { fold } from '@/shared/lib/state'
 import { routes } from '@/shared/routes'
+
+import { workspaceModel } from '@/entities/workspace'
 
 import {
   CompleteTaskDialog,
@@ -24,8 +27,6 @@ import { PositiveEventsLog } from '@/features/positive-events-log'
 import { TasksListsList } from '@/features/tasks-lists-list'
 
 import { HeaderWidget } from '@/widgets/header'
-
-import { workspaceQuery } from './model'
 
 interface ViewProps {
   workspace: Workspace
@@ -88,7 +89,14 @@ function View({ workspace }: ViewProps): JSX.Element {
                 </IconButton>
               }
             >
-              <TasksListsList onClick={console.log} />
+              <TasksListsList
+                onClick={(tasksList) => {
+                  routes.workspace.tasksList.open({
+                    workspaceId: workspace.id,
+                    tasksListId: tasksList.id,
+                  })
+                }}
+              />
             </TitledPanel>
           )}
         </Grid>
@@ -100,22 +108,20 @@ function View({ workspace }: ViewProps): JSX.Element {
 }
 
 export function WorkspacePage(): JSX.Element {
-  const { data, pending, error } = useUnit(workspaceQuery)
   const openHome = useUnit(routes.home.open)
-  if (error instanceof Error && !pending) {
-    return (
+  const ws = useUnit(workspaceModel.$workspace)
+  return fold(ws, {
+    otherwise: () => (
+      <Center>
+        <CircularProgress size={64} />
+      </Center>
+    ),
+    error: ({ error }) => (
       <Center>
         <Typography>{error.message}</Typography>
         <Button onClick={openHome}>Back to home</Button>
       </Center>
-    )
-  }
-  if (pending || data === null) {
-    return (
-      <Center>
-        <CircularProgress size={64} />
-      </Center>
-    )
-  }
-  return <View workspace={data} />
+    ),
+    loaded: ({ data }) => <View workspace={data} />,
+  })
 }

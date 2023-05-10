@@ -17,6 +17,8 @@ export const $positiveEvents = $events.map((events) =>
   events.filter(isPositiveEvent)
 )
 
+// TODO: Use react query or something like it
+// to implement infinite scroll
 sample({
   clock: [EventsGate.open, $page.updates],
   source: $page,

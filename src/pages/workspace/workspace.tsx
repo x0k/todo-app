@@ -99,7 +99,7 @@ function View({ workspace }: ViewProps): JSX.Element {
   )
 }
 
-export function WorkspaceViewPage(): JSX.Element {
+export function WorkspacePage(): JSX.Element {
   const { data, pending, error } = useUnit(workspaceQuery)
   const openHome = useUnit(routes.home.open)
   if (error instanceof Error && !pending) {

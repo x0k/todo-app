@@ -1,2 +1,2 @@
 export * as workspaceModel from './model'
-export * from './workspace-view'
+export * from './workspace'

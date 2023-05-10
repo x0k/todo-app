@@ -39,6 +39,6 @@ export function TasksListsList({ onClick }: TasksListsListProps): JSX.Element {
       ))}
     </List>
   ) : (
-    <Typography>No lists</Typography>
+    <Typography padding={2}>No lists</Typography>
   )
 }

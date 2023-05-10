@@ -63,9 +63,9 @@ export function Dashboard({
             ))}
           </List>
         ) : (
-          <Box padding={2}>
-            <Typography variant="body1">No uncompleted tasks</Typography>
-          </Box>
+          <Typography padding={2} variant="body1">
+            No uncompleted tasks
+          </Typography>
         )}
       </TitledPanel>
       {doneTasks.length > 0 && (

@@ -32,7 +32,10 @@ function View({ workspace }: ViewProps): JSX.Element {
   function toggleFeature(): void {
     setIseEventsLogFeature((s) => !s)
   }
-  const openTasksList = useUnit(routes.workspace.tasksList.open)
+  const handlers = useUnit({
+    openTasksList: routes.workspace.tasksList.open,
+    openCompleteTaskDialog: completeTaskDialogModel.open,
+  })
   return (
     <Box
       flex="1 1 100%"
@@ -48,7 +51,7 @@ function View({ workspace }: ViewProps): JSX.Element {
       <Grid container spacing={4}>
         <Grid xs>
           <Dashboard
-            onUnDoneTaskClick={completeTaskDialogModel.open}
+            onUnDoneTaskClick={handlers.openCompleteTaskDialog}
             onDoneTaskClick={console.log}
           />
         </Grid>
@@ -87,7 +90,7 @@ function View({ workspace }: ViewProps): JSX.Element {
             >
               <TasksListsList
                 onClick={(tasksList) => {
-                  openTasksList({
+                  handlers.openTasksList({
                     workspaceId: workspace.id,
                     tasksListId: tasksList.id,
                   })

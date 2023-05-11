@@ -5,7 +5,7 @@ import {
   type TasksListId,
 } from '@/shared/kernel'
 
-import { type ITasksListService } from './core'
+import { type ITasksListService, type TasksListState } from './core'
 
 export class TestTasksListService implements ITasksListService {
   constructor(
@@ -13,11 +13,14 @@ export class TestTasksListService implements ITasksListService {
     private readonly tasks: Map<TaskId, Task>
   ) {}
 
-  loadTasksList = async (id: TasksListId): Promise<TasksList> => {
+  loadTasksList = async (id: TasksListId): Promise<TasksListState> => {
     const tasksList = this.tasksLists.get(id)
     if (tasksList === undefined) {
       throw new Error(`Tasks list with id "${id}" not found.`)
     }
-    return tasksList
+    return {
+      tasks: this.tasks,
+      tasksList,
+    }
   }
 }

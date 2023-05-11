@@ -1,12 +1,12 @@
 import { attach, sample } from 'effector'
 
 import { app } from '@/shared/app'
-import { type TasksList, type TasksListId } from '@/shared/kernel'
-import { type Loadable, type States } from '@/shared/lib/state'
+import { type TasksListId } from '@/shared/kernel'
+import { type Loadable, type States, mapLoadable } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
 import { routes } from '@/shared/routes'
 
-import { type ITasksListService } from './core'
+import { type ITasksListService, type TasksListState } from './core'
 
 const d = app.createDomain('tasks-list')
 
@@ -14,9 +14,17 @@ export const $tasksListService = d.createStore<ITasksListService>(
   {} as ITasksListService
 )
 
-export const $tasksList = d.createStore<States<Loadable<TasksList, Error>>>({
+export const $tasksListState = d.createStore<
+  States<Loadable<TasksListState, Error>>
+>({
   type: 'idle',
 })
+
+export const $tasksList = $tasksListState.map(
+  mapLoadable((data) => data.tasksList)
+)
+
+// Events
 
 // Effects
 
@@ -33,4 +41,4 @@ sample({
   target: loadTasksListFx,
 })
 
-bindLoadable($tasksList, loadTasksListFx)
+bindLoadable($tasksListState, loadTasksListFx)

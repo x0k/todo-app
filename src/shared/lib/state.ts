@@ -48,3 +48,12 @@ export function fold<S, R>(value: States<S>, config: FoldConfig<S, R>): R {
   }
   return handler(value)
 }
+
+export function mapLoadable<T, R>(
+  mapper: (data: T) => R
+): <E>(state: States<Loadable<T, E>>) => States<Loadable<R, E>> {
+  return (state) =>
+    state.type === 'loaded'
+      ? { type: 'loaded', data: mapper(state.data) }
+      : state
+}

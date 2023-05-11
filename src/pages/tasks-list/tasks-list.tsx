@@ -1,12 +1,15 @@
 import { Box, Typography } from '@mui/material'
+import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { useStore } from 'effector-react/scope'
 
-import { Loader } from '@/shared/components'
-import { type TasksList } from '@/shared/kernel'
+import { Loader, TitledPanel } from '@/shared/components'
+import { TaskStatus, type TasksList } from '@/shared/kernel'
 import { fold } from '@/shared/lib/state'
 import { routes } from '@/shared/routes'
 
 import { tasksListModel } from '@/entities/tasks-list'
+
+import { TasksListFeature } from '@/features/tasks-list'
 
 import { ErrorMessage, ToWorkspace } from '@/widgets/error-message'
 import { HeaderWidget } from '@/widgets/header'
@@ -28,6 +31,23 @@ function View({ tasksList }: ViewProps): JSX.Element {
       <HeaderWidget
         title={<Typography variant="h4">{tasksList.title}</Typography>}
       />
+      <Grid spacing={2} container>
+        <Grid xs>
+          <TitledPanel title="To Do">
+            <TasksListFeature taskStatus={TaskStatus.NotDone} />
+          </TitledPanel>
+        </Grid>
+        <Grid xs>
+          <TitledPanel title="Done">
+            <TasksListFeature taskStatus={TaskStatus.Done} />
+          </TitledPanel>
+        </Grid>
+        <Grid xs>
+          <TitledPanel title="Archived">
+            <TasksListFeature taskStatus={TaskStatus.Archived} />
+          </TitledPanel>
+        </Grid>
+      </Grid>
     </Box>
   )
 }

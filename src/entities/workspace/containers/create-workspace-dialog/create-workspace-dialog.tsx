@@ -12,16 +12,15 @@ import { useForm } from 'react-hook-form'
 
 import { REQUIRED_FIELD_MESSAGE } from '@/shared/validation'
 
-import { createWorkspaceFx } from '@/entities/workspace/model'
-
-import { $isOpen, close } from './model'
+import { createWorkspaceFx } from '../../model'
+import { $isDialogOpen, dialogClosed } from './model'
 
 interface CreateWorkspaceDialogFormData {
   title: string
 }
 
 export function CreateWorkspaceDialog(): JSX.Element {
-  const isOpen = useStore($isOpen)
+  const isOpen = useStore($isDialogOpen)
   const {
     register,
     handleSubmit,
@@ -32,7 +31,10 @@ export function CreateWorkspaceDialog(): JSX.Element {
       title: '',
     },
   })
-  const handler = useUnit({ close, createWorkspaceFx })
+  const handler = useUnit({
+    close: dialogClosed,
+    createWorkspaceFx,
+  })
   function closeAndReset(): void {
     handler.close()
     reset()

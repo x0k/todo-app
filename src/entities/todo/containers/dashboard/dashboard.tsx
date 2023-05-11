@@ -7,19 +7,19 @@ import { TitledPanel } from '@/shared/components'
 import { type Task, type TaskId } from '@/shared/kernel'
 import { concat, map, take } from '@/shared/lib/iterable'
 
-import { TaskItem, archiveTasksFx } from '@/entities/todo'
-
+import { TaskItem } from '../../components'
+import { archiveTasksFx } from '../../model'
 import { $dashboard, doneTasksArchiving } from './model'
 
-export interface DashboardProps {
+export interface DashboardContainerProps {
   onUnDoneTaskClick: (task: Task) => void
   onDoneTaskClick: (task: Task) => void
 }
 
-export function Dashboard({
+export function DashboardContainer({
   onUnDoneTaskClick,
   onDoneTaskClick,
-}: DashboardProps): JSX.Element {
+}: DashboardContainerProps): JSX.Element {
   const { doneTasks, notDoneTasks, tasksLists } = useStore($dashboard)
   const secondaryTexts = useMemo(
     () =>

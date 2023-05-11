@@ -8,7 +8,7 @@ import {
 } from '@/shared/kernel'
 import { isArrayNotEqual } from '@/shared/utils'
 
-import { $listsMap, $tasksMap, $tasksState } from '@/entities/todo'
+import { $listsMap, $tasksMap, $tasksState } from './model'
 
 export function useTasks(taskIds: Iterable<TaskId>): Task[] {
   return useStoreMap({
@@ -49,13 +49,5 @@ export function useTask(taskId: TaskId): Task | undefined {
     store: $tasksMap,
     keys: [taskId],
     fn: (tasks, [id]) => tasks.get(id),
-  })
-}
-
-export function useTasksLists(): TasksList[] {
-  return useStoreMap({
-    store: $listsMap,
-    keys: [],
-    fn: (lists) => Array.from(lists.values()),
   })
 }

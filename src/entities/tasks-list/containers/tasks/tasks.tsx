@@ -9,19 +9,19 @@ import { useStoreMap } from 'effector-react/scope'
 
 import { type Task, type TaskStatus } from '@/shared/kernel'
 
-import { tasksListModel } from '@/entities/tasks-list'
+import { $tasksListState } from '../../model'
 
-export interface TasksListProps {
+export interface TasksContainerPops {
   taskStatus: TaskStatus
   onClick: (task: Task) => void
 }
 
-export function TasksListFeature({
+export function TasksContainer({
   taskStatus,
   onClick,
-}: TasksListProps): JSX.Element | null {
+}: TasksContainerPops): JSX.Element | null {
   const tasks = useStoreMap({
-    store: tasksListModel.$tasksListState,
+    store: $tasksListState,
     keys: [taskStatus],
     fn: (state, [taskStatus]) =>
       state.type === 'loaded'

@@ -1,18 +1,12 @@
 import { Paper } from '@mui/material'
 import { useStore, useUnit } from 'effector-react/scope'
 
-import {
-  CreateTasksForm,
-  type CreateTasksFormData,
-  createTasksFx,
-  createTasksListFx,
-  useTasksLists,
-} from '@/entities/todo'
-
+import { CreateTasksForm, type CreateTasksFormData } from '../../components'
+import { $listsArray, createTasksFx, createTasksListFx } from '../../model'
 import { $isOpen, statusChanged } from './model'
 
-export function CreateTasksPanel(): JSX.Element {
-  const tasksLists = useTasksLists()
+export function CreateTasksPanelContainer(): JSX.Element {
+  const tasksLists = useStore($listsArray)
   const isOpen = useStore($isOpen)
   const handler = useUnit({ createTasksFx, createTasksListFx })
   async function handleSubmit({

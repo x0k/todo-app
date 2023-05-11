@@ -1,5 +1,5 @@
 import { Button, Typography } from '@mui/material'
-import { useUnit } from 'effector-react/scope.mjs'
+import { useUnit } from 'effector-react/scope'
 
 import { Center } from '@/shared/components'
 import { type WorkspaceId } from '@/shared/kernel'

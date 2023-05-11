@@ -1,11 +1,10 @@
 import { sample } from 'effector'
 
-import { app } from '@/shared/app'
 import { type Task, TaskStatus } from '@/shared/kernel'
 
-import { $tasksState, archiveTasksFx } from '@/entities/todo'
+import { $tasksState, archiveTasksFx, todo } from '../../model'
 
-const d = app.createDomain('dashboard')
+const dashboard = todo.createDomain('dashboard')
 
 // Stores
 
@@ -47,7 +46,7 @@ export const $dashboard = $tasksState.map((state) => {
 
 // Events
 
-export const doneTasksArchiving = d.createEvent()
+export const doneTasksArchiving = dashboard.createEvent()
 
 sample({
   clock: doneTasksArchiving,

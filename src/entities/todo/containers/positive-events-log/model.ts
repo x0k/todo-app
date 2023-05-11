@@ -1,13 +1,10 @@
 import { sample } from 'effector'
 import { createGate } from 'effector-react/scope'
 
-import { app } from '@/shared/app'
-
-import { $events, loadEventsFx } from '@/entities/todo'
-
+import { $events, loadEventsFx, todo } from '../../model'
 import { isPositiveEvent } from './core'
 
-const d = app.createDomain('positive-events-log')
+const d = todo.createDomain('positive-events-log')
 
 export const EventsGate = createGate({ domain: d })
 

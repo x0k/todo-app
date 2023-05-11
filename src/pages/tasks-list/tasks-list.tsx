@@ -4,12 +4,10 @@ import { useStore } from 'effector-react/scope'
 
 import { Loader, TitledPanel } from '@/shared/components'
 import { TaskStatus, type TasksList } from '@/shared/kernel'
-import { fold } from '@/shared/lib/state'
 import { routes } from '@/shared/routes'
 
-import { tasksListModel } from '@/entities/tasks-list'
-
-import { TasksListFeature } from '@/features/tasks-list'
+import { TasksListContainer } from '@/entities/tasks-list'
+import { TasksContainer } from '@/entities/tasks-list/containers/tasks'
 
 import { ErrorMessage, ToWorkspace } from '@/widgets/error-message'
 import { HeaderWidget } from '@/widgets/header'
@@ -34,7 +32,7 @@ function View({ tasksList }: ViewProps): JSX.Element {
       <Grid spacing={2} container>
         <Grid xs>
           <TitledPanel title="To Do">
-            <TasksListFeature
+            <TasksContainer
               taskStatus={TaskStatus.NotDone}
               onClick={console.log}
             />
@@ -42,7 +40,7 @@ function View({ tasksList }: ViewProps): JSX.Element {
         </Grid>
         <Grid xs>
           <TitledPanel title="Done">
-            <TasksListFeature
+            <TasksContainer
               taskStatus={TaskStatus.Done}
               onClick={console.log}
             />
@@ -50,7 +48,7 @@ function View({ tasksList }: ViewProps): JSX.Element {
         </Grid>
         <Grid xs>
           <TitledPanel title="Archived">
-            <TasksListFeature
+            <TasksContainer
               taskStatus={TaskStatus.Archived}
               onClick={console.log}
             />
@@ -62,16 +60,19 @@ function View({ tasksList }: ViewProps): JSX.Element {
 }
 
 export function TasksListPage(): JSX.Element {
-  const tasksList = useStore(tasksListModel.$tasksList)
   const { workspaceId } = useStore(routes.workspace.tasksList.$params)
-  return fold(tasksList, {
-    otherwise: () => <Loader />,
-    error: ({ error }) => (
-      <ErrorMessage
-        message={error.message}
-        action={<ToWorkspace workspaceId={workspaceId} />}
-      />
-    ),
-    loaded: ({ data }) => <View tasksList={data} />,
-  })
+  return (
+    <TasksListContainer
+      render={{
+        otherwise: () => <Loader />,
+        error: ({ error }) => (
+          <ErrorMessage
+            message={error.message}
+            action={<ToWorkspace workspaceId={workspaceId} />}
+          />
+        ),
+        loaded: ({ data }) => <View tasksList={data} />,
+      }}
+    />
+  )
 }

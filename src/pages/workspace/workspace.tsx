@@ -6,19 +6,20 @@ import { useState } from 'react'
 
 import { Loader, TitledPanel } from '@/shared/components'
 import { type Workspace } from '@/shared/kernel'
-import { fold } from '@/shared/lib/state'
 import { routes } from '@/shared/routes'
 
-import { workspaceModel } from '@/entities/workspace'
+import {
+  CreateTasksPanelContainer,
+  DashboardContainer,
+  PositiveEventsLog,
+} from '@/entities/todo'
+import { WorkspaceContainer } from '@/entities/workspace'
 
 import {
-  CompleteTaskDialog,
+  CompleteTaskDialogContainer,
   completeTaskDialogModel,
-} from '@/features/complete-task-dialog'
-import { CreateTasksPanel } from '@/features/create-tasks-panel'
-import { Dashboard } from '@/features/dashboard'
-import { PositiveEventsLog } from '@/features/positive-events-log'
-import { TasksListsList } from '@/features/tasks-lists-list'
+} from '@/entities/todo/containers/complete-task-dialog'
+import { TasksListsContainer } from '@/entities/todo/containers/tasks-lists'
 
 import { ErrorMessage } from '@/widgets/error-message'
 import { HeaderWidget } from '@/widgets/header'
@@ -34,7 +35,7 @@ function View({ workspace }: ViewProps): JSX.Element {
   }
   const handlers = useUnit({
     openTasksList: routes.workspace.tasksList.open,
-    openCompleteTaskDialog: completeTaskDialogModel.open,
+    openCompleteTaskDialog: completeTaskDialogModel.dialogOpened,
   })
   return (
     <Box
@@ -50,7 +51,7 @@ function View({ workspace }: ViewProps): JSX.Element {
       />
       <Grid container spacing={4}>
         <Grid xs>
-          <Dashboard
+          <DashboardContainer
             onUnDoneTaskClick={handlers.openCompleteTaskDialog}
             onDoneTaskClick={console.log}
           />
@@ -88,7 +89,7 @@ function View({ workspace }: ViewProps): JSX.Element {
                 </IconButton>
               }
             >
-              <TasksListsList
+              <TasksListsContainer
                 onClick={(tasksList) => {
                   handlers.openTasksList({
                     workspaceId: workspace.id,
@@ -100,17 +101,20 @@ function View({ workspace }: ViewProps): JSX.Element {
           )}
         </Grid>
       </Grid>
-      <CreateTasksPanel />
-      <CompleteTaskDialog />
+      <CreateTasksPanelContainer />
+      <CompleteTaskDialogContainer />
     </Box>
   )
 }
 
 export function WorkspacePage(): JSX.Element {
-  const ws = useUnit(workspaceModel.$workspace)
-  return fold(ws, {
-    otherwise: () => <Loader />,
-    error: ({ error }) => <ErrorMessage message={error.message} />,
-    loaded: ({ data }) => <View workspace={data} />,
-  })
+  return (
+    <WorkspaceContainer
+      render={{
+        otherwise: () => <Loader />,
+        error: ({ error }) => <ErrorMessage message={error.message} />,
+        loaded: ({ data }) => <View workspace={data} />,
+      }}
+    />
+  )
 }

@@ -3,16 +3,17 @@ import { useUnit } from 'effector-react/scope'
 
 import { Center } from '@/shared/components'
 
+import { WorkspacesContainer } from '@/entities/workspace'
+
 import {
   CreateWorkspaceDialog,
   createWorkspaceDialogModel,
-} from '@/features/create-workspace-dialog'
-import { WorkspacesList } from '@/features/workspaces-list'
+} from '@/entities/workspace/containers/create-workspace-dialog'
 
 import { HeaderWidget } from '@/widgets/header'
 
 export function HomePage(): JSX.Element {
-  const open = useUnit(createWorkspaceDialogModel.open)
+  const open = useUnit(createWorkspaceDialogModel.dialogOpened)
   return (
     <Box display="flex" flexDirection="column" padding={2}>
       <HeaderWidget title={<Typography variant="h4">Workspaces</Typography>} />
@@ -25,7 +26,7 @@ export function HomePage(): JSX.Element {
             padding={2}
             minWidth="300px"
           >
-            <WorkspacesList />
+            <WorkspacesContainer />
             <Button onClick={open}>Create workspace</Button>
           </Box>
         </Paper>

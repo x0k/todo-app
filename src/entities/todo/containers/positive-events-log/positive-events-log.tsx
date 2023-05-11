@@ -3,8 +3,7 @@ import { useStore } from 'effector-react/scope'
 
 import { reverseMap } from '@/shared/lib/array'
 
-import { $listsRecord, $tasksRecord } from '@/entities/todo'
-
+import { $listsRecord, $tasksRecord } from '../../model'
 import { $positiveEvents, EventsGate } from './model'
 import { PositiveEventComponent } from './positive-event'
 

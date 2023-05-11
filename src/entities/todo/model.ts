@@ -25,13 +25,13 @@ import {
   reducer,
 } from './core'
 
-const d = app.createDomain('todo')
+export const todo = app.createDomain('todo')
 
 // Stores
 
-export const $todoService = d.createStore<IToDoService>({} as IToDoService)
+export const $todoService = todo.createStore<IToDoService>({} as IToDoService)
 
-export const $tasksState = d.createStore<TasksState>({
+export const $tasksState = todo.createStore<TasksState>({
   lists: new Map(),
   tasks: new Map(),
 })
@@ -56,7 +56,7 @@ export const $tasksArray = $tasksState.map((state) =>
   Array.from(state.tasks.values())
 )
 
-export const $events = d.createStore<Event[]>([])
+export const $events = todo.createStore<Event[]>([])
 
 // Effects
 

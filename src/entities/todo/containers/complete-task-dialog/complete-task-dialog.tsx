@@ -12,16 +12,15 @@ import { useForm } from 'react-hook-form'
 
 import { type TaskId } from '@/shared/kernel'
 
-import { completeTaskFx } from '@/entities/todo'
-
-import { $currentTask, close } from './model'
+import { completeTaskFx } from '../../model'
+import { $currentTask, dialogClosed } from './model'
 
 interface CompleteTaskDialogFormData {
   message: string
   taskId: TaskId
 }
 
-export function CompleteTaskDialog(): JSX.Element {
+export function CompleteTaskDialogContainer(): JSX.Element {
   const task = useStore($currentTask)
   const {
     register,
@@ -39,7 +38,7 @@ export function CompleteTaskDialog(): JSX.Element {
       setValue('taskId', task.id)
     }
   }, [task])
-  const handler = useUnit({ completeTaskFx, close })
+  const handler = useUnit({ completeTaskFx, close: dialogClosed })
   function closeAndReset(): void {
     handler.close()
     reset()

@@ -13,21 +13,25 @@ import {
   type UpdateWorkspace,
 } from './core'
 
-const d = app.createDomain('workspace')
+export const workspace = app.createDomain('workspace')
 
 // Stores
 
-export const $workspaceService = d.createStore<IWorkspaceService>(
+export const $workspaceService = workspace.createStore<IWorkspaceService>(
   {} as IWorkspaceService
 )
 
-export const $workspacesMap = d.createStore(new Map<WorkspaceId, Workspace>())
+export const $workspacesMap = workspace.createStore(
+  new Map<WorkspaceId, Workspace>()
+)
 
 export const $workspacesArray = $workspacesMap.map((map) =>
   Array.from(map.values())
 )
 
-export const $workspace = d.createStore<States<Loadable<Workspace, Error>>>({
+export const $workspace = workspace.createStore<
+  States<Loadable<Workspace, Error>>
+>({
   type: 'idle',
 })
 

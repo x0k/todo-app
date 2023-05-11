@@ -17,7 +17,6 @@ import {
   type TasksListCreatedEvent,
   type TasksListId,
   type TasksListUpdatedEvent,
-  type WorkspaceId,
 } from '@/shared/kernel'
 
 import {
@@ -47,9 +46,8 @@ export class TestToDoService implements IToDoService {
 
   loadEvents = async (_: QueryEvents): Promise<Event[]> => []
 
-  loadTasksState = async (workspaceId: WorkspaceId): Promise<TasksState> => {
+  loadTasksState = async (): Promise<TasksState> => {
     return {
-      workspaceId,
       tasks: new Map(),
       lists: new Map(),
     }

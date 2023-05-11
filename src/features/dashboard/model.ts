@@ -39,7 +39,6 @@ export const $dashboard = $tasksState.map((state) => {
     }
   }
   return {
-    workspaceId: state.workspaceId,
     doneTasks,
     notDoneTasks,
     tasksLists: state.lists,
@@ -53,8 +52,7 @@ export const doneTasksArchiving = d.createEvent()
 sample({
   clock: doneTasksArchiving,
   source: $dashboard,
-  fn: ({ doneTasks, workspaceId }) => ({
-    workspaceId,
+  fn: ({ doneTasks }) => ({
     newStatus: TaskStatus.Archived,
     tasksIds: doneTasks.map((t) => t.id),
   }),

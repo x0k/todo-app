@@ -7,7 +7,6 @@ import {
   createTasksFx,
   createTasksListFx,
   useTasksLists,
-  useWorkspaceId,
 } from '@/entities/todo'
 
 import { $isOpen, statusChanged } from './model'
@@ -16,19 +15,16 @@ export function CreateTasksPanel(): JSX.Element {
   const tasksLists = useTasksLists()
   const isOpen = useStore($isOpen)
   const handler = useUnit({ createTasksFx, createTasksListFx })
-  const workspaceId = useWorkspaceId()
   async function handleSubmit({
     tasks,
     tasksList,
   }: CreateTasksFormData): Promise<unknown> {
     return await (typeof tasksList === 'string'
       ? handler.createTasksListFx({
-          workspaceId,
           title: tasksList,
           tasks: tasks.map((t) => t.title),
         })
       : handler.createTasksFx({
-          workspaceId,
           tasksListId: tasksList.id,
           tasks: tasks.map((t) => t.title),
         }))

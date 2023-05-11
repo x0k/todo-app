@@ -1,10 +1,9 @@
 import { Button, Typography } from '@mui/material'
-import { useStore, useUnit } from 'effector-react/scope.mjs'
+import { useUnit } from 'effector-react/scope.mjs'
 
 import { Center } from '@/shared/components'
+import { type WorkspaceId } from '@/shared/kernel'
 import { routes } from '@/shared/routes'
-
-import { $workspaceId } from '@/entities/todo'
 
 export interface ErrorMessageProps {
   message: React.ReactNode
@@ -16,9 +15,12 @@ export function ToHome(): JSX.Element {
   return <Button onClick={openHome}>Back to home</Button>
 }
 
-export function ToWorkspace(): JSX.Element {
+export interface ToWorkspaceProps {
+  workspaceId: WorkspaceId
+}
+
+export function ToWorkspace({ workspaceId }: ToWorkspaceProps): JSX.Element {
   const openWorkspace = useUnit(routes.workspace.index.open)
-  const workspaceId = useStore($workspaceId)
   return (
     <Button
       onClick={() => {

@@ -7,7 +7,6 @@ import {
   type TaskId,
   type TasksList,
   type TasksListId,
-  type WorkspaceId,
 } from '@/shared/kernel'
 
 import {
@@ -32,12 +31,9 @@ const d = app.createDomain('todo')
 export const $todoService = d.createStore<IToDoService>({} as IToDoService)
 
 export const $tasksState = d.createStore<TasksState>({
-  workspaceId: 'INVALID_WORKSPACE_ID' as WorkspaceId,
   lists: new Map(),
   tasks: new Map(),
 })
-
-export const $workspaceId = $tasksState.map((state) => state.workspaceId)
 
 export const $listsMap = $tasksState.map((state) => state.lists)
 
@@ -65,8 +61,7 @@ export const $events = d.createStore<Event[]>([])
 
 export const loadTasksStateFx = attach({
   source: $todoService,
-  effect: async (s, workspaceId: WorkspaceId) =>
-    await s.loadTasksState(workspaceId),
+  effect: async (s) => await s.loadTasksState(),
 })
 
 export const createTaskFx = attach({
@@ -106,8 +101,7 @@ export const archiveTasksFx = attach({
 
 export const getEventsCountFx = attach({
   source: $todoService,
-  effect: async (s, workspaceId: WorkspaceId) =>
-    await s.getEventsCount(workspaceId),
+  effect: async (s) => await s.getEventsCount(),
 })
 
 export const loadEventsFx = attach({

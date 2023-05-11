@@ -4,6 +4,7 @@ import { useStore } from 'effector-react/scope'
 import { Loader } from '@/shared/components'
 import { type TasksList } from '@/shared/kernel'
 import { fold } from '@/shared/lib/state'
+import { routes } from '@/shared/routes'
 
 import { tasksListModel } from '@/entities/tasks-list'
 
@@ -33,10 +34,14 @@ function View({ tasksList }: ViewProps): JSX.Element {
 
 export function TasksListPage(): JSX.Element {
   const tasksList = useStore(tasksListModel.$tasksList)
+  const { workspaceId } = useStore(routes.workspace.tasksList.$params)
   return fold(tasksList, {
     otherwise: () => <Loader />,
     error: ({ error }) => (
-      <ErrorMessage message={error.message} action={<ToWorkspace />} />
+      <ErrorMessage
+        message={error.message}
+        action={<ToWorkspace workspaceId={workspaceId} />}
+      />
     ),
     loaded: ({ data }) => <View tasksList={data} />,
   })

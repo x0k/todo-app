@@ -14,65 +14,55 @@ import {
   type TasksListCreatedEvent,
   type TasksListId,
   type TasksListUpdatedEvent,
-  type WorkspaceId,
   type WritableTaskData,
   type WritableTasksListData,
 } from '@/shared/kernel'
 
 export interface CreateTask {
-  workspaceId: WorkspaceId
   tasksListId: TasksListId
   title: string
 }
 
 export interface CreateTasks {
-  workspaceId: WorkspaceId
   tasksListId: TasksListId
   tasks: string[]
 }
 
 export interface UpdateTask {
-  workspaceId: WorkspaceId
   taskId: TaskId
   change: WritableTaskData
 }
 
 export interface CompleteTask {
-  workspaceId: WorkspaceId
   taskId: TaskId
   message: string
 }
 
 export interface ArchiveTasks {
-  workspaceId: WorkspaceId
   tasksIds: TaskId[]
 }
 
 export interface CreateTasksList {
-  workspaceId: WorkspaceId
   title: string
   tasks: string[]
 }
 
 export interface UpdateTasksList {
-  workspaceId: WorkspaceId
   tasksListId: TasksListId
   change: WritableTasksListData
 }
 
 export interface TasksState {
-  workspaceId: WorkspaceId
   lists: Map<TasksListId, TasksList>
   tasks: Map<TaskId, Task>
 }
 
 export interface QueryEvents {
-  workspaceId: WorkspaceId
   page: number
 }
 
 export interface IToDoService {
-  loadTasksState: (workspaceId: WorkspaceId) => Promise<TasksState>
+  loadTasksState: () => Promise<TasksState>
   createTask: (data: CreateTask) => Promise<TaskCreatedEvent>
   createTasks: (data: CreateTasks) => Promise<TasksCreatedEvent>
   createTasksList: (data: CreateTasksList) => Promise<TasksListCreatedEvent>
@@ -80,7 +70,7 @@ export interface IToDoService {
   updateTasksList: (data: UpdateTasksList) => Promise<TasksListUpdatedEvent>
   completeTask: (data: CompleteTask) => Promise<TaskCompletedEvent>
   archiveTasks: (data: ArchiveTasks) => Promise<TasksArchivedEvent>
-  getEventsCount: (workspaceId: WorkspaceId) => Promise<number>
+  getEventsCount: () => Promise<number>
   loadEvents: (query: QueryEvents) => Promise<Event[]>
 }
 
@@ -109,7 +99,6 @@ const HANDLERS: {
           ),
         },
       }),
-      workspaceId: state.workspaceId,
     }
   },
   [EventType.TasksCreated]: (state, event) => {
@@ -136,7 +125,6 @@ const HANDLERS: {
           [TaskStatus.NotDone]: notDoneTasks,
         },
       }),
-      workspaceId: state.workspaceId,
     }
   },
   [EventType.TasksListCreated]: (state, event) => {
@@ -147,7 +135,6 @@ const HANDLERS: {
     return {
       lists: new Map(state.lists).set(event.list.id, event.list),
       tasks: event.tasks.length > 0 ? tasks : state.tasks,
-      workspaceId: state.workspaceId,
     }
   },
   [EventType.TaskUpdated]: (state, event) => {
@@ -161,7 +148,6 @@ const HANDLERS: {
         ...task,
         ...event.change,
       }),
-      workspaceId: state.workspaceId,
     }
   },
   [EventType.TasksListUpdated]: (state, event) => {
@@ -175,7 +161,6 @@ const HANDLERS: {
         ...list,
         ...event.change,
       }),
-      workspaceId: state.workspaceId,
     }
   },
   [EventType.TaskCompleted]: (state, event) => {
@@ -204,7 +189,6 @@ const HANDLERS: {
         ...task,
         status: TaskStatus.Done,
       }),
-      workspaceId: state.workspaceId,
     }
   },
   [EventType.TasksArchived]: (state, event) => {
@@ -239,7 +223,6 @@ const HANDLERS: {
     return {
       lists,
       tasks,
-      workspaceId: state.workspaceId,
     }
   },
 }

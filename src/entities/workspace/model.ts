@@ -98,7 +98,7 @@ sample({
 })
 
 sample({
-  clock: [routes.workspace.index.opened, routes.workspace.tasksList.opened],
+  clock: routes.workspace.index.opened,
   fn: ({ params }) => params.workspaceId,
   target: loadWorkspaceFx,
 })

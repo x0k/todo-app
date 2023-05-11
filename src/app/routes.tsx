@@ -1,7 +1,7 @@
 // @ts-expect-error wtf
 import { Route } from 'atomic-router-react/scope'
 
-import { routes } from '@/shared/routes'
+import { routes } from '@/shared/router'
 
 import { HomePage } from '@/pages/home'
 import { NotFoundPage } from '@/pages/not-found'

@@ -1,4 +1,3 @@
-import { createHistoryRouter } from 'atomic-router'
 // @ts-expect-error wtf
 import { RouterProvider } from 'atomic-router-react/scope'
 import { allSettled, fork, sample } from 'effector'
@@ -17,7 +16,7 @@ import { $themeService, ColorMode, ThemeService } from './features/toggle-theme'
 import { PersistentStorageService } from './implementations/persistent-storage'
 import { appStarted } from './shared/app'
 import { type TasksListId, type WorkspaceId } from './shared/kernel'
-import { notFoundRoute, routes, routesMap } from './shared/routes'
+import { router, routes } from './shared/router'
 import { withCache } from './shared/storage'
 
 const todoService = new TestToDoService([
@@ -60,11 +59,6 @@ sample({
   source: $todoService,
   fn: (todoService) => new TestTasksListService(todoService),
   target: $tasksListService,
-})
-
-const router = createHistoryRouter({
-  routes: routesMap,
-  notFoundRoute,
 })
 
 sample({

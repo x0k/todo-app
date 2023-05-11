@@ -8,7 +8,7 @@ import {
   type TasksList,
   type TasksListId,
 } from '@/shared/kernel'
-import { routes } from '@/shared/routes'
+import { routes } from '@/shared/router'
 
 import {
   type ArchiveTasks,

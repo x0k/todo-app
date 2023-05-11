@@ -1,6 +1,6 @@
 import { sample } from 'effector'
 
-import { routes } from '@/shared/routes'
+import { routes } from '@/shared/router'
 
 import { loadWorkspacesFx } from '@/entities/workspace/model'
 

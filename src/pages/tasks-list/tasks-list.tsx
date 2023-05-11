@@ -1,15 +1,13 @@
 import { Box, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { useStore } from 'effector-react/scope'
 
 import { Loader, TitledPanel } from '@/shared/components'
 import { TaskStatus, type TasksList } from '@/shared/kernel'
-import { routes } from '@/shared/routes'
 
 import { TasksListContainer } from '@/entities/tasks-list'
 import { TasksContainer } from '@/entities/tasks-list/containers/tasks'
 
-import { ErrorMessage, ToWorkspace } from '@/widgets/error-message'
+import { ErrorMessage } from '@/widgets/error-message'
 import { HeaderWidget } from '@/widgets/header'
 
 interface ViewProps {
@@ -60,17 +58,11 @@ function View({ tasksList }: ViewProps): JSX.Element {
 }
 
 export function TasksListPage(): JSX.Element {
-  const { workspaceId } = useStore(routes.workspace.tasksList.$params)
   return (
     <TasksListContainer
       render={{
         otherwise: () => <Loader />,
-        error: ({ error }) => (
-          <ErrorMessage
-            message={error.message}
-            action={<ToWorkspace workspaceId={workspaceId} />}
-          />
-        ),
+        error: ({ error }) => <ErrorMessage message={error.message} />,
         loaded: ({ data }) => <View tasksList={data} />,
       }}
     />

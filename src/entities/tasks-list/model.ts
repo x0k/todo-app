@@ -4,7 +4,7 @@ import { app } from '@/shared/app'
 import { type TasksListId } from '@/shared/kernel'
 import { type Loadable, type States, mapLoadable } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
-import { routes } from '@/shared/routes'
+import { routes } from '@/shared/router'
 
 import { type ITasksListService, type TasksListState } from './core'
 

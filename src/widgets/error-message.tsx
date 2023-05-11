@@ -3,7 +3,7 @@ import { useUnit } from 'effector-react/scope'
 
 import { Center } from '@/shared/components'
 import { type WorkspaceId } from '@/shared/kernel'
-import { routes } from '@/shared/routes'
+import { router, routes } from '@/shared/router'
 
 export interface ErrorMessageProps {
   message: React.ReactNode
@@ -32,9 +32,14 @@ export function ToWorkspace({ workspaceId }: ToWorkspaceProps): JSX.Element {
   )
 }
 
+export function Back(): JSX.Element {
+  const back = useUnit(router.back)
+  return <Button onClick={back}>Go back</Button>
+}
+
 export function ErrorMessage({
   message,
-  action = <ToHome />,
+  action = <Back />,
 }: ErrorMessageProps): JSX.Element {
   return (
     <Center>

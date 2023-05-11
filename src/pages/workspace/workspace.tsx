@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 import { Loader, TitledPanel } from '@/shared/components'
 import { type Workspace } from '@/shared/kernel'
-import { routes } from '@/shared/routes'
+import { routes } from '@/shared/router'
 
 import {
   CreateTasksPanelContainer,

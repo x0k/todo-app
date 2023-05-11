@@ -3,7 +3,7 @@ import { ListItem, ListItemButton, ListItemText } from '@mui/material'
 import { Link } from 'atomic-router-react/scope'
 
 import { type Workspace } from '@/shared/kernel'
-import { routes } from '@/shared/routes'
+import { routes } from '@/shared/router'
 
 export interface WorkspaceListItemProps {
   workspace: Workspace

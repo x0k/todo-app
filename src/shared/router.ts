@@ -1,4 +1,4 @@
-import { createRoute } from 'atomic-router'
+import { createHistoryRouter, createRoute } from 'atomic-router'
 
 import { type TasksListId, type WorkspaceId } from './kernel'
 
@@ -22,7 +22,13 @@ export const routes = {
 export const routesMap = [
   { path: '/', route: routes.home },
   { path: '/ws/:workspaceId', route: routes.workspace.index },
-  { path: '/ws/:workspaceId/list/:tasksListId', route: routes.workspace.tasksList }, 
+  {
+    path: '/ws/:workspaceId/list/:tasksListId',
+    route: routes.workspace.tasksList,
+  },
 ]
 
-export const notFoundRoute = routes.notFound
+export const router = createHistoryRouter({
+  routes: routesMap,
+  notFoundRoute: routes.notFound,
+})

@@ -1,16 +1,10 @@
 import { FactCheck, ViewList } from '@mui/icons-material'
-import {
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  Typography,
-} from '@mui/material'
+import { Box, IconButton, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useUnit } from 'effector-react/scope'
 import { useState } from 'react'
 
-import { Center, TitledPanel } from '@/shared/components'
+import { Loader, TitledPanel } from '@/shared/components'
 import { type Workspace } from '@/shared/kernel'
 import { fold } from '@/shared/lib/state'
 import { routes } from '@/shared/routes'
@@ -26,6 +20,7 @@ import { Dashboard } from '@/features/dashboard'
 import { PositiveEventsLog } from '@/features/positive-events-log'
 import { TasksListsList } from '@/features/tasks-lists-list'
 
+import { ErrorMessage } from '@/widgets/error-message'
 import { HeaderWidget } from '@/widgets/header'
 
 interface ViewProps {
@@ -108,20 +103,10 @@ function View({ workspace }: ViewProps): JSX.Element {
 }
 
 export function WorkspacePage(): JSX.Element {
-  const openHome = useUnit(routes.home.open)
   const ws = useUnit(workspaceModel.$workspace)
   return fold(ws, {
-    otherwise: () => (
-      <Center>
-        <CircularProgress size={64} />
-      </Center>
-    ),
-    error: ({ error }) => (
-      <Center>
-        <Typography>{error.message}</Typography>
-        <Button onClick={openHome}>Back to home</Button>
-      </Center>
-    ),
+    otherwise: () => <Loader />,
+    error: ({ error }) => <ErrorMessage message={error.message} />,
     loaded: ({ data }) => <View workspace={data} />,
   })
 }

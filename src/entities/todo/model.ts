@@ -1,20 +1,14 @@
-import { sample } from 'effector'
+import { attach, sample } from 'effector'
 
-import { app, appStarted, errorOccurred } from '@/shared/app'
+import { app, errorOccurred } from '@/shared/app'
 import {
   type Event,
   type Task,
-  type TaskCompletedEvent,
-  type TaskCreatedEvent,
   type TaskId,
-  type TaskUpdatedEvent,
-  type TasksArchivedEvent,
-  type TasksCreatedEvent,
   type TasksList,
-  type TasksListCreatedEvent,
   type TasksListId,
-  type TasksListUpdatedEvent,
 } from '@/shared/kernel'
+import { routes } from '@/shared/routes'
 
 import {
   type ArchiveTasks,
@@ -24,6 +18,7 @@ import {
   type CreateTasksList,
   EVENTS_PER_PAGE,
   type IToDoService,
+  type QueryEvents,
   type TasksState,
   type UpdateTask,
   type UpdateTasksList,
@@ -65,43 +60,54 @@ export const $events = d.createStore<Event[]>([])
 
 // Effects
 
-export const loadTasksStateFx = d.createEffect<void, TasksState>()
+export const loadTasksStateFx = attach({
+  source: $todoService,
+  effect: async (s) => await s.loadTasksState(),
+})
 
-export const createTaskFx = d.createEffect<CreateTask, TaskCreatedEvent>()
+export const createTaskFx = attach({
+  source: $todoService,
+  effect: async (s, data: CreateTask) => await s.createTask(data),
+})
 
-export const createTasksFx = d.createEffect<CreateTasks, TasksCreatedEvent>()
+export const createTasksFx = attach({
+  source: $todoService,
+  effect: async (s, data: CreateTasks) => await s.createTasks(data),
+})
 
-export const createTasksListFx = d.createEffect<
-  CreateTasksList,
-  TasksListCreatedEvent
->()
+export const createTasksListFx = attach({
+  source: $todoService,
+  effect: async (s, data: CreateTasksList) => await s.createTasksList(data),
+})
 
-export const updateTaskFx = d.createEffect<UpdateTask, TaskUpdatedEvent>()
+export const updateTaskFx = attach({
+  source: $todoService,
+  effect: async (s, data: UpdateTask) => await s.updateTask(data),
+})
 
-export const updateTasksListFx = d.createEffect<
-  UpdateTasksList,
-  TasksListUpdatedEvent
->()
+export const updateTasksListFx = attach({
+  source: $todoService,
+  effect: async (s, data: UpdateTasksList) => await s.updateTasksList(data),
+})
 
-export const completeTaskFx = d.createEffect<CompleteTask, TaskCompletedEvent>()
+export const completeTaskFx = attach({
+  source: $todoService,
+  effect: async (s, data: CompleteTask) => await s.completeTask(data),
+})
 
-export const archiveTasksFx = d.createEffect<ArchiveTasks, TasksArchivedEvent>()
+export const archiveTasksFx = attach({
+  source: $todoService,
+  effect: async (s, data: ArchiveTasks) => await s.archiveTasks(data),
+})
 
-export const getEventsCountFx = d.createEffect<void, number>()
+export const getEventsCountFx = attach({
+  source: $todoService,
+  effect: async (s) => await s.getEventsCount(),
+})
 
-export const loadEventsFx = d.createEffect<number, Event[]>()
-
-const updateFxHandlersFx = d.createEffect((todoService: IToDoService) => {
-  loadTasksStateFx.use(todoService.loadTasksState)
-  createTaskFx.use(todoService.createTask)
-  createTasksFx.use(todoService.createTasks)
-  createTasksListFx.use(todoService.createTasksList)
-  updateTaskFx.use(todoService.updateTask)
-  updateTasksListFx.use(todoService.updateTasksList)
-  completeTaskFx.use(todoService.completeTask)
-  archiveTasksFx.use(todoService.archiveTasks)
-  getEventsCountFx.use(todoService.getEventsCount)
-  loadEventsFx.use(todoService.loadEvents)
+export const loadEventsFx = attach({
+  source: $todoService,
+  effect: async (s, query: QueryEvents) => await s.loadEvents(query),
 })
 
 // Events
@@ -151,17 +157,14 @@ $events
     (events, event) => events.concat(event)
   )
   .on(loadEventsFx.done, (events, { params, result }) => {
-    const start = (params - 1) * EVENTS_PER_PAGE
+    const start = (params.page - 1) * EVENTS_PER_PAGE
     return events
       .slice(0, start)
       .concat(result)
       .concat(events.slice(start + EVENTS_PER_PAGE))
   })
 
-// Start
-
 sample({
-  clock: [appStarted, $todoService.updates],
-  source: $todoService,
-  target: updateFxHandlersFx,
+  clock: routes.workspace.index.opened,
+  target: loadTasksStateFx,
 })

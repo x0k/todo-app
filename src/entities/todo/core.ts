@@ -57,6 +57,10 @@ export interface TasksState {
   tasks: Map<TaskId, Task>
 }
 
+export interface QueryEvents {
+  page: number
+}
+
 export interface IToDoService {
   loadTasksState: () => Promise<TasksState>
   createTask: (data: CreateTask) => Promise<TaskCreatedEvent>
@@ -67,7 +71,7 @@ export interface IToDoService {
   completeTask: (data: CompleteTask) => Promise<TaskCompletedEvent>
   archiveTasks: (data: ArchiveTasks) => Promise<TasksArchivedEvent>
   getEventsCount: () => Promise<number>
-  loadEvents: (page: number) => Promise<Event[]>
+  loadEvents: (query: QueryEvents) => Promise<Event[]>
 }
 
 export const EVENTS_PER_PAGE = 100

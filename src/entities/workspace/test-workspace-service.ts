@@ -10,7 +10,13 @@ import {
 } from './core'
 
 export class TestWorkspaceService implements IWorkspaceService {
-  private readonly workspaces = new Map<WorkspaceId, Workspace>()
+  private readonly workspaces: Map<WorkspaceId, Workspace>
+
+  constructor(initial: Workspace[]) {
+    this.workspaces = new Map(
+      initial.map((workspace) => [workspace.id, workspace])
+    )
+  }
 
   loadWorkspaces = async (): Promise<Map<WorkspaceId, Workspace>> =>
     this.workspaces

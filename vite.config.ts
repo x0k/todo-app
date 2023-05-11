@@ -10,6 +10,7 @@ export default defineConfig({
       babel: {
         babelrc: true,
         plugins: [['effector/babel-plugin', { addLoc: true }]],
+        presets: ['atomic-router/babel-preset'],
       },
       // plugins: [['@effector/swc-plugin', {}]],
     }),

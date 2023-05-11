@@ -10,14 +10,25 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { App } from './app'
+import { TestTasksListService } from './entities/tasks-list'
+import { $tasksListService } from './entities/tasks-list/model'
 import { $todoService, TestToDoService } from './entities/todo'
 import { TestWorkspaceService } from './entities/workspace'
 import { $workspaceService } from './entities/workspace/model'
 import { $themeService, ColorMode, ThemeService } from './features/toggle-theme'
 import { PersistentStorageService } from './implementations/persistent-storage'
 import { appStarted } from './shared/app'
-import { notFoundRoute, routesMap } from './shared/routes'
+import { type TasksListId, type WorkspaceId } from './shared/kernel'
+import { notFoundRoute, routes, routesMap } from './shared/routes'
 import { withCache } from './shared/storage'
+
+const todoService = new TestToDoService([
+  {
+    id: 'list' as TasksListId,
+    title: 'list',
+    tasks: ['first', 'second'],
+  },
+])
 
 export const scope = fork({
   values: [
@@ -35,9 +46,22 @@ export const scope = fork({
         )
       ),
     ],
-    [$workspaceService, new TestWorkspaceService()],
-    [$todoService, new TestToDoService()],
+    [
+      $workspaceService,
+      new TestWorkspaceService([
+        { title: 'Personal', id: 'personal' as WorkspaceId },
+      ]),
+    ],
+    [$todoService, todoService],
+    [$tasksListService, new TestTasksListService(todoService)],
   ],
+})
+
+sample({
+  clock: routes.workspace.tasksList.opened,
+  source: $todoService,
+  fn: (todoService) => new TestTasksListService(todoService),
+  target: $tasksListService,
 })
 
 const router = createHistoryRouter({
@@ -55,14 +79,16 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 attachLogger({ scope })
 
-allSettled(appStarted, { scope }).then(() => {
-  root.render(
-    <React.StrictMode>
-      <Provider value={scope}>
-        <RouterProvider router={router}>
-          <App />
-        </RouterProvider>
-      </Provider>
-    </React.StrictMode>
-  )
-})
+allSettled(appStarted, { scope })
+  .then(() => {
+    root.render(
+      <React.StrictMode>
+        <Provider value={scope}>
+          <RouterProvider router={router}>
+            <App />
+          </RouterProvider>
+        </Provider>
+      </React.StrictMode>
+    )
+  })
+  .catch(console.error)

@@ -1,7 +1,10 @@
-import { sample } from 'effector'
+import { attach, sample } from 'effector'
 
-import { app, appStarted, errorOccurred } from '@/shared/app'
+import { app } from '@/shared/app'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
+import { type Loadable, type States } from '@/shared/lib/state'
+import { bindLoadable } from '@/shared/lib/state-effector'
+import { routes } from '@/shared/routes'
 
 import {
   type CreateWorkspace,
@@ -20,73 +23,88 @@ export const $workspaceService = d.createStore<IWorkspaceService>(
 
 export const $workspacesMap = d.createStore(new Map<WorkspaceId, Workspace>())
 
-export const $workspaces = $workspacesMap.map((map) => Array.from(map.values()))
+export const $workspacesArray = $workspacesMap.map((map) =>
+  Array.from(map.values())
+)
 
-// Events
+export const $workspace = d.createStore<States<Loadable<Workspace, Error>>>({
+  type: 'idle',
+})
 
 // Effects
 
-export const loadWorkspacesFx = d.createEffect<
-  void,
-  Map<WorkspaceId, Workspace>
->()
+export const loadWorkspacesFx = attach({
+  source: $workspaceService,
+  effect: async (s) => await s.loadWorkspaces(),
+})
 
-export const loadWorkspaceFx = d.createEffect<WorkspaceId, Workspace>()
+export const loadWorkspaceFx = attach({
+  source: $workspaceService,
+  effect: async (s, id: WorkspaceId) => await s.loadWorkspace(id),
+})
 
-export const createWorkspaceFx = d.createEffect<CreateWorkspace, Workspace>()
+export const createWorkspaceFx = attach({
+  source: $workspaceService,
+  effect: async (s, data: CreateWorkspace) => await s.createWorkspace(data),
+})
 
-export const updateWorkspaceFx = d.createEffect<UpdateWorkspace, Workspace>()
+export const updateWorkspaceFx = attach({
+  source: $workspaceService,
+  effect: async (s, data: UpdateWorkspace) => await s.updateWorkspace(data),
+})
 
-export const deleteWorkspaceFx = d.createEffect<DeleteWorkspace, void>()
-
-const updateFxHandlersFx = d.createEffect(
-  (workspaceService: IWorkspaceService) => {
-    loadWorkspaceFx.use(workspaceService.loadWorkspace)
-    loadWorkspacesFx.use(workspaceService.loadWorkspaces)
-    createWorkspaceFx.use(workspaceService.createWorkspace)
-    updateWorkspaceFx.use(workspaceService.updateWorkspace)
-    deleteWorkspaceFx.use(workspaceService.deleteWorkspace)
-  }
-)
+export const deleteWorkspaceFx = attach({
+  source: $workspaceService,
+  effect: async (s, data: DeleteWorkspace) => {
+    await s.deleteWorkspace(data)
+  },
+})
 
 // Init
-
-sample({
-  clock: [appStarted, $workspaceService.updates],
-  source: $workspaceService,
-  target: updateFxHandlersFx,
-})
-
-sample({
-  clock: [
-    loadWorkspacesFx.failData,
-    loadWorkspaceFx.failData,
-    createWorkspaceFx.failData,
-    updateWorkspaceFx.failData,
-    deleteWorkspaceFx.failData,
-  ],
-  target: errorOccurred,
-})
 
 $workspacesMap
   .on(loadWorkspacesFx.doneData, (_, data) => data)
   .on(
     [
-      loadWorkspaceFx.doneData,
       createWorkspaceFx.doneData,
+      loadWorkspaceFx.doneData,
       updateWorkspaceFx.doneData,
     ],
-    (map, data) => {
-      return new Map(map).set(data.id, data)
-    }
+    (map, workspace) => new Map(map).set(workspace.id, workspace)
   )
+  .on(deleteWorkspaceFx.done, (map, { params: { id } }) => {
+    if (!map.has(id)) {
+      return
+    }
+    const newMap = new Map(map)
+    newMap.delete(id)
+    return newMap
+  })
+
+bindLoadable($workspace, loadWorkspaceFx)
+  .on(
+    [
+      createWorkspaceFx.doneData,
+      loadWorkspaceFx.doneData,
+      updateWorkspaceFx.doneData,
+    ],
+    (_, data) => ({ type: 'loaded', data })
+  )
+  .on(deleteWorkspaceFx.done, () => ({ type: 'idle' }))
 
 sample({
-  clock: deleteWorkspaceFx.done,
-  source: $workspacesMap,
-  fn: (map, { params: { id } }) => {
-    const newMap = new Map(map)
-    return newMap.delete(id) ? newMap : map
-  },
-  target: $workspacesMap,
+  clock: routes.home.opened,
+  target: loadWorkspacesFx,
+})
+
+sample({
+  clock: routes.workspace.index.opened,
+  fn: ({ params }) => params.workspaceId,
+  target: loadWorkspaceFx,
+})
+
+sample({
+  clock: createWorkspaceFx.doneData,
+  fn: (workspace) => ({ workspaceId: workspace.id }),
+  target: routes.workspace.index.open,
 })

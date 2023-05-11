@@ -13,9 +13,13 @@ import { tasksListModel } from '@/entities/tasks-list'
 
 export interface TasksListProps {
   taskStatus: TaskStatus
+  onClick: (task: Task) => void
 }
 
-export function TasksListFeature({ taskStatus }: TasksListProps): JSX.Element | null {
+export function TasksListFeature({
+  taskStatus,
+  onClick,
+}: TasksListProps): JSX.Element | null {
   const tasks = useStoreMap({
     store: tasksListModel.$tasksListState,
     keys: [taskStatus],
@@ -29,8 +33,13 @@ export function TasksListFeature({ taskStatus }: TasksListProps): JSX.Element | 
   return tasks.length > 0 ? (
     <List>
       {tasks.map((task) => (
-        <ListItem key={task.id}>
-          <ListItemButton>
+        <ListItem key={task.id} disablePadding>
+          <ListItemButton
+            onClick={() => {
+              onClick(task)
+            }}
+            disableRipple
+          >
             <ListItemText primary={task.title} />
           </ListItemButton>
         </ListItem>

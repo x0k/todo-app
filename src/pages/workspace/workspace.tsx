@@ -32,6 +32,7 @@ function View({ workspace }: ViewProps): JSX.Element {
   function toggleFeature(): void {
     setIseEventsLogFeature((s) => !s)
   }
+  const openTasksList = useUnit(routes.workspace.tasksList.open)
   return (
     <Box
       flex="1 1 100%"
@@ -86,7 +87,7 @@ function View({ workspace }: ViewProps): JSX.Element {
             >
               <TasksListsList
                 onClick={(tasksList) => {
-                  routes.workspace.tasksList.open({
+                  openTasksList({
                     workspaceId: workspace.id,
                     tasksListId: tasksList.id,
                   })

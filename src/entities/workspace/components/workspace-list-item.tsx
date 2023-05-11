@@ -18,7 +18,7 @@ export function WorkspaceListItem({
     <ListItem secondaryAction={secondaryAction} disablePadding>
       <ListItemButton
         component={Link}
-        to={routes.workspace}
+        to={routes.workspace.index}
         params={{ workspaceId: workspace.id }}
       >
         <ListItemText primary={workspace.title} />

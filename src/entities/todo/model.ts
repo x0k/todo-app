@@ -8,6 +8,7 @@ import {
   type TasksList,
   type TasksListId,
 } from '@/shared/kernel'
+import { routes } from '@/shared/routes'
 
 import {
   type ArchiveTasks,
@@ -162,3 +163,8 @@ $events
       .concat(result)
       .concat(events.slice(start + EVENTS_PER_PAGE))
   })
+
+sample({
+  clock: routes.workspace.index.opened,
+  target: loadTasksStateFx,
+})

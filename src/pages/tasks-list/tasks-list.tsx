@@ -34,17 +34,26 @@ function View({ tasksList }: ViewProps): JSX.Element {
       <Grid spacing={2} container>
         <Grid xs>
           <TitledPanel title="To Do">
-            <TasksListFeature taskStatus={TaskStatus.NotDone} />
+            <TasksListFeature
+              taskStatus={TaskStatus.NotDone}
+              onClick={console.log}
+            />
           </TitledPanel>
         </Grid>
         <Grid xs>
           <TitledPanel title="Done">
-            <TasksListFeature taskStatus={TaskStatus.Done} />
+            <TasksListFeature
+              taskStatus={TaskStatus.Done}
+              onClick={console.log}
+            />
           </TitledPanel>
         </Grid>
         <Grid xs>
           <TitledPanel title="Archived">
-            <TasksListFeature taskStatus={TaskStatus.Archived} />
+            <TasksListFeature
+              taskStatus={TaskStatus.Archived}
+              onClick={console.log}
+            />
           </TitledPanel>
         </Grid>
       </Grid>

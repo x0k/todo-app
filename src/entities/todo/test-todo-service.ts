@@ -41,17 +41,50 @@ function createTask(tasksListId: TasksListId, title: string): Task {
     tasksListId,
   }
 }
+
+export interface TasksListTemplate {
+  id: TasksListId
+  title: string
+  tasks: string[]
+}
 export class TestToDoService implements IToDoService {
+  private readonly state: TasksState
+
+  constructor(initialState: TasksListTemplate[]) {
+    const data = initialState.map((template): [TasksList, Task[]] => {
+      const tasks = template.tasks.map((title) =>
+        createTask(template.id, title)
+      )
+      return [
+        {
+          id: template.id,
+          title: template.title,
+          createdAt: new Date(),
+          isArchived: false,
+          tasks: {
+            [TaskStatus.NotDone]: new Set(tasks.map((task) => task.id)),
+            [TaskStatus.Done]: new Set(),
+            [TaskStatus.Archived]: new Set(),
+          },
+          tasksCount: tasks.length,
+        },
+        tasks,
+      ]
+    })
+
+    this.state = {
+      lists: new Map(data.map(([list]) => [list.id, list])),
+      tasks: new Map(
+        data.flatMap(([_, tasks]) => tasks.map((task) => [task.id, task]))
+      ),
+    }
+  }
+
   getEventsCount = async (): Promise<number> => 0
 
   loadEvents = async (_: QueryEvents): Promise<Event[]> => []
 
-  loadTasksState = async (): Promise<TasksState> => {
-    return {
-      tasks: new Map(),
-      lists: new Map(),
-    }
-  }
+  loadTasksState = async (): Promise<TasksState> => this.state
 
   createTask = async ({
     tasksListId,

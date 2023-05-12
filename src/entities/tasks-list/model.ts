@@ -8,13 +8,13 @@ import { routes } from '@/shared/router'
 
 import { type ITasksListService, type TasksListState } from './core'
 
-const d = app.createDomain('tasks-list')
+export const tasksList = app.createDomain('tasks-list')
 
-export const $tasksListService = d.createStore<ITasksListService>(
+export const $tasksListService = tasksList.createStore<ITasksListService>(
   {} as ITasksListService
 )
 
-export const $tasksListState = d.createStore<
+export const $tasksListState = tasksList.createStore<
   States<Loadable<TasksListState, Error>>
 >({
   type: 'idle',

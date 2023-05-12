@@ -9,17 +9,14 @@ import { type Workspace } from '@/shared/kernel'
 import { routes } from '@/shared/router'
 
 import {
+  CompleteTaskDialogContainer,
   CreateTasksPanelContainer,
   DashboardContainer,
   PositiveEventsLog,
+  TasksListsContainer,
+  completeTaskDialogModel,
 } from '@/entities/todo'
 import { WorkspaceContainer } from '@/entities/workspace'
-
-import {
-  CompleteTaskDialogContainer,
-  completeTaskDialogModel,
-} from '@/entities/todo/containers/complete-task-dialog'
-import { TasksListsContainer } from '@/entities/todo/containers/tasks-lists'
 
 import { ErrorMessage } from '@/widgets/error-message'
 import { HeaderWidget } from '@/widgets/header'
@@ -91,7 +88,7 @@ function View({ workspace }: ViewProps): JSX.Element {
             >
               <TasksListsContainer
                 onClick={(tasksList) => {
-                  handlers.openTasksList({
+                  void handlers.openTasksList({
                     workspaceId: workspace.id,
                     tasksListId: tasksList.id,
                   })

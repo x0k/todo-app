@@ -15,7 +15,11 @@ import { $workspaceService, TestWorkspaceService } from './entities/workspace'
 import { $themeService, ColorMode, ThemeService } from './features/toggle-theme'
 import { PersistentStorageService } from './implementations/persistent-storage'
 import { appStarted } from './shared/app'
-import { type TasksListId, type WorkspaceId } from './shared/kernel'
+import {
+  BackendType,
+  type TasksListId,
+  type WorkspaceId,
+} from './shared/kernel'
 import { router, routes } from './shared/router'
 import { withCache } from './shared/storage'
 
@@ -46,7 +50,11 @@ export const scope = fork({
     [
       $workspaceService,
       new TestWorkspaceService([
-        { title: 'Personal', id: 'personal' as WorkspaceId },
+        {
+          title: 'Personal',
+          id: 'personal' as WorkspaceId,
+          backend: { type: BackendType.InMemory, config: {} },
+        },
       ]),
     ],
     [$todoService, todoService],

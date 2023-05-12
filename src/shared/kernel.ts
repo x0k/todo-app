@@ -1,4 +1,4 @@
-import { type Brand } from './lib/type'
+import { type Brand, type EmptyObject } from './lib/type'
 
 export type TaskId = Brand<'TaskID', string>
 
@@ -100,11 +100,27 @@ export type Event =
   | TaskCompletedEvent
   | TasksArchivedEvent
 
+export enum BackendType {
+  InMemory = 'inMemory',
+  IndexedDatabase = 'indexedDB',
+}
+
+export interface BackendConfigs {
+  [BackendType.InMemory]: EmptyObject
+  [BackendType.IndexedDatabase]: EmptyObject
+}
+
+export interface BackendData<T extends BackendType> {
+  type: T
+  config: BackendConfigs[T]
+}
+
 export type WorkspaceId = Brand<'WorkspaceId', string>
 
-export interface Workspace {
+export interface Workspace<T extends BackendType = BackendType> {
   id: WorkspaceId
   title: string
+  backend: BackendData<T>
 }
 
 export type WritableWorkspaceData = Partial<Pick<Workspace, 'title'>>

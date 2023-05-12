@@ -2,12 +2,17 @@ import { ListItem, ListItemButton, ListItemText } from '@mui/material'
 // @ts-expect-error wtf
 import { Link } from 'atomic-router-react/scope'
 
-import { type Workspace } from '@/shared/kernel'
+import { BackendType, type Workspace } from '@/shared/kernel'
 import { routes } from '@/shared/router'
 
 export interface WorkspaceListItemProps {
   workspace: Workspace
   secondaryAction?: React.ReactNode
+}
+
+const BACKEND_TITLES: Record<BackendType, string> = {
+  [BackendType.InMemory]: 'Demo',
+  [BackendType.IndexedDatabase]: 'Local',
 }
 
 export function WorkspaceListItem({
@@ -21,7 +26,10 @@ export function WorkspaceListItem({
         to={routes.workspace.index}
         params={{ workspaceId: workspace.id }}
       >
-        <ListItemText primary={workspace.title} />
+        <ListItemText
+          primary={workspace.title}
+          secondary={BACKEND_TITLES[workspace.backend.type]}
+        />
       </ListItemButton>
     </ListItem>
   )

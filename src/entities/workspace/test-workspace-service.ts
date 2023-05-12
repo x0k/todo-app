@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 
-import { type Workspace, type WorkspaceId } from '@/shared/kernel'
+import { BackendType, type Workspace, type WorkspaceId } from '@/shared/kernel'
 
 import {
   type CreateWorkspace,
@@ -33,6 +33,10 @@ export class TestWorkspaceService implements IWorkspaceService {
     const workspace: Workspace = {
       id: nanoid() as WorkspaceId,
       title,
+      backend: {
+        type: BackendType.IndexedDatabase,
+        config: {},
+      },
     }
     this.workspaces.set(workspace.id, workspace)
     return workspace

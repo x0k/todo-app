@@ -1,11 +1,8 @@
-import { type Union } from './type'
+import { type EmptyObject, type Union } from './type'
 
 export interface State<T extends string> {
   type: T
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface EmptyObject {}
 
 export interface Loadable<T, E> {
   idle: EmptyObject

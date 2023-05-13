@@ -10,3 +10,10 @@ if (process.env.NODE_ENV === 'development') {
 export const appStarted = app.createEvent()
 
 export const errorOccurred = app.createEvent<Error>()
+
+// Registry
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Registry {}
+
+export const $registry = app.createStore({} as Registry)

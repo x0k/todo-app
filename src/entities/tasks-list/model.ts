@@ -1,6 +1,6 @@
 import { attach, sample } from 'effector'
 
-import { app } from '@/shared/app'
+import { $registry, app } from '@/shared/app'
 import { type TasksListId } from '@/shared/kernel'
 import { type Loadable, type States, mapLoadable } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
@@ -10,9 +10,11 @@ import { type ITasksListService, type TasksListState } from './core'
 
 export const tasksList = app.createDomain('tasks-list')
 
-export const $tasksListService = tasksList.createStore<ITasksListService>(
-  {} as ITasksListService
-)
+declare module '@/shared/app' {
+  interface Registry {
+    tasksList: ITasksListService
+  }
+}
 
 export const $tasksListState = tasksList.createStore<
   States<Loadable<TasksListState, Error>>
@@ -29,8 +31,8 @@ export const $tasksList = $tasksListState.map(
 // Effects
 
 export const loadTasksListFx = attach({
-  source: $tasksListService,
-  effect: async (s, id: TasksListId) => await s.loadTasksList(id),
+  source: $registry,
+  effect: async (r, id: TasksListId) => await r.tasksList.loadTasksList(id),
 })
 
 // Init

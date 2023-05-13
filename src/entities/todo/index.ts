@@ -1,5 +1,4 @@
 export * from './core'
-export { $todoService } from './model'
 export * from './components'
 export * from './containers'
 export * from './test-todo-service'

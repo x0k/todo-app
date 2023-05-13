@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 
-import { BackendType, type Workspace, type WorkspaceId } from '@/shared/kernel'
+import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 
 import {
   type CreateWorkspace,

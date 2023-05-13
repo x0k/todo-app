@@ -9,12 +9,12 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { App } from './app'
-import { $tasksListService, TestTasksListService } from './entities/tasks-list'
-import { $todoService, TestToDoService } from './entities/todo'
-import { $workspaceService, TestWorkspaceService } from './entities/workspace'
-import { $themeService, ColorMode, ThemeService } from './features/toggle-theme'
+import { TestTasksListService } from './entities/tasks-list'
+import { TestToDoService } from './entities/todo'
+import { TestWorkspaceService } from './entities/workspace'
+import { ColorMode, ThemeService } from './features/toggle-theme'
 import { PersistentStorageService } from './implementations/persistent-storage'
-import { appStarted } from './shared/app'
+import { $registry, type Registry, appStarted } from './shared/app'
 import {
   BackendType,
   type TasksListId,
@@ -34,40 +34,37 @@ const todoService = new TestToDoService([
 export const scope = fork({
   values: [
     [
-      $themeService,
-      new ThemeService(
-        withCache(
-          new PersistentStorageService<ColorMode>(
-            localStorage,
-            'theme',
-            window.matchMedia('(prefers-color-scheme: dark)').matches
-              ? ColorMode.Dark
-              : ColorMode.Light
+      $registry,
+      {
+        todoService,
+        tasksList: new TestTasksListService(todoService),
+        themeService: new ThemeService(
+          withCache(
+            new PersistentStorageService<ColorMode>(
+              localStorage,
+              'theme',
+              window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? ColorMode.Dark
+                : ColorMode.Light
+            )
           )
-        )
-      ),
+        ),
+        workspaceService: new TestWorkspaceService([
+          {
+            title: 'Personal',
+            id: 'personal' as WorkspaceId,
+            backend: { type: BackendType.InMemory, config: {} },
+          },
+        ]),
+      } satisfies Registry,
     ],
-    [
-      $workspaceService,
-      new TestWorkspaceService([
-        {
-          title: 'Personal',
-          id: 'personal' as WorkspaceId,
-          backend: { type: BackendType.InMemory, config: {} },
-        },
-      ]),
-    ],
-    [$todoService, todoService],
-    [$tasksListService, new TestTasksListService(todoService)],
   ],
 })
 
-sample({
-  clock: routes.workspace.tasksList.opened,
-  source: $todoService,
-  fn: (todoService) => new TestTasksListService(todoService),
-  target: $tasksListService,
-})
+$registry.on(routes.workspace.tasksList.opened, (r) => ({
+  ...r,
+  tasksList: new TestTasksListService(r.todoService),
+}))
 
 sample({
   clock: appStarted,

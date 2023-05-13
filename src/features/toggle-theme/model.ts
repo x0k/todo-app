@@ -1,12 +1,16 @@
-import { sample } from 'effector'
+import { attach, sample } from 'effector'
 
-import { app, appStarted } from '@/shared/app'
+import { $registry, app, appStarted } from '@/shared/app'
 
 import { ColorMode, type IThemeService } from './core'
 
 const d = app.createDomain('toggle-theme')
 
-export const $themeService = d.createStore({} as IThemeService)
+declare module '@/shared/app' {
+  interface Registry {
+    themeService: IThemeService
+  }
+}
 
 export const $colorMode = d.createStore(ColorMode.Light)
 
@@ -16,22 +20,21 @@ $colorMode.on(colorModeToggled, (state) =>
   state === ColorMode.Dark ? ColorMode.Light : ColorMode.Dark
 )
 
-const setColorModeFx = d.createEffect(
-  ([themeService, colorMode]: [IThemeService, ColorMode]) => {
-    themeService.setColorMode(colorMode)
-  }
-)
+const setColorModeFx = attach({
+  source: $registry,
+  effect: (r, colorMode: ColorMode) => {
+    r.themeService.setColorMode(colorMode)
+  },
+})
 
 sample({
   clock: appStarted,
-  source: $themeService,
-  fn: (service) => service.getColorMode(),
+  source: $registry,
+  fn: (r) => r.themeService.getColorMode(),
   target: $colorMode,
 })
 
 sample({
-  clock: $colorMode,
-  source: $themeService,
-  fn: (service, colorMode) => [service, colorMode] as const,
+  clock: $colorMode.updates,
   target: setColorModeFx,
 })

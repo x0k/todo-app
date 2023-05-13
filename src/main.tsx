@@ -55,6 +55,11 @@ export const scope = fork({
             backend: { type: BackendType.InMemory, config: {} },
           },
         ]),
+        workspacePageSettingsStorage: new PersistentStorageService<boolean>(
+          localStorage,
+          'workspace-page-settings',
+          false
+        ),
       } satisfies Registry,
     ],
   ],

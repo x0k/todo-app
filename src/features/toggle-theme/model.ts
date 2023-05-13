@@ -16,16 +16,16 @@ export const $colorMode = d.createStore(ColorMode.Light)
 
 export const colorModeToggled = d.createEvent()
 
-$colorMode.on(colorModeToggled, (state) =>
-  state === ColorMode.Dark ? ColorMode.Light : ColorMode.Dark
-)
-
 const setColorModeFx = attach({
   source: $registry,
   effect: (r, colorMode: ColorMode) => {
     r.themeService.setColorMode(colorMode)
   },
 })
+
+$colorMode.on(colorModeToggled, (state) =>
+  state === ColorMode.Dark ? ColorMode.Light : ColorMode.Dark
+)
 
 sample({
   clock: appStarted,

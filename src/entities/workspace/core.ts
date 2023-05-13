@@ -1,4 +1,6 @@
 import {
+  type BackendData,
+  type BackendType,
   type Workspace,
   type WorkspaceId,
   type WritableWorkspaceData,
@@ -6,6 +8,7 @@ import {
 
 export interface CreateWorkspace {
   title: string
+  backend: BackendData<BackendType>
 }
 
 export interface UpdateWorkspace {

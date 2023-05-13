@@ -102,12 +102,18 @@ export type Event =
 
 export enum BackendType {
   InMemory = 'inMemory',
-  IndexedDatabase = 'indexedDB',
+  // IndexedDatabase = 'indexedDB',
 }
 
+export const BACKEND_TYPES = Object.values(BackendType)
+
+export const BACKEND_TITLES: Record<BackendType, string> = {
+  [BackendType.InMemory]: 'Demo',
+  // [BackendType.IndexedDatabase]: 'Local',
+}
 export interface BackendConfigs {
   [BackendType.InMemory]: EmptyObject
-  [BackendType.IndexedDatabase]: EmptyObject
+  // [BackendType.IndexedDatabase]: EmptyObject
 }
 
 export interface BackendData<T extends BackendType> {

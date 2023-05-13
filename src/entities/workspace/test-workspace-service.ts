@@ -29,14 +29,14 @@ export class TestWorkspaceService implements IWorkspaceService {
     return workspace
   }
 
-  createWorkspace = async ({ title }: CreateWorkspace): Promise<Workspace> => {
+  createWorkspace = async ({
+    title,
+    backend,
+  }: CreateWorkspace): Promise<Workspace> => {
     const workspace: Workspace = {
       id: nanoid() as WorkspaceId,
       title,
-      backend: {
-        type: BackendType.IndexedDatabase,
-        config: {},
-      },
+      backend,
     }
     this.workspaces.set(workspace.id, workspace)
     return workspace

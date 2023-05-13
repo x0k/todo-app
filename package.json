@@ -18,7 +18,7 @@
     "@mui/material": "^5.13.0",
     "@vitejs/plugin-react": "^4.0.0",
     "atomic-router": "^0.8.0",
-    "atomic-router-react": "^0.8.1",
+    "atomic-router-react": "^0.8.2",
     "date-fns": "^2.30.0",
     "effector": "^22.8.3",
     "effector-react": "^22.5.1",

@@ -1,9 +1,8 @@
 import { ListItem, ListItemButton, ListItemText } from '@mui/material'
-// @ts-expect-error wtf
 import { Link } from 'atomic-router-react/scope'
 
 import { BACKEND_TITLES, type Workspace } from '@/shared/kernel'
-import { routes } from '@/shared/router'
+import { type WorkspaceRouteParams, routes } from '@/shared/router'
 
 export interface WorkspaceListItemProps {
   workspace: Workspace
@@ -17,7 +16,7 @@ export function WorkspaceListItem({
   return (
     <ListItem secondaryAction={secondaryAction} disablePadding>
       <ListItemButton
-        component={Link}
+        component={Link<WorkspaceRouteParams>}
         to={routes.workspace.index}
         params={{ workspaceId: workspace.id }}
       >

@@ -1,4 +1,3 @@
-// @ts-expect-error wtf
 import { RouterProvider } from 'atomic-router-react/scope'
 import { allSettled, fork, sample } from 'effector'
 // @ts-expect-error wtf

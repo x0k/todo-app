@@ -1,4 +1,3 @@
-// @ts-expect-error wtf
 import { Route } from 'atomic-router-react/scope'
 
 import { routes } from '@/shared/router'

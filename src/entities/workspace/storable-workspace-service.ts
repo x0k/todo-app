@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid'
 
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
+import { type IAsyncStorageService } from '@/shared/storage'
 
 import {
   type CreateWorkspace,
@@ -9,20 +10,18 @@ import {
   type UpdateWorkspace,
 } from './core'
 
-export class TestWorkspaceService implements IWorkspaceService {
-  private readonly workspaces: Map<WorkspaceId, Workspace>
-
-  constructor(initial: Workspace[]) {
-    this.workspaces = new Map(
-      initial.map((workspace) => [workspace.id, workspace])
-    )
-  }
+export class StorableWorkspaceService implements IWorkspaceService {
+  constructor(
+    private readonly storageService: IAsyncStorageService<
+      Map<WorkspaceId, Workspace>
+    >
+  ) {}
 
   loadWorkspaces = async (): Promise<Map<WorkspaceId, Workspace>> =>
-    this.workspaces
+    await this.storageService.load()
 
   loadWorkspace = async (id: WorkspaceId): Promise<Workspace> => {
-    const workspace = this.workspaces.get(id)
+    const workspace = (await this.loadWorkspaces()).get(id)
     if (workspace === undefined) {
       throw new Error(`Workspace "${id}" not found`)
     }
@@ -38,7 +37,9 @@ export class TestWorkspaceService implements IWorkspaceService {
       title,
       backend,
     }
-    this.workspaces.set(workspace.id, workspace)
+    const workspaces = await this.storageService.load()
+    workspaces.set(workspace.id, workspace)
+    await this.storageService.save(workspaces)
     return workspace
   }
 
@@ -46,19 +47,20 @@ export class TestWorkspaceService implements IWorkspaceService {
     id,
     data,
   }: UpdateWorkspace): Promise<Workspace> => {
-    const workspace = this.workspaces.get(id)
+    const workspaces = await this.loadWorkspaces()
+    const workspace = workspaces.get(id)
     if (workspace === undefined) {
       throw new Error(`Workspace "${id}" not found`)
     }
-    const updatedWorkspace = {
-      ...workspace,
-      ...data,
-    }
-    this.workspaces.set(id, updatedWorkspace)
-    return updatedWorkspace
+    Object.assign(workspace, data)
+    workspaces.set(id, workspace)
+    await this.storageService.save(workspaces)
+    return workspace
   }
 
   deleteWorkspace = async ({ id }: DeleteWorkspace): Promise<void> => {
-    this.workspaces.delete(id)
+    const workspaces = await this.loadWorkspaces()
+    workspaces.delete(id)
+    await this.storageService.save(workspaces)
   }
 }

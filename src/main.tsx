@@ -10,17 +10,22 @@ import ReactDOM from 'react-dom/client'
 import { App } from './app'
 import { TestTasksListService } from './entities/tasks-list'
 import { TestToDoService } from './entities/todo'
-import { TestWorkspaceService } from './entities/workspace'
+import { StorableWorkspaceService } from './entities/workspace'
 import { ColorMode, ThemeService } from './features/toggle-theme'
 import { PersistentStorageService } from './implementations/persistent-storage'
 import { $registry, type Registry, appStarted } from './shared/app'
 import {
-  BackendType,
   type TasksListId,
+  type Workspace,
   type WorkspaceId,
 } from './shared/kernel'
 import { router, routes } from './shared/router'
-import { withCache } from './shared/storage'
+import {
+  asyncWithCache,
+  makeAsync,
+  withCache,
+  withMapCodec,
+} from './shared/storage'
 
 const todoService = new TestToDoService([
   {
@@ -48,13 +53,19 @@ export const scope = fork({
             )
           )
         ),
-        workspaceService: new TestWorkspaceService([
-          {
-            title: 'Personal',
-            id: 'personal' as WorkspaceId,
-            backend: { type: BackendType.InMemory, config: {} },
-          },
-        ]),
+        workspaceService: new StorableWorkspaceService(
+          asyncWithCache(
+            makeAsync(
+              withMapCodec(
+                new PersistentStorageService<Array<[WorkspaceId, Workspace]>>(
+                  localStorage,
+                  'workspaces',
+                  []
+                )
+              )
+            )
+          )
+        ),
         workspacePageSettingsStorage: new PersistentStorageService<boolean>(
           localStorage,
           'workspace-page-settings',

@@ -16,7 +16,6 @@ import {
   TasksListId,
   TasksListUpdatedEvent,
 } from '@/shared/kernel'
-import { isDefined } from '@/shared/lib/guards'
 
 import {
   ArchiveTasks,
@@ -47,14 +46,29 @@ export class InMemoryToDoService implements IToDoService {
   private lists = new Map<TasksListId, TasksList>()
   private tasks = new Map<TaskId, Task>()
 
-  private updateTaskStatus(task: Task, status: TaskStatus): void {
-    const tasksList = this.lists.get(task.tasksListId)
-    if (tasksList === undefined) {
-      throw new Error(`TasksList with id ${task.tasksListId} not found`)
+  private getTaskById(id: TaskId): Task {
+    const task = this.tasks.get(id)
+    if (task === undefined) {
+      throw new Error(`Task with id ${id} not found`)
     }
+    return task
+  }
+
+  private getTasksListById(id: TasksListId): TasksList {
+    const tasksList = this.lists.get(id)
+    if (tasksList === undefined) {
+      throw new Error(`TasksList with id ${id} not found`)
+    }
+    return tasksList
+  }
+
+  private updateTaskStatus(taskId: TaskId, status: TaskStatus): Task {
+    const task = this.getTaskById(taskId)
+    const tasksList = this.getTasksListById(task.tasksListId)
     tasksList.tasks[task.status].delete(task.id)
     tasksList.tasks[status].add(task.id)
     task.status = status
+    return task
   }
 
   loadTasksState = async (): Promise<TasksState> => ({
@@ -66,10 +80,7 @@ export class InMemoryToDoService implements IToDoService {
     tasksListId,
     title,
   }: CreateTask): Promise<TaskCreatedEvent> => {
-    const tasksList = this.lists.get(tasksListId)
-    if (tasksList === undefined) {
-      throw new Error(`TasksList with id ${tasksListId} not found`)
-    }
+    const tasksList = this.getTasksListById(tasksListId)
     const task = createTask(tasksListId, title)
     this.tasks.set(task.id, task)
     tasksList.tasks[task.status].add(task.id)
@@ -86,10 +97,7 @@ export class InMemoryToDoService implements IToDoService {
     tasksListId,
     tasks,
   }: CreateTasks): Promise<TasksCreatedEvent> => {
-    const tasksList = this.lists.get(tasksListId)
-    if (tasksList === undefined) {
-      throw new Error(`TasksList with id ${tasksListId} not found`)
-    }
+    const tasksList = this.getTasksListById(tasksListId)
     const result: Task[] = []
     for (const title of tasks) {
       const task = createTask(tasksListId, title)
@@ -139,10 +147,7 @@ export class InMemoryToDoService implements IToDoService {
     taskId,
     change,
   }: UpdateTask): Promise<TaskUpdatedEvent> => {
-    const task = this.tasks.get(taskId)
-    if (task === undefined) {
-      throw new Error(`Task with id ${taskId} not found`)
-    }
+    const task = this.getTaskById(taskId)
     Object.assign(task, change)
     return {
       createdAt: new Date(),
@@ -156,10 +161,7 @@ export class InMemoryToDoService implements IToDoService {
     tasksListId,
     change,
   }: UpdateTasksList): Promise<TasksListUpdatedEvent> => {
-    const list = this.lists.get(tasksListId)
-    if (list === undefined) {
-      throw new Error(`TasksList with id ${tasksListId} not found`)
-    }
+    const list = this.getTasksListById(tasksListId)
     Object.assign(list, change)
     return {
       change,
@@ -173,11 +175,7 @@ export class InMemoryToDoService implements IToDoService {
     taskId,
     message,
   }: CompleteTask): Promise<TaskCompletedEvent> => {
-    const task = this.tasks.get(taskId)
-    if (task === undefined) {
-      throw new Error(`Task with id ${taskId} not found`)
-    }
-    this.updateTaskStatus(task, TaskStatus.Done)
+    this.updateTaskStatus(taskId, TaskStatus.Done)
     return {
       createdAt: new Date(),
       message,
@@ -189,10 +187,9 @@ export class InMemoryToDoService implements IToDoService {
   archiveTasks = async ({
     tasksIds,
   }: ArchiveTasks): Promise<TasksArchivedEvent> => {
-    tasksIds
-      .map((taskId) => this.tasks.get(taskId))
-      .filter(isDefined)
-      .forEach((task) => this.updateTaskStatus(task, TaskStatus.Archived))
+    tasksIds.forEach((taskId) => {
+      this.updateTaskStatus(taskId, TaskStatus.Archived)
+    })
     return {
       type: EventType.TasksArchived,
       createdAt: new Date(),

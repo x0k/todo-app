@@ -3,6 +3,15 @@ export interface ICodecService<I, O> {
   encode: (data: I) => O
 }
 
+export type DateCodec = ICodecService<Date, string>
+
+export const dateCodec: DateCodec = {
+  encode: (data) => data.toISOString(),
+  decode: (data) => new Date(data),
+}
+
+export type MapCodec<K, I, O = I> = ICodecService<Map<K, I>, Array<[K, O]>>
+
 export function makeMapCodec<K, I>(): ICodecService<Map<K, I>, Array<[K, I]>>
 export function makeMapCodec<K, I, O>(
   valueCodec: ICodecService<I, O>
@@ -22,6 +31,25 @@ export function makeMapCodec<K, I, O = I>(
     : {
         encode: (data) => Array.from(data) as unknown as Array<[K, O]>,
         decode: (data) => new Map(data as unknown as Array<[K, I]>),
+      }
+}
+
+export type SetCodec<I, O = I> = ICodecService<Set<I>, O[]>
+export function makeSetCodec<I>(): ICodecService<Set<I>, I[]>
+export function makeSetCodec<I, O>(
+  valueCodec: ICodecService<I, O>
+): ICodecService<Set<I>, O[]>
+export function makeSetCodec<I, O = I>(
+  valueCodec?: ICodecService<I, O>
+): SetCodec<I, O> {
+  return valueCodec !== undefined
+    ? {
+        encode: (data) => Array.from(data).map(valueCodec.encode),
+        decode: (data) => new Set(data.map(valueCodec.decode)),
+      }
+    : {
+        encode: (data) => Array.from(data) as unknown as O[],
+        decode: (data) => new Set(data) as unknown as Set<I>,
       }
 }
 
@@ -55,9 +83,9 @@ export function withCache<T>(
   }
 }
 
-export function makeWithCodec(
-  codec: ICodecService<any, any>
-): <T>(storageService: IStorageService<T>) => IStorageService<any> {
+export function makeWithCodec<I, O>(
+  codec: ICodecService<I, O>
+): (storageService: IStorageService<O>) => IStorageService<I> {
   return (storageService) => ({
     load: () => codec.decode(storageService.load()),
     save: (data) => {

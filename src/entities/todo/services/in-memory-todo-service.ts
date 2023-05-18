@@ -32,16 +32,6 @@ import {
   UpdateTasksList,
 } from '../core'
 
-function createTask(tasksListId: TasksListId, title: string): Task {
-  return {
-    id: nanoid() as TaskId,
-    title,
-    createdAt: new Date(),
-    status: TaskStatus.NotDone,
-    tasksListId,
-  }
-}
-
 interface ToDoServiceState {
   lists: Map<TasksListId, TasksList>
   tasks: Map<TaskId, Task>
@@ -80,6 +70,21 @@ export class InMemoryToDoService implements IToDoService {
     return task
   }
 
+  private registerEvent<E extends Event>(event: E): E {
+    this.events.unshift(event)
+    return event
+  }
+
+  private makeTask(tasksListId: TasksListId, title: string): Task {
+    return {
+      id: nanoid() as TaskId,
+      title,
+      createdAt: new Date(),
+      status: TaskStatus.NotDone,
+      tasksListId,
+    }
+  }
+
   constructor(workspaceId: WorkspaceId) {
     const state = InMemoryToDoService.states.get(workspaceId)
     if (state !== undefined) {
@@ -108,16 +113,16 @@ export class InMemoryToDoService implements IToDoService {
     title,
   }: CreateTask): Promise<TaskCreatedEvent> => {
     const tasksList = this.getTasksListById(tasksListId)
-    const task = createTask(tasksListId, title)
+    const task = this.makeTask(tasksListId, title)
     this.tasks.set(task.id, task)
     tasksList.tasks[task.status].add(task.id)
     tasksList.tasksCount++
-    return {
+    return this.registerEvent({
       type: EventType.TaskCreated,
       task,
       createdAt: new Date(),
       tasksListId: tasksListId,
-    }
+    })
   }
 
   createTasks = async ({
@@ -127,18 +132,18 @@ export class InMemoryToDoService implements IToDoService {
     const tasksList = this.getTasksListById(tasksListId)
     const result: Task[] = []
     for (const title of tasks) {
-      const task = createTask(tasksListId, title)
+      const task = this.makeTask(tasksListId, title)
       result.push(task)
       this.tasks.set(task.id, task)
       tasksList.tasks[task.status].add(task.id)
     }
     tasksList.tasksCount += result.length
-    return {
+    return this.registerEvent({
       createdAt: new Date(),
       type: EventType.TasksCreated,
       tasks: result,
       tasksListId,
-    }
+    })
   }
 
   createTasksList = async ({
@@ -162,12 +167,12 @@ export class InMemoryToDoService implements IToDoService {
       tasksListId: list.id,
       tasks,
     })
-    return {
+    return this.registerEvent({
       createdAt: new Date(),
       list,
       tasks: realTasks,
       type: EventType.TasksListCreated,
-    }
+    })
   }
 
   updateTask = async ({
@@ -176,12 +181,12 @@ export class InMemoryToDoService implements IToDoService {
   }: UpdateTask): Promise<TaskUpdatedEvent> => {
     const task = this.getTaskById(taskId)
     Object.assign(task, change)
-    return {
+    return this.registerEvent({
       createdAt: new Date(),
       change,
       taskId,
       type: EventType.TaskUpdated,
-    }
+    })
   }
 
   updateTasksList = async ({
@@ -190,12 +195,12 @@ export class InMemoryToDoService implements IToDoService {
   }: UpdateTasksList): Promise<TasksListUpdatedEvent> => {
     const list = this.getTasksListById(tasksListId)
     Object.assign(list, change)
-    return {
+    return this.registerEvent({
       change,
       createdAt: new Date(),
       tasksListId,
       type: EventType.TasksListUpdated,
-    }
+    })
   }
 
   completeTask = async ({
@@ -203,12 +208,12 @@ export class InMemoryToDoService implements IToDoService {
     message,
   }: CompleteTask): Promise<TaskCompletedEvent> => {
     this.updateTaskStatus(taskId, TaskStatus.Done)
-    return {
+    return this.registerEvent({
       createdAt: new Date(),
       message,
       taskId,
       type: EventType.TaskCompleted,
-    }
+    })
   }
 
   archiveTasks = async ({
@@ -217,11 +222,11 @@ export class InMemoryToDoService implements IToDoService {
     tasksIds.forEach((taskId) => {
       this.updateTaskStatus(taskId, TaskStatus.Archived)
     })
-    return {
+    return this.registerEvent({
       type: EventType.TasksArchived,
       createdAt: new Date(),
       tasksIds,
-    }
+    })
   }
 
   getEventsCount = async (): Promise<number> => this.events.length

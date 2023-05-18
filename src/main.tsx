@@ -12,13 +12,24 @@ import { App } from './app'
 import {
   ITasksListService,
   InMemoryTasksListService,
+  StorableTasksListService,
 } from './entities/tasks-list'
-import { IToDoService, InMemoryToDoService } from './entities/todo'
+import {
+  IToDoService,
+  InMemoryToDoService,
+  StorableToDoService,
+  StorableToDoServiceState,
+} from './entities/todo'
 import { StorableWorkspaceService } from './entities/workspace'
 import { ColorMode, ThemeService } from './features/toggle-theme'
 import { PersistentStorageService } from './implementations/persistent-storage'
+import { makeStorableToDoServiceStateToTasksListServiceCodec } from './implementations/storable-todo-service-state-to-tasks-list-service-state-codec'
+import {
+  EncodedStorableToDoServiceState,
+  withStorableToDoServiceStateCodec,
+} from './implementations/storable-todo-sevice-state-codec'
 import { $registry, type Registry, appStarted } from './shared/app'
-import { type Workspace, type WorkspaceId } from './shared/kernel'
+import { BackendType, type Workspace, type WorkspaceId } from './shared/kernel'
 import { noop } from './shared/lib/function'
 import {
   WorkspaceRouteParams,
@@ -27,11 +38,21 @@ import {
   routes,
 } from './shared/router'
 import {
+  IAsyncStorageService,
   asyncWithCache,
   makeAsync,
+  makeAsyncWithCodec,
   withCache,
   withMapCodec,
 } from './shared/storage'
+
+declare module '@/shared/app' {
+  interface Registry {
+    storableToDoServiceStateAsyncStorage: Promise<
+      IAsyncStorageService<StorableToDoServiceState>
+    >
+  }
+}
 
 export const scope = fork({
   values: [
@@ -40,6 +61,7 @@ export const scope = fork({
       {
         todoService: new Promise(noop),
         tasksList: new Promise(noop),
+        storableToDoServiceStateAsyncStorage: new Promise(noop),
         themeService: new ThemeService(
           withCache(
             new PersistentStorageService<ColorMode>(
@@ -83,7 +105,22 @@ async function createTasksListService(
   if (tasksList === undefined) {
     throw new Error(`Tasks list with "${e.params.tasksListId}" not found`)
   }
-  return new InMemoryTasksListService(tasksList, tasks)
+  const workspace = await r.workspaceService.loadWorkspace(e.params.workspaceId)
+  switch (workspace.backend.type) {
+    case BackendType.InMemory:
+      return new InMemoryTasksListService(tasksList, tasks)
+    case BackendType.LocalStorage:
+      const withTasksListCodec = makeAsyncWithCodec(
+        makeStorableToDoServiceStateToTasksListServiceCodec(
+          e.params.tasksListId
+        )
+      )
+      const storeWithCodec = withTasksListCodec(
+        await r.storableToDoServiceStateAsyncStorage
+      )
+      const asyncStoreWithCache = asyncWithCache(storeWithCodec)
+      return new StorableTasksListService(asyncStoreWithCache)
+  }
 }
 
 $registry.on(routes.workspace.tasksList.opened, (r, e) => ({
@@ -91,17 +128,51 @@ $registry.on(routes.workspace.tasksList.opened, (r, e) => ({
   tasksList: createTasksListService(r, e),
 }))
 
-async function createToDoService(
+async function createStorableToDoServiceStateAsyncStorage(
   _: Registry,
   e: RouteParamsAndQuery<WorkspaceRouteParams>
-): Promise<IToDoService> {
-  return new InMemoryToDoService(e.params.workspaceId)
+): Promise<IAsyncStorageService<StorableToDoServiceState>> {
+  const store = new PersistentStorageService<EncodedStorableToDoServiceState>(
+    localStorage,
+    `todo-${e.params.workspaceId}`,
+    {
+      events: [],
+      lists: [],
+      tasks: [],
+    }
+  )
+  const storeWithCodec = withStorableToDoServiceStateCodec(store)
+  return asyncWithCache(makeAsync(storeWithCodec))
 }
 
-$registry.on(routes.workspace.index.opened, (r, e) => ({
-  ...r,
-  todoService: createToDoService(r, e),
-}))
+async function createToDoService(
+  r: Registry,
+  e: RouteParamsAndQuery<WorkspaceRouteParams>
+): Promise<IToDoService> {
+  const workspace = await r.workspaceService.loadWorkspace(e.params.workspaceId)
+  switch (workspace.backend.type) {
+    case BackendType.InMemory:
+      return new InMemoryToDoService(e.params.workspaceId)
+    case BackendType.LocalStorage: {
+      return new StorableToDoService(
+        await r.storableToDoServiceStateAsyncStorage
+      )
+    }
+  }
+}
+
+$registry.on(routes.workspace.index.opened, (r, e) => {
+  const storableToDoServiceStateAsyncStorage =
+    createStorableToDoServiceStateAsyncStorage(r, e)
+  return {
+    ...r,
+    storableToDoServiceStateAsyncStorage,
+    todoService: createToDoService(
+      { ...r, storableToDoServiceStateAsyncStorage },
+      e
+    ),
+  }
+})
 
 sample({
   clock: appStarted,

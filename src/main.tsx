@@ -1,3 +1,4 @@
+import { RouteParamsAndQuery } from 'atomic-router'
 import { RouterProvider } from 'atomic-router-react/scope'
 import { allSettled, fork, sample } from 'effector'
 // @ts-expect-error wtf
@@ -8,18 +9,23 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { App } from './app'
-import { TestTasksListService } from './entities/tasks-list'
-import { TestToDoService } from './entities/todo'
+import {
+  ITasksListService,
+  InMemoryTasksListService,
+} from './entities/tasks-list'
+import { IToDoService, InMemoryToDoService } from './entities/todo'
 import { StorableWorkspaceService } from './entities/workspace'
 import { ColorMode, ThemeService } from './features/toggle-theme'
 import { PersistentStorageService } from './implementations/persistent-storage'
 import { $registry, type Registry, appStarted } from './shared/app'
+import { type Workspace, type WorkspaceId } from './shared/kernel'
+import { noop } from './shared/lib/function'
 import {
-  type TasksListId,
-  type Workspace,
-  type WorkspaceId,
-} from './shared/kernel'
-import { router, routes } from './shared/router'
+  WorkspaceRouteParams,
+  WorkspaceTasksListRouteParams,
+  router,
+  routes,
+} from './shared/router'
 import {
   asyncWithCache,
   makeAsync,
@@ -27,21 +33,13 @@ import {
   withMapCodec,
 } from './shared/storage'
 
-const todoService = new TestToDoService([
-  {
-    id: 'list' as TasksListId,
-    title: 'list',
-    tasks: ['first', 'second'],
-  },
-])
-
 export const scope = fork({
   values: [
     [
       $registry,
       {
-        todoService,
-        tasksList: new TestTasksListService(todoService),
+        todoService: new Promise(noop),
+        tasksList: new Promise(noop),
         themeService: new ThemeService(
           withCache(
             new PersistentStorageService<ColorMode>(
@@ -76,9 +74,33 @@ export const scope = fork({
   ],
 })
 
-$registry.on(routes.workspace.tasksList.opened, (r) => ({
+async function createTasksListService(
+  r: Registry,
+  e: RouteParamsAndQuery<WorkspaceTasksListRouteParams>
+): Promise<ITasksListService> {
+  const { lists, tasks } = await (await r.todoService).loadTasksState()
+  const tasksList = lists.get(e.params.tasksListId)
+  if (tasksList === undefined) {
+    throw new Error(`Tasks list with "${e.params.tasksListId}" not found`)
+  }
+  return new InMemoryTasksListService(tasksList, tasks)
+}
+
+$registry.on(routes.workspace.tasksList.opened, (r, e) => ({
   ...r,
-  tasksList: new TestTasksListService(r.todoService),
+  tasksList: createTasksListService(r, e),
+}))
+
+async function createToDoService(
+  _: Registry,
+  e: RouteParamsAndQuery<WorkspaceRouteParams>
+): Promise<IToDoService> {
+  return new InMemoryToDoService(e.params.workspaceId)
+}
+
+$registry.on(routes.workspace.index.opened, (r, e) => ({
+  ...r,
+  todoService: createToDoService(r, e),
 }))
 
 sample({

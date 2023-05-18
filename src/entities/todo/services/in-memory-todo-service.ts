@@ -15,6 +15,7 @@ import {
   TasksListCreatedEvent,
   TasksListId,
   TasksListUpdatedEvent,
+  WorkspaceId,
 } from '@/shared/kernel'
 
 import {
@@ -29,7 +30,7 @@ import {
   TasksState,
   UpdateTask,
   UpdateTasksList,
-} from './core'
+} from '../core'
 
 function createTask(tasksListId: TasksListId, title: string): Task {
   return {
@@ -41,10 +42,18 @@ function createTask(tasksListId: TasksListId, title: string): Task {
   }
 }
 
+interface ToDoServiceState {
+  lists: Map<TasksListId, TasksList>
+  tasks: Map<TaskId, Task>
+  events: Event[]
+}
+
 export class InMemoryToDoService implements IToDoService {
-  private events: Event[] = []
-  private lists = new Map<TasksListId, TasksList>()
-  private tasks = new Map<TaskId, Task>()
+  private static states: Map<WorkspaceId, ToDoServiceState> = new Map()
+
+  private events: Event[]
+  private lists: Map<TasksListId, TasksList>
+  private tasks: Map<TaskId, Task>
 
   private getTaskById(id: TaskId): Task {
     const task = this.tasks.get(id)
@@ -69,6 +78,24 @@ export class InMemoryToDoService implements IToDoService {
     tasksList.tasks[status].add(task.id)
     task.status = status
     return task
+  }
+
+  constructor(workspaceId: WorkspaceId) {
+    const state = InMemoryToDoService.states.get(workspaceId)
+    if (state !== undefined) {
+      this.lists = state.lists
+      this.tasks = state.tasks
+      this.events = state.events
+    } else {
+      this.lists = new Map<TasksListId, TasksList>()
+      this.tasks = new Map<TaskId, Task>()
+      this.events = []
+      InMemoryToDoService.states.set(workspaceId, {
+        events: this.events,
+        lists: this.lists,
+        tasks: this.tasks,
+      })
+    }
   }
 
   loadTasksState = async (): Promise<TasksState> => ({

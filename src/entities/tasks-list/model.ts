@@ -1,7 +1,6 @@
 import { attach, sample } from 'effector'
 
 import { $registry, app } from '@/shared/app'
-import { type TasksListId } from '@/shared/kernel'
 import { type Loadable, type States, mapLoadable } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
 import { routes } from '@/shared/router'
@@ -12,7 +11,7 @@ export const tasksList = app.createDomain('tasks-list')
 
 declare module '@/shared/app' {
   interface Registry {
-    tasksList: ITasksListService
+    tasksList: Promise<ITasksListService>
   }
 }
 
@@ -32,7 +31,7 @@ export const $tasksList = $tasksListState.map(
 
 export const loadTasksListFx = attach({
   source: $registry,
-  effect: async (r, id: TasksListId) => await r.tasksList.loadTasksList(id),
+  effect: async (r) => await (await r.tasksList).loadTasksList(),
 })
 
 // Init

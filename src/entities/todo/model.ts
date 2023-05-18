@@ -29,7 +29,7 @@ export const todo = app.createDomain('todo')
 
 declare module '@/shared/app' {
   interface Registry {
-    todoService: IToDoService
+    todoService: Promise<IToDoService>
   }
 }
 
@@ -66,57 +66,60 @@ export const $events = todo.createStore<Event[]>([])
 
 export const loadTasksStateFx = attach({
   source: $registry,
-  effect: async (r) => await r.todoService.loadTasksState(),
+  effect: async (r) => await (await r.todoService).loadTasksState(),
 })
 
 export const createTaskFx = attach({
   source: $registry,
-  effect: async (r, data: CreateTask) => await r.todoService.createTask(data),
+  effect: async (r, data: CreateTask) =>
+    await (await r.todoService).createTask(data),
 })
 
 export const createTasksFx = attach({
   source: $registry,
-  effect: async (r, data: CreateTasks) => await r.todoService.createTasks(data),
+  effect: async (r, data: CreateTasks) =>
+    await (await r.todoService).createTasks(data),
 })
 
 export const createTasksListFx = attach({
   source: $registry,
   effect: async (r, data: CreateTasksList) =>
-    await r.todoService.createTasksList(data),
+    await (await r.todoService).createTasksList(data),
 })
 
 export const updateTaskFx = attach({
   source: $registry,
-  effect: async (r, data: UpdateTask) => await r.todoService.updateTask(data),
+  effect: async (r, data: UpdateTask) =>
+    await (await r.todoService).updateTask(data),
 })
 
 export const updateTasksListFx = attach({
   source: $registry,
   effect: async (r, data: UpdateTasksList) =>
-    await r.todoService.updateTasksList(data),
+    await (await r.todoService).updateTasksList(data),
 })
 
 export const completeTaskFx = attach({
   source: $registry,
   effect: async (r, data: CompleteTask) =>
-    await r.todoService.completeTask(data),
+    await (await r.todoService).completeTask(data),
 })
 
 export const archiveTasksFx = attach({
   source: $registry,
   effect: async (r, data: ArchiveTasks) =>
-    await r.todoService.archiveTasks(data),
+    await (await r.todoService).archiveTasks(data),
 })
 
 export const getEventsCountFx = attach({
   source: $registry,
-  effect: async (r) => await r.todoService.getEventsCount(),
+  effect: async (r) => await (await r.todoService).getEventsCount(),
 })
 
 export const loadEventsFx = attach({
   source: $registry,
   effect: async (r, query: QueryEvents) =>
-    await r.todoService.loadEvents(query),
+    await (await r.todoService).loadEvents(query),
 })
 
 // Events

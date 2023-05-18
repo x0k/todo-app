@@ -30,7 +30,7 @@ import {
   type TasksState,
   type UpdateTask,
   type UpdateTasksList,
-} from './core'
+} from '../core'
 
 function createTask(tasksListId: TasksListId, title: string): Task {
   return {

@@ -30,7 +30,6 @@ import {
 } from './implementations/storable-todo-sevice-state-codec'
 import { $registry, type Registry, appStarted } from './shared/app'
 import { BackendType, type Workspace, type WorkspaceId } from './shared/kernel'
-import { noop } from './shared/lib/function'
 import {
   type WorkspaceRouteParams,
   type WorkspaceTasksListRouteParams,
@@ -59,9 +58,13 @@ export const scope = fork({
     [
       $registry,
       {
-        todoService: new Promise(noop),
-        tasksList: new Promise(noop),
-        storableToDoServiceStateAsyncStorage: new Promise(noop),
+        todoService: Promise.reject(new Error('ToDo service uninitialized')),
+        tasksListService: Promise.reject(
+          new Error('Tasks list service uninitialized')
+        ),
+        storableToDoServiceStateAsyncStorage: Promise.reject(
+          new Error('Storable ToDo service state async storage uninitialized')
+        ),
         themeService: new ThemeService(
           withCache(
             new PersistentStorageService<ColorMode>(
@@ -126,7 +129,7 @@ async function createTasksListService(
 
 $registry.on(routes.workspace.tasksList.opened, (r, e) => ({
   ...r,
-  tasksList: createTasksListService(r, e),
+  tasksListService: createTasksListService(r, e),
 }))
 
 async function createStorableToDoServiceStateAsyncStorage(

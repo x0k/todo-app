@@ -11,7 +11,7 @@ export const tasksList = app.createDomain('tasks-list')
 
 declare module '@/shared/app' {
   interface Registry {
-    tasksList: Promise<ITasksListService>
+    tasksListService: Promise<ITasksListService>
   }
 }
 
@@ -31,7 +31,7 @@ export const $tasksList = $tasksListState.map(
 
 export const loadTasksListFx = attach({
   source: $registry,
-  effect: async (r) => await (await r.tasksList).loadTasksList(),
+  effect: async (r) => await (await r.tasksListService).loadTasksList(),
 })
 
 // Init

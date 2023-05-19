@@ -1,23 +1,23 @@
 import {
-  Event,
-  Task,
-  TaskId,
+  type Event,
+  type Task,
+  type TaskId,
   TaskStatus,
-  TasksList,
-  TasksListId,
+  type TasksList,
+  type TasksListId,
 } from '@/shared/kernel'
 import {
-  ICodecService,
+  type ICodecService,
   dateCodec,
   makeMapCodec,
   makeSetCodec,
   makeWithCodec,
 } from '@/shared/storage'
 
-import { StorableToDoServiceState } from '@/entities/todo'
+import { type StorableToDoServiceState } from '@/entities/todo'
 
 export type EncodedTasksList = Omit<TasksList, 'tasks' | 'createdAt'> & {
-  tasks: Record<TaskStatus, Array<TaskId>>
+  tasks: Record<TaskStatus, TaskId[]>
   createdAt: string
 }
 

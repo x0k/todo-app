@@ -3,12 +3,11 @@ import { useUnit } from 'effector-react/scope'
 
 import { Center } from '@/shared/components'
 
-import { WorkspacesContainer } from '@/entities/workspace'
-
 import {
   CreateWorkspaceDialog,
+  WorkspacesContainer,
   createWorkspaceDialogModel,
-} from '@/entities/workspace/containers/create-workspace-dialog'
+} from '@/entities/workspace'
 
 import { HeaderWidget } from '@/widgets/header'
 

@@ -1,35 +1,35 @@
 import { nanoid } from 'nanoid'
 
 import {
-  Event,
+  type Event,
   EventType,
-  Task,
-  TaskCompletedEvent,
-  TaskCreatedEvent,
-  TaskId,
+  type Task,
+  type TaskCompletedEvent,
+  type TaskCreatedEvent,
+  type TaskId,
   TaskStatus,
-  TaskUpdatedEvent,
-  TasksArchivedEvent,
-  TasksCreatedEvent,
-  TasksList,
-  TasksListCreatedEvent,
-  TasksListId,
-  TasksListUpdatedEvent,
+  type TaskUpdatedEvent,
+  type TasksArchivedEvent,
+  type TasksCreatedEvent,
+  type TasksList,
+  type TasksListCreatedEvent,
+  type TasksListId,
+  type TasksListUpdatedEvent,
 } from '@/shared/kernel'
-import { IAsyncStorageService } from '@/shared/storage'
+import { type IAsyncStorageService } from '@/shared/storage'
 
 import {
-  ArchiveTasks,
-  CompleteTask,
-  CreateTask,
-  CreateTasks,
-  CreateTasksList,
+  type ArchiveTasks,
+  type CompleteTask,
+  type CreateTask,
+  type CreateTasks,
+  type CreateTasksList,
   EVENTS_PER_PAGE,
-  IToDoService,
-  QueryEvents,
-  TasksState,
-  UpdateTask,
-  UpdateTasksList,
+  type IToDoService,
+  type QueryEvents,
+  type TasksState,
+  type UpdateTask,
+  type UpdateTasksList,
 } from '../core'
 
 export interface StorableToDoServiceState extends TasksState {
@@ -98,20 +98,21 @@ export class StorableToDoService implements IToDoService {
     private readonly storageService: IAsyncStorageService<StorableToDoServiceState>
   ) {}
 
-  loadTasksState = async (): Promise<TasksState> => this.storageService.load()
+  loadTasksState = async (): Promise<TasksState> =>
+    await this.storageService.load()
 
   createTask = async ({
     tasksListId,
     title,
   }: CreateTask): Promise<TaskCreatedEvent> =>
-    this.transaction((state) => {
+    await this.transaction((state) => {
       const tasksList = this.getTasksListById(state, tasksListId)
       const task = this.registerTask(state, tasksList, title)
       return {
         type: EventType.TaskCreated,
         task,
         createdAt: new Date(),
-        tasksListId: tasksListId,
+        tasksListId,
       }
     })
 
@@ -119,7 +120,7 @@ export class StorableToDoService implements IToDoService {
     tasksListId,
     tasks: titles,
   }: CreateTasks): Promise<TasksCreatedEvent> =>
-    this.transaction((state) => {
+    await this.transaction((state) => {
       const list = this.getTasksListById(state, tasksListId)
       const tasks = titles.map((title) => this.registerTask(state, list, title))
       return {
@@ -134,7 +135,7 @@ export class StorableToDoService implements IToDoService {
     title,
     tasks: titles,
   }: CreateTasksList): Promise<TasksListCreatedEvent> =>
-    this.transaction((state) => {
+    await this.transaction((state) => {
       const list: TasksList = {
         id: nanoid() as TasksListId,
         createdAt: new Date(),
@@ -161,7 +162,7 @@ export class StorableToDoService implements IToDoService {
     taskId,
     change,
   }: UpdateTask): Promise<TaskUpdatedEvent> =>
-    this.transaction((state) => {
+    await this.transaction((state) => {
       const task = this.getTaskById(state, taskId)
       Object.assign(task, change)
       return {
@@ -176,7 +177,7 @@ export class StorableToDoService implements IToDoService {
     tasksListId,
     change,
   }: UpdateTasksList): Promise<TasksListUpdatedEvent> =>
-    this.transaction((state) => {
+    await this.transaction((state) => {
       const list = this.getTasksListById(state, tasksListId)
       Object.assign(list, change)
       return {
@@ -191,7 +192,7 @@ export class StorableToDoService implements IToDoService {
     taskId,
     message,
   }: CompleteTask): Promise<TaskCompletedEvent> =>
-    this.transaction((state) => {
+    await this.transaction((state) => {
       this.updateTaskStatus(state, taskId, TaskStatus.Done)
       return {
         createdAt: new Date(),
@@ -204,7 +205,7 @@ export class StorableToDoService implements IToDoService {
   archiveTasks = async ({
     tasksIds,
   }: ArchiveTasks): Promise<TasksArchivedEvent> =>
-    this.transaction((state) => {
+    await this.transaction((state) => {
       for (const taskId of tasksIds) {
         this.updateTaskStatus(state, taskId, TaskStatus.Archived)
       }

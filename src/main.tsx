@@ -1,4 +1,4 @@
-import { RouteParamsAndQuery } from 'atomic-router'
+import { type RouteParamsAndQuery } from 'atomic-router'
 import { RouterProvider } from 'atomic-router-react/scope'
 import { allSettled, fork, sample } from 'effector'
 // @ts-expect-error wtf
@@ -10,35 +10,35 @@ import ReactDOM from 'react-dom/client'
 
 import { App } from './app'
 import {
-  ITasksListService,
+  type ITasksListService,
   InMemoryTasksListService,
   StorableTasksListService,
 } from './entities/tasks-list'
 import {
-  IToDoService,
+  type IToDoService,
   InMemoryToDoService,
   StorableToDoService,
-  StorableToDoServiceState,
+  type StorableToDoServiceState,
 } from './entities/todo'
 import { StorableWorkspaceService } from './entities/workspace'
 import { ColorMode, ThemeService } from './features/toggle-theme'
 import { PersistentStorageService } from './implementations/persistent-storage'
 import { makeStorableToDoServiceStateToTasksListServiceCodec } from './implementations/storable-todo-service-state-to-tasks-list-service-state-codec'
 import {
-  EncodedStorableToDoServiceState,
+  type EncodedStorableToDoServiceState,
   withStorableToDoServiceStateCodec,
 } from './implementations/storable-todo-sevice-state-codec'
 import { $registry, type Registry, appStarted } from './shared/app'
 import { BackendType, type Workspace, type WorkspaceId } from './shared/kernel'
 import { noop } from './shared/lib/function'
 import {
-  WorkspaceRouteParams,
-  WorkspaceTasksListRouteParams,
+  type WorkspaceRouteParams,
+  type WorkspaceTasksListRouteParams,
   router,
   routes,
 } from './shared/router'
 import {
-  IAsyncStorageService,
+  type IAsyncStorageService,
   asyncWithCache,
   makeAsync,
   makeAsyncWithCodec,
@@ -109,7 +109,7 @@ async function createTasksListService(
   switch (workspace.backend.type) {
     case BackendType.InMemory:
       return new InMemoryTasksListService(tasksList, tasks)
-    case BackendType.LocalStorage:
+    case BackendType.LocalStorage: {
       const withTasksListCodec = makeAsyncWithCodec(
         makeStorableToDoServiceStateToTasksListServiceCodec(
           e.params.tasksListId
@@ -120,6 +120,7 @@ async function createTasksListService(
       )
       const asyncStoreWithCache = asyncWithCache(storeWithCodec)
       return new StorableTasksListService(asyncStoreWithCache)
+    }
   }
 }
 

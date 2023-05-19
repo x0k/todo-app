@@ -1,6 +1,6 @@
-import { Task, TaskId, TasksList } from '@/shared/kernel'
+import { type Task, type TaskId, type TasksList } from '@/shared/kernel'
 
-import { ITasksListService, TasksListState } from '../core'
+import { type ITasksListService, type TasksListState } from '../core'
 
 export class InMemoryTasksListService implements ITasksListService {
   constructor(

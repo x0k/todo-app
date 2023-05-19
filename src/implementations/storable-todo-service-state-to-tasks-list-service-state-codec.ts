@@ -1,8 +1,8 @@
-import { TasksListId } from '@/shared/kernel'
-import { ICodecService } from '@/shared/storage'
+import { type TasksListId } from '@/shared/kernel'
+import { type ICodecService } from '@/shared/storage'
 
-import { TasksListState } from '@/entities/tasks-list'
-import { StorableToDoServiceState } from '@/entities/todo'
+import { type TasksListState } from '@/entities/tasks-list'
+import { type StorableToDoServiceState } from '@/entities/todo'
 
 export function makeStorableToDoServiceStateToTasksListServiceCodec(
   tasksListId: TasksListId

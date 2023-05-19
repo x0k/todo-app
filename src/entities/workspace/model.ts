@@ -91,6 +91,7 @@ $workspacesMap
   })
 
 bindLoadable($workspace, loadWorkspaceFx)
+$workspace
   .on(
     [
       createWorkspaceFx.doneData,

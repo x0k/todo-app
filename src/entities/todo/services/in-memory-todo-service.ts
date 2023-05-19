@@ -1,35 +1,35 @@
 import { nanoid } from 'nanoid'
 
 import {
-  Event,
+  type Event,
   EventType,
-  Task,
-  TaskCompletedEvent,
-  TaskCreatedEvent,
-  TaskId,
+  type Task,
+  type TaskCompletedEvent,
+  type TaskCreatedEvent,
+  type TaskId,
   TaskStatus,
-  TaskUpdatedEvent,
-  TasksArchivedEvent,
-  TasksCreatedEvent,
-  TasksList,
-  TasksListCreatedEvent,
-  TasksListId,
-  TasksListUpdatedEvent,
-  WorkspaceId,
+  type TaskUpdatedEvent,
+  type TasksArchivedEvent,
+  type TasksCreatedEvent,
+  type TasksList,
+  type TasksListCreatedEvent,
+  type TasksListId,
+  type TasksListUpdatedEvent,
+  type WorkspaceId,
 } from '@/shared/kernel'
 
 import {
-  ArchiveTasks,
-  CompleteTask,
-  CreateTask,
-  CreateTasks,
-  CreateTasksList,
+  type ArchiveTasks,
+  type CompleteTask,
+  type CreateTask,
+  type CreateTasks,
+  type CreateTasksList,
   EVENTS_PER_PAGE,
-  IToDoService,
-  QueryEvents,
-  TasksState,
-  UpdateTask,
-  UpdateTasksList,
+  type IToDoService,
+  type QueryEvents,
+  type TasksState,
+  type UpdateTask,
+  type UpdateTasksList,
 } from '../core'
 
 interface ToDoServiceState {
@@ -39,11 +39,11 @@ interface ToDoServiceState {
 }
 
 export class InMemoryToDoService implements IToDoService {
-  private static states: Map<WorkspaceId, ToDoServiceState> = new Map()
+  private static readonly states = new Map<WorkspaceId, ToDoServiceState>()
 
-  private events: Event[]
-  private lists: Map<TasksListId, TasksList>
-  private tasks: Map<TaskId, Task>
+  private readonly events: Event[]
+  private readonly lists: Map<TasksListId, TasksList>
+  private readonly tasks: Map<TaskId, Task>
 
   private getTaskById(id: TaskId): Task {
     const task = this.tasks.get(id)
@@ -121,7 +121,7 @@ export class InMemoryToDoService implements IToDoService {
       type: EventType.TaskCreated,
       task,
       createdAt: new Date(),
-      tasksListId: tasksListId,
+      tasksListId,
     })
   }
 

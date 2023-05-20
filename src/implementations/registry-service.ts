@@ -1,5 +1,6 @@
 import { type IRegistryService } from '@/shared/app'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
+import { memoize } from '@/shared/lib/memoize-decorator'
 import {
   asyncWithCache,
   makeAsync,
@@ -28,31 +29,35 @@ declare module '@/shared/app' {
 }
 
 export class RegistryService implements IRegistryService {
-  workspaceService = async (): Promise<IWorkspaceService> =>
-    new StorableWorkspaceService(
-      asyncWithCache(
-        makeAsync(
-          withMapCodec(
-            new PersistentStorageService<Array<[WorkspaceId, Workspace]>>(
-              localStorage,
-              'workspaces',
-              []
+  workspaceService = memoize(
+    async (): Promise<IWorkspaceService> =>
+      new StorableWorkspaceService(
+        asyncWithCache(
+          makeAsync(
+            withMapCodec(
+              new PersistentStorageService<Array<[WorkspaceId, Workspace]>>(
+                localStorage,
+                'workspaces',
+                []
+              )
             )
           )
         )
       )
-    )
+  )
 
-  themeService = async (): Promise<IThemeService> =>
-    new ThemeService(
-      withCache(
-        new PersistentStorageService<ColorMode>(
-          localStorage,
-          'theme',
-          window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? ColorMode.Dark
-            : ColorMode.Light
+  themeService = memoize(
+    async (): Promise<IThemeService> =>
+      new ThemeService(
+        withCache(
+          new PersistentStorageService<ColorMode>(
+            localStorage,
+            'theme',
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? ColorMode.Dark
+              : ColorMode.Light
+          )
         )
       )
-    )
+  )
 }

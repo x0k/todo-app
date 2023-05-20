@@ -28,7 +28,7 @@ import {
   type EncodedStorableToDoServiceState,
   withStorableToDoServiceStateCodec,
 } from './implementations/storable-todo-sevice-state-codec'
-import { $registry, type Registry, appStarted } from './shared/app'
+import { $registry, type Registry, appStarted, $registryService } from './shared/app'
 import { BackendType, type Workspace, type WorkspaceId } from './shared/kernel'
 import {
   type WorkspaceRouteParams,
@@ -44,6 +44,7 @@ import {
   withCache,
   withMapCodec,
 } from './shared/storage'
+import { RegistryService } from './implementations/registry-service'
 
 declare module '@/shared/app' {
   interface Registry {
@@ -96,6 +97,7 @@ export const scope = fork({
         ),
       } satisfies Registry,
     ],
+    [$registryService, new RegistryService()]
   ],
 })
 

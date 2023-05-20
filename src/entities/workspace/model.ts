@@ -1,6 +1,6 @@
 import { attach, sample } from 'effector'
 
-import { $registry, app } from '@/shared/app'
+import { $registryService, app } from '@/shared/app'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import { type Loadable, type States } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
@@ -40,32 +40,32 @@ export const $workspace = workspace.createStore<
 // Effects
 
 export const loadWorkspacesFx = attach({
-  source: $registry,
-  effect: async (r) => await r.workspaceService.loadWorkspaces(),
+  source: $registryService,
+  effect: async (r) => await (await r.workspaceService()).loadWorkspaces(),
 })
 
 export const loadWorkspaceFx = attach({
-  source: $registry,
+  source: $registryService,
   effect: async (r, id: WorkspaceId) =>
-    await r.workspaceService.loadWorkspace(id),
+    await (await r.workspaceService()).loadWorkspace(id),
 })
 
 export const createWorkspaceFx = attach({
-  source: $registry,
+  source: $registryService,
   effect: async (r, data: CreateWorkspace) =>
-    await r.workspaceService.createWorkspace(data),
+    await (await r.workspaceService()).createWorkspace(data),
 })
 
 export const updateWorkspaceFx = attach({
-  source: $registry,
+  source: $registryService,
   effect: async (r, data: UpdateWorkspace) =>
-    await r.workspaceService.updateWorkspace(data),
+    await (await r.workspaceService()).updateWorkspace(data),
 })
 
 export const deleteWorkspaceFx = attach({
-  source: $registry,
+  source: $registryService,
   effect: async (r, data: DeleteWorkspace) => {
-    await r.workspaceService.deleteWorkspace(data)
+    await (await r.workspaceService()).deleteWorkspace(data)
   },
 })
 

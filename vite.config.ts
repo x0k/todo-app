@@ -8,10 +8,17 @@ export default defineConfig({
     react({
       jsxImportSource: '@emotion/react',
       // babel: {
-      //   babelrc: true,
-      //   plugins: [['effector/babel-plugin', { addLoc: true }]],
+      //   plugins: [
+      //     // Seems like this plugin is not working cause esbuild don`t have support for decorators
+      //     [
+      //       '@babel/plugin-proposal-decorators',
+      //       { loose: true, version: '2022-03' },
+      //     ],
+      //     ['effector/babel-plugin', { addLoc: true }],
+      //   ],
       //   presets: ['atomic-router/babel-preset'],
       // },
+      tsDecorators: true,
       plugins: [
         [
           '@effector/swc-plugin',

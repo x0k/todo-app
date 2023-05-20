@@ -1,6 +1,6 @@
 import { attach, sample } from 'effector'
 
-import { $registry, app, appStarted } from '@/shared/app'
+import { $registryService, app, appStarted } from '@/shared/app'
 
 import { ColorMode, type IThemeService } from './core'
 
@@ -17,21 +17,26 @@ export const $colorMode = d.createStore(ColorMode.Light)
 export const colorModeToggled = d.createEvent()
 
 const setColorModeFx = attach({
-  source: $registry,
-  effect: (r, colorMode: ColorMode) => {
-    r.themeService.setColorMode(colorMode)
+  source: $registryService,
+  effect: async (r, colorMode: ColorMode) => {
+    ;(await r.themeService()).setColorMode(colorMode)
   },
 })
 
-$colorMode.on(colorModeToggled, (state) =>
-  state === ColorMode.Dark ? ColorMode.Light : ColorMode.Dark
-)
+const getColorModeFx = attach({
+  source: $registryService,
+  effect: async (r) => (await r.themeService()).getColorMode(),
+})
+
+$colorMode
+  .on(colorModeToggled, (state) =>
+    state === ColorMode.Dark ? ColorMode.Light : ColorMode.Dark
+  )
+  .on(getColorModeFx.doneData, (_, colorMode) => colorMode)
 
 sample({
   clock: appStarted,
-  source: $registry,
-  fn: (r) => r.themeService.getColorMode(),
-  target: $colorMode,
+  target: getColorModeFx,
 })
 
 sample({

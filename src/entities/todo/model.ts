@@ -1,14 +1,15 @@
 import { attach, sample } from 'effector'
 
-import { $registry, app, errorOccurred } from '@/shared/app'
+import { $registryService, app, errorOccurred } from '@/shared/app'
 import {
   type Event,
   type Task,
   type TaskId,
   type TasksList,
   type TasksListId,
+  type WorkspaceId,
 } from '@/shared/kernel'
-import { routes } from '@/shared/router'
+import { isDefined } from '@/shared/lib/guards'
 
 import {
   type ArchiveTasks,
@@ -29,11 +30,13 @@ export const todo = app.createDomain('todo')
 
 declare module '@/shared/app' {
   interface Registry {
-    todoService: Promise<IToDoService>
+    todoService: IToDoService
   }
 }
 
 // Stores
+
+export const $currentWorkspaceId = todo.createStore<WorkspaceId | null>(null)
 
 export const $tasksState = todo.createStore<TasksState>({
   lists: new Map(),
@@ -62,64 +65,78 @@ export const $tasksArray = $tasksState.map((state) =>
 
 export const $events = todo.createStore<Event[]>([])
 
+const $todoService = sample({
+  source: {
+    registryService: $registryService,
+    workspaceId: $currentWorkspaceId,
+  },
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
+  fn: ({ registryService, workspaceId }): Promise<IToDoService> =>
+    workspaceId === null
+      ? Promise.reject(new Error(`Workspace is not initialized`))
+      : registryService.todoService(workspaceId),
+})
+
+export const workspaceIdChanged = todo.createEvent<WorkspaceId | null>()
+
 // Effects
 
 export const loadTasksStateFx = attach({
-  source: $registry,
-  effect: async (r) => await (await r.todoService).loadTasksState(),
+  source: $todoService,
+  effect: async (todoService) => await (await todoService).loadTasksState(),
 })
 
 export const createTaskFx = attach({
-  source: $registry,
-  effect: async (r, data: CreateTask) =>
-    await (await r.todoService).createTask(data),
+  source: $todoService,
+  effect: async (todoService, data: CreateTask) =>
+    await (await todoService).createTask(data),
 })
 
 export const createTasksFx = attach({
-  source: $registry,
-  effect: async (r, data: CreateTasks) =>
-    await (await r.todoService).createTasks(data),
+  source: $todoService,
+  effect: async (todoService, data: CreateTasks) =>
+    await (await todoService).createTasks(data),
 })
 
 export const createTasksListFx = attach({
-  source: $registry,
-  effect: async (r, data: CreateTasksList) =>
-    await (await r.todoService).createTasksList(data),
+  source: $todoService,
+  effect: async (todoService, data: CreateTasksList) =>
+    await (await todoService).createTasksList(data),
 })
 
 export const updateTaskFx = attach({
-  source: $registry,
-  effect: async (r, data: UpdateTask) =>
-    await (await r.todoService).updateTask(data),
+  source: $todoService,
+  effect: async (todoService, data: UpdateTask) =>
+    await (await todoService).updateTask(data),
 })
 
 export const updateTasksListFx = attach({
-  source: $registry,
-  effect: async (r, data: UpdateTasksList) =>
-    await (await r.todoService).updateTasksList(data),
+  source: $todoService,
+  effect: async (todoService, data: UpdateTasksList) =>
+    await (await todoService).updateTasksList(data),
 })
 
 export const completeTaskFx = attach({
-  source: $registry,
-  effect: async (r, data: CompleteTask) =>
-    await (await r.todoService).completeTask(data),
+  source: $todoService,
+  effect: async (todoService, data: CompleteTask) =>
+    await (await todoService).completeTask(data),
 })
 
 export const archiveTasksFx = attach({
-  source: $registry,
-  effect: async (r, data: ArchiveTasks) =>
-    await (await r.todoService).archiveTasks(data),
+  source: $todoService,
+  effect: async (todoService, data: ArchiveTasks) =>
+    await (await todoService).archiveTasks(data),
 })
 
 export const getEventsCountFx = attach({
-  source: $registry,
-  effect: async (r) => await (await r.todoService).getEventsCount(),
+  source: $todoService,
+  effect: async (todoService) => await (await todoService).getEventsCount(),
 })
 
 export const loadEventsFx = attach({
-  source: $registry,
-  effect: async (r, query: QueryEvents) =>
-    await (await r.todoService).loadEvents(query),
+  source: $todoService,
+  effect: async (todoService, query: QueryEvents) =>
+    await (await todoService).loadEvents(query),
 })
 
 // Events
@@ -177,6 +194,12 @@ $events
   })
 
 sample({
-  clock: routes.workspace.index.opened,
+  clock: workspaceIdChanged,
+  target: $currentWorkspaceId,
+})
+
+sample({
+  clock: $currentWorkspaceId,
+  filter: isDefined,
   target: loadTasksStateFx,
 })

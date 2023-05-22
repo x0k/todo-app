@@ -1,6 +1,8 @@
-import { type DBSchema } from 'idb'
+import { type DBSchema, type IDBPTransaction } from 'idb'
 
-type TaskId = string
+import { type Brand } from './lib/type'
+
+type TaskId = Brand<'TaskID', string>
 interface Task {
   id: TaskId
   tasksListId: TasksListId
@@ -8,7 +10,7 @@ interface Task {
   status: TaskStatus
   createdAt: Date
 }
-type TasksListId = string
+type TasksListId = Brand<'TasksListID', string>
 interface TasksList {
   id: TasksListId
   title: string
@@ -17,8 +19,12 @@ interface TasksList {
   tasksCount: number
   createdAt: Date
 }
-type TaskStatus = 'n' | 'a' | 'd'
-type EventId = string
+enum TaskStatus {
+  NotDone = 'n',
+  Archived = 'a',
+  Done = 'd',
+}
+type EventId = Brand<'EventID', string>
 enum EventType {
   TaskCreated = 't_c',
   TasksCreated = 'ts_c',
@@ -33,47 +39,37 @@ interface AbstractEvent<T extends EventType> {
   type: T
   createdAt: Date
 }
-
 interface TaskCreatedEvent extends AbstractEvent<EventType.TaskCreated> {
   tasksListId: TasksListId
   task: Task
 }
-
 interface TasksCreatedEvent extends AbstractEvent<EventType.TasksCreated> {
   tasksListId: TasksListId
   tasks: Task[]
 }
-
 interface TasksListCreatedEvent
   extends AbstractEvent<EventType.TasksListCreated> {
   list: TasksList
   tasks: Task[]
 }
-
 type WritableTaskData = Partial<Pick<Task, 'title'>>
-
 interface TaskUpdatedEvent extends AbstractEvent<EventType.TaskUpdated> {
   taskId: TaskId
   change: WritableTaskData
 }
-
 type WritableTasksListData = Partial<Pick<TasksList, 'title' | 'isArchived'>>
-
 interface TasksListUpdatedEvent
   extends AbstractEvent<EventType.TasksListUpdated> {
   tasksListId: TasksListId
   change: WritableTasksListData
 }
-
 interface TaskCompletedEvent extends AbstractEvent<EventType.TaskCompleted> {
   taskId: TaskId
   message: string
 }
-
 interface TasksArchivedEvent extends AbstractEvent<EventType.TasksArchived> {
   tasksIds: TaskId[]
 }
-
 type Event =
   | TaskCreatedEvent
   | TasksCreatedEvent
@@ -97,3 +93,13 @@ export interface IDBSchemaV1 extends DBSchema {
     value: Event
   }
 }
+
+export type IDBSchema = IDBSchemaV1
+
+export const IDB_SCHEMA_KEYS = ['task', 'tasksList', 'event'] as const
+
+export type Transaction = IDBPTransaction<
+  IDBSchema,
+  typeof IDB_SCHEMA_KEYS,
+  'readwrite'
+>

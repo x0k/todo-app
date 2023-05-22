@@ -69,7 +69,7 @@ export class RegistryService implements IRegistryService {
       return asyncWithCache(makeAsync(storeWithCodec))
     }
   )
-
+  
   workspacePageSettingsStorage = memoize(
     async () =>
       new PersistentStorageService<boolean>(
@@ -84,7 +84,6 @@ export class RegistryService implements IRegistryService {
       tasksListId,
       workspaceId,
     }: WorkspaceTasksListRouteParams): Promise<ITasksListService> => {
-      console.log('TASKS LIST SERVICE')
       const { lists, tasks } = await (
         await this.todoService(workspaceId)
       ).loadTasksState()

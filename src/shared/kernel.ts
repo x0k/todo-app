@@ -38,16 +38,19 @@ export type WritableTasksListData = Partial<
 >
 
 export enum EventType {
-  TaskCreated = 'taskCreated',
-  TasksCreated = 'tasksCreated',
-  TasksListCreated = 'tasksListCreated',
-  TaskUpdated = 'taskUpdated',
-  TasksListUpdated = 'tasksListUpdated',
-  TaskCompleted = 'taskCompleted',
-  TasksArchived = 'tasksArchived',
+  TaskCreated = 't_c',
+  TasksCreated = 'ts_c',
+  TasksListCreated = 'tl_c',
+  TaskUpdated = 't_u',
+  TasksListUpdated = 'tl_u',
+  TaskCompleted = 't_ct',
+  TasksArchived = 'ts_a',
 }
 
+export type EventId = Brand<'EventID', string>
+
 export interface AbstractEvent<T extends EventType> {
+  id: EventId
   type: T
   createdAt: Date
 }

@@ -1,6 +1,7 @@
 import { attach, sample } from 'effector'
 
-import { $registry, app, appStarted } from '@/shared/app'
+import { $registryService, app } from '@/shared/app'
+import { routes } from '@/shared/router'
 import { type IStorageService } from '@/shared/storage'
 
 declare module '@/shared/app' {
@@ -15,20 +16,32 @@ export const $isEventsLogFeature = d.createStore(false)
 
 export const featureToggled = d.createEvent()
 
+const $workspacePageSettingsService = $registryService.map(
+  async (r) => await r.workspacePageSettingsStorage()
+)
+
 const setIsEventsLogFeatureFx = attach({
-  source: $registry,
-  effect: (r, isEventsLogFeature: boolean) => {
-    r.workspacePageSettingsStorage.save(isEventsLogFeature)
+  source: $workspacePageSettingsService,
+  effect: async (settingsService, isEventsLogFeature: boolean) => {
+    ;(await settingsService).save(isEventsLogFeature)
   },
 })
 
-$isEventsLogFeature.on(featureToggled, (state) => !state)
+const loadWorkspacePageSettingsFx = attach({
+  source: $workspacePageSettingsService,
+  effect: async (settingsService) => (await settingsService).load(),
+})
+
+$isEventsLogFeature
+  .on(featureToggled, (state) => !state)
+  .on(
+    loadWorkspacePageSettingsFx.doneData,
+    (_, isEventsLogFeature) => isEventsLogFeature
+  )
 
 sample({
-  clock: appStarted,
-  source: $registry,
-  fn: (r) => r.workspacePageSettingsStorage.load(),
-  target: $isEventsLogFeature,
+  clock: routes.workspace.index.opened,
+  target: loadWorkspacePageSettingsFx,
 })
 
 sample({

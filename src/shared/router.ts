@@ -1,4 +1,5 @@
 import { createHistoryRouter, createRoute } from 'atomic-router'
+import { merge } from 'effector'
 
 import { type TasksListId, type WorkspaceId } from './kernel'
 
@@ -32,3 +33,16 @@ export const router = createHistoryRouter({
   routes: routesMap,
   notFoundRoute: routes.notFound,
 })
+
+export const workspaceOpened = merge([
+  routes.workspace.index.opened.map(
+    ({ params: { workspaceId } }) => workspaceId
+  ),
+  routes.workspace.tasksList.opened.map(
+    ({ params: { workspaceId } }) => workspaceId
+  ),
+])
+
+export const tasksListOpened = routes.workspace.tasksList.opened.map(
+  ({ params }) => params
+)

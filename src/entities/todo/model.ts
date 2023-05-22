@@ -10,6 +10,7 @@ import {
   type WorkspaceId,
 } from '@/shared/kernel'
 import { isDefined } from '@/shared/lib/guards'
+import { workspaceOpened } from '@/shared/router'
 
 import {
   type ArchiveTasks,
@@ -77,8 +78,6 @@ const $todoService = sample({
       : registryService.todoService(workspaceId),
 })
 
-export const workspaceIdChanged = todo.createEvent<WorkspaceId | null>()
-
 // Effects
 
 export const loadTasksStateFx = attach({
@@ -142,6 +141,10 @@ export const loadEventsFx = attach({
 // Events
 
 // Init
+sample({
+  clock: workspaceOpened,
+  target: $currentWorkspaceId,
+})
 
 sample({
   clock: [
@@ -192,11 +195,6 @@ $events
       .concat(result)
       .concat(events.slice(start + EVENTS_PER_PAGE))
   })
-
-sample({
-  clock: workspaceIdChanged,
-  target: $currentWorkspaceId,
-})
 
 sample({
   clock: $currentWorkspaceId,

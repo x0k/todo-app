@@ -25,6 +25,4 @@ export type IRegistryService = {
   ) => Promise<Registry[K]>
 }
 
-export const $registry = app.createStore({} as Registry)
-
 export const $registryService = app.createStore({} as IRegistryService)

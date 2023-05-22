@@ -12,8 +12,15 @@ import memoizeOne, { type MemoizedFn } from 'memoize-one'
 //   return descriptor
 // }
 
+function equalWithPromise<T>(a: T, b: T): boolean {
+  if (a instanceof Promise) {
+    return b instanceof Promise ? a === b : false
+  }
+  return equal(a, b)
+}
+
 export function memoize<F extends (this: any, ...args: any[]) => any>(
   fn: F
 ): MemoizedFn<F> {
-  return memoizeOne(fn, equal)
+  return memoizeOne(fn, equalWithPromise)
 }

@@ -106,7 +106,7 @@ export type Event =
 export enum BackendType {
   InMemory = 'inMemory',
   LocalStorage = 'localStorage',
-  // IndexedDatabase = 'indexedDB',
+  IndexedDB = 'indexedDB',
 }
 
 export const BACKEND_TYPES = Object.values(BackendType)
@@ -114,12 +114,12 @@ export const BACKEND_TYPES = Object.values(BackendType)
 export const BACKEND_TITLES: Record<BackendType, string> = {
   [BackendType.InMemory]: 'In memory',
   [BackendType.LocalStorage]: 'Local storage',
-  // [BackendType.IndexedDatabase]: 'Local',
+  [BackendType.IndexedDB]: 'Indexed database',
 }
 export interface BackendConfigs {
   [BackendType.InMemory]: EmptyObject
   [BackendType.LocalStorage]: EmptyObject
-  // [BackendType.IndexedDatabase]: EmptyObject
+  [BackendType.IndexedDB]: EmptyObject
 }
 
 export interface BackendData<T extends BackendType> {

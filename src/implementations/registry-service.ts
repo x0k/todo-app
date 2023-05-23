@@ -1,4 +1,7 @@
+import { type IDBPDatabase, openDB } from 'idb'
+
 import { type IRegistryService } from '@/shared/app'
+import { type IDBSchema, TARGET_IDB_SCHEMA_VERSION } from '@/shared/idb-schema'
 import { BackendType, type Workspace, type WorkspaceId } from '@/shared/kernel'
 import { memoize } from '@/shared/lib/memoize-decorator'
 import { type WorkspaceTasksListRouteParams } from '@/shared/router'
@@ -16,12 +19,14 @@ import {
   InMemoryTasksListService,
   StorableTasksListService,
 } from '@/entities/tasks-list'
+import { IDBTasksListService } from '@/entities/tasks-list/services/idb-tasks-list-service'
 import {
   type IToDoService,
   InMemoryToDoService,
   StorableToDoService,
   type StorableToDoServiceState,
 } from '@/entities/todo'
+import { IDBToDoService } from '@/entities/todo/services/idb-todo-service'
 import {
   type IWorkspaceService,
   StorableWorkspaceService,
@@ -69,7 +74,27 @@ export class RegistryService implements IRegistryService {
       return asyncWithCache(makeAsync(storeWithCodec))
     }
   )
-  
+
+  private readonly indexedDb = memoize(
+    async (workspaceId: WorkspaceId): Promise<IDBPDatabase<IDBSchema>> => {
+      return await openDB<IDBSchema>(
+        `todo-${workspaceId}`,
+        TARGET_IDB_SCHEMA_VERSION,
+        {
+          async upgrade(db, oldVersion) {
+            // Init
+            if (oldVersion < 1) {
+              db.createObjectStore('task', { keyPath: 'id' })
+              db.createObjectStore('tasksList', { keyPath: 'id' })
+              const events = db.createObjectStore('event', { keyPath: 'id' })
+              events.createIndex('byCreatedAt', 'createdAt')
+            }
+          },
+        }
+      )
+    }
+  )
+
   workspacePageSettingsStorage = memoize(
     async () =>
       new PersistentStorageService<boolean>(
@@ -107,6 +132,12 @@ export class RegistryService implements IRegistryService {
           const asyncStoreWithCache = asyncWithCache(storeWithCodec)
           return new StorableTasksListService(asyncStoreWithCache)
         }
+        case BackendType.IndexedDB: {
+          return new IDBTasksListService(
+            await this.indexedDb(workspaceId),
+            tasksListId
+          )
+        }
       }
     }
   )
@@ -123,6 +154,9 @@ export class RegistryService implements IRegistryService {
           return new StorableToDoService(
             await this.storableToDoServiceStateAsyncStorage(workspaceId)
           )
+        }
+        case BackendType.IndexedDB: {
+          return new IDBToDoService(await this.indexedDb(workspaceId))
         }
       }
     }

@@ -97,7 +97,11 @@ export interface IDBSchemaV1 extends DBSchema {
   }
 }
 
-export type IDBSchema = IDBSchemaV1
+export type IDBSchemaVersions = [DBSchema, IDBSchemaV1]
+
+export const TARGET_IDB_SCHEMA_VERSION = 1 as const
+
+export type IDBSchema = IDBSchemaVersions[typeof TARGET_IDB_SCHEMA_VERSION]
 
 export const IDB_SCHEMA_KEYS = ['task', 'tasksList', 'event'] as const
 

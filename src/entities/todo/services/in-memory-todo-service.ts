@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid'
 
 import {
   type Event,
+  type EventId,
   EventType,
   type Task,
   type TaskCompletedEvent,
@@ -70,9 +71,16 @@ export class InMemoryToDoService implements IToDoService {
     return task
   }
 
-  private registerEvent<E extends Event>(event: E): E {
-    this.events.unshift(event)
-    return event
+  private registerEvent<E extends Event>(
+    event: Omit<E, 'createdAt' | 'id'>
+  ): E {
+    const e = {
+      ...event,
+      createdAt: new Date(),
+      id: nanoid() as EventId,
+    } as E
+    this.events.unshift(e)
+    return e
   }
 
   private makeTask(tasksListId: TasksListId, title: string): Task {
@@ -117,10 +125,9 @@ export class InMemoryToDoService implements IToDoService {
     this.tasks.set(task.id, task)
     tasksList.tasks[task.status].add(task.id)
     tasksList.tasksCount++
-    return this.registerEvent({
+    return this.registerEvent<TaskCreatedEvent>({
       type: EventType.TaskCreated,
       task,
-      createdAt: new Date(),
       tasksListId,
     })
   }
@@ -138,8 +145,7 @@ export class InMemoryToDoService implements IToDoService {
       tasksList.tasks[task.status].add(task.id)
     }
     tasksList.tasksCount += result.length
-    return this.registerEvent({
-      createdAt: new Date(),
+    return this.registerEvent<TasksCreatedEvent>({
       type: EventType.TasksCreated,
       tasks: result,
       tasksListId,
@@ -167,8 +173,7 @@ export class InMemoryToDoService implements IToDoService {
       tasksListId: list.id,
       tasks,
     })
-    return this.registerEvent({
-      createdAt: new Date(),
+    return this.registerEvent<TasksListCreatedEvent>({
       list,
       tasks: realTasks,
       type: EventType.TasksListCreated,
@@ -181,8 +186,7 @@ export class InMemoryToDoService implements IToDoService {
   }: UpdateTask): Promise<TaskUpdatedEvent> => {
     const task = this.getTaskById(taskId)
     Object.assign(task, change)
-    return this.registerEvent({
-      createdAt: new Date(),
+    return this.registerEvent<TaskUpdatedEvent>({
       change,
       taskId,
       type: EventType.TaskUpdated,
@@ -195,9 +199,8 @@ export class InMemoryToDoService implements IToDoService {
   }: UpdateTasksList): Promise<TasksListUpdatedEvent> => {
     const list = this.getTasksListById(tasksListId)
     Object.assign(list, change)
-    return this.registerEvent({
+    return this.registerEvent<TasksListUpdatedEvent>({
       change,
-      createdAt: new Date(),
       tasksListId,
       type: EventType.TasksListUpdated,
     })
@@ -208,8 +211,7 @@ export class InMemoryToDoService implements IToDoService {
     message,
   }: CompleteTask): Promise<TaskCompletedEvent> => {
     this.updateTaskStatus(taskId, TaskStatus.Done)
-    return this.registerEvent({
-      createdAt: new Date(),
+    return this.registerEvent<TaskCompletedEvent>({
       message,
       taskId,
       type: EventType.TaskCompleted,
@@ -222,9 +224,8 @@ export class InMemoryToDoService implements IToDoService {
     tasksIds.forEach((taskId) => {
       this.updateTaskStatus(taskId, TaskStatus.Archived)
     })
-    return this.registerEvent({
+    return this.registerEvent<TasksArchivedEvent>({
       type: EventType.TasksArchived,
-      createdAt: new Date(),
       tasksIds,
     })
   }

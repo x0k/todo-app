@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid'
 
 import {
   type Event,
+  type EventId,
   EventType,
   type Task,
   type TaskCompletedEvent,
@@ -56,10 +57,14 @@ export class StorableToDoService implements IToDoService {
   }
 
   private async transaction<E extends Event>(
-    action: (state: TasksState) => E
+    action: (state: TasksState) => Omit<E, 'id' | 'createdAt'>
   ): Promise<E> {
     const state = await this.storageService.load()
-    const event = action(state)
+    const event = {
+      ...action(state),
+      id: nanoid() as EventId,
+      createdAt: new Date(),
+    } as E
     state.events.unshift(event)
     await this.storageService.save(state)
     return event
@@ -111,7 +116,6 @@ export class StorableToDoService implements IToDoService {
       return {
         type: EventType.TaskCreated,
         task,
-        createdAt: new Date(),
         tasksListId,
       }
     })
@@ -124,7 +128,6 @@ export class StorableToDoService implements IToDoService {
       const list = this.getTasksListById(state, tasksListId)
       const tasks = titles.map((title) => this.registerTask(state, list, title))
       return {
-        createdAt: new Date(),
         type: EventType.TasksCreated,
         tasks,
         tasksListId,
@@ -151,7 +154,6 @@ export class StorableToDoService implements IToDoService {
       state.lists.set(list.id, list)
       const tasks = titles.map((title) => this.registerTask(state, list, title))
       return {
-        createdAt: new Date(),
         list,
         tasks,
         type: EventType.TasksListCreated,
@@ -166,7 +168,6 @@ export class StorableToDoService implements IToDoService {
       const task = this.getTaskById(state, taskId)
       Object.assign(task, change)
       return {
-        createdAt: new Date(),
         change,
         taskId,
         type: EventType.TaskUpdated,
@@ -182,7 +183,6 @@ export class StorableToDoService implements IToDoService {
       Object.assign(list, change)
       return {
         change,
-        createdAt: new Date(),
         tasksListId,
         type: EventType.TasksListUpdated,
       }
@@ -195,7 +195,6 @@ export class StorableToDoService implements IToDoService {
     await this.transaction((state) => {
       this.updateTaskStatus(state, taskId, TaskStatus.Done)
       return {
-        createdAt: new Date(),
         type: EventType.TaskCompleted,
         taskId,
         message,
@@ -210,7 +209,6 @@ export class StorableToDoService implements IToDoService {
         this.updateTaskStatus(state, taskId, TaskStatus.Archived)
       }
       return {
-        createdAt: new Date(),
         tasksIds,
         type: EventType.TasksArchived,
       }

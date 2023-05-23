@@ -91,6 +91,9 @@ export interface IDBSchemaV1 extends DBSchema {
   event: {
     key: EventId
     value: Event
+    indexes: {
+      byCreatedAt: Date
+    }
   }
 }
 

@@ -27,3 +27,7 @@ export interface IWorkspaceService {
   updateWorkspace: (data: UpdateWorkspace) => Promise<Workspace>
   deleteWorkspace: (data: DeleteWorkspace) => Promise<void>
 }
+
+export interface IWorkspaceBackendReleaseService {
+  release: (ws: Workspace) => Promise<void>
+}

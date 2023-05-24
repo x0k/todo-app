@@ -2,7 +2,12 @@ import { type IDBPDatabase, openDB } from 'idb'
 
 import { type IRegistryService } from '@/shared/app'
 import { type IDBSchema, TARGET_IDB_SCHEMA_VERSION } from '@/shared/idb-schema'
-import { BackendType, type Workspace, type WorkspaceId } from '@/shared/kernel'
+import {
+  BackendType,
+  type IIDBService,
+  type Workspace,
+  type WorkspaceId,
+} from '@/shared/kernel'
 import { memoize } from '@/shared/lib/memoize-decorator'
 import { type WorkspaceTasksListRouteParams } from '@/shared/router'
 import {
@@ -28,6 +33,7 @@ import {
 } from '@/features/toggle-theme'
 
 import { PersistentStorageService } from './persistent-storage'
+import { WorkspaceBackendReleaseService } from './workspace-backend-release-service'
 
 declare module '@/shared/app' {
   interface Config {
@@ -40,10 +46,12 @@ declare module '@/shared/app' {
 }
 
 export class RegistryService implements IRegistryService {
+  constructor(private readonly idbService: IIDBService) {}
+
   private readonly indexedDb = memoize(
     async (workspaceId: WorkspaceId): Promise<IDBPDatabase<IDBSchema>> => {
       return await openDB<IDBSchema>(
-        `todo-${workspaceId}`,
+        this.idbService.getDBName(workspaceId),
         TARGET_IDB_SCHEMA_VERSION,
         {
           async upgrade(db, oldVersion) {
@@ -114,7 +122,8 @@ export class RegistryService implements IRegistryService {
               )
             )
           )
-        )
+        ),
+        new WorkspaceBackendReleaseService(this.idbService)
       )
   )
 

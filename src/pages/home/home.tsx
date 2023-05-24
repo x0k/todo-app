@@ -5,14 +5,19 @@ import { Center } from '@/shared/components'
 
 import {
   CreateWorkspaceDialog,
+  DeleteWorkspaceDialog,
   WorkspacesContainer,
   createWorkspaceDialogModel,
+  deleteWorkspaceDialogModel,
 } from '@/entities/workspace'
 
 import { HeaderWidget } from '@/widgets/header'
 
 export function HomePage(): JSX.Element {
-  const open = useUnit(createWorkspaceDialogModel.dialogOpened)
+  const binds = useUnit({
+    openCreateWorkspaceDialog: createWorkspaceDialogModel.dialogOpened,
+    openDeleteWorkspaceDialog: deleteWorkspaceDialogModel.dialogOpened,
+  })
   return (
     <Box display="flex" flexDirection="column" padding={2}>
       <HeaderWidget title={<Typography variant="h4">Workspaces</Typography>} />
@@ -25,12 +30,17 @@ export function HomePage(): JSX.Element {
             padding={2}
             minWidth="300px"
           >
-            <WorkspacesContainer />
-            <Button onClick={open}>Create workspace</Button>
+            <WorkspacesContainer
+              onDelete={(ws) => binds.openDeleteWorkspaceDialog(ws.id)}
+            />
+            <Button onClick={binds.openCreateWorkspaceDialog}>
+              Create workspace
+            </Button>
           </Box>
         </Paper>
       </Center>
       <CreateWorkspaceDialog />
+      <DeleteWorkspaceDialog />
     </Box>
   )
 }

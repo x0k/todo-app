@@ -8,17 +8,13 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { App } from './app'
-import { appStarted, $registryService } from './shared/app'
-import {
-  router,
-} from './shared/router'
-
+import { IDBService } from './implementations/idb-service'
 import { RegistryService } from './implementations/registry-service'
+import { $registryService, appStarted } from './shared/app'
+import { router } from './shared/router'
 
 export const scope = fork({
-  values: [
-    [$registryService, new RegistryService()]
-  ],
+  values: [[$registryService, new RegistryService(new IDBService())]],
 })
 
 sample({

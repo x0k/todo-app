@@ -82,9 +82,6 @@ $workspacesMap
     (map, workspace) => new Map(map).set(workspace.id, workspace)
   )
   .on(deleteWorkspaceFx.done, (map, { params: { id } }) => {
-    if (!map.has(id)) {
-      return
-    }
     const newMap = new Map(map)
     newMap.delete(id)
     return newMap

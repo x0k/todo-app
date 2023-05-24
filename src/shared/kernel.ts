@@ -121,6 +121,10 @@ export interface BackendData<T extends BackendType> {
   config: BackendConfigs[T]
 }
 
+export interface IIDBService {
+  getDBName: (workspaceId: WorkspaceId) => string
+}
+
 export type WorkspaceId = Brand<'WorkspaceId', string>
 
 export interface Workspace<T extends BackendType = BackendType> {

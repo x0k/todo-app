@@ -6,6 +6,7 @@ import { type IAsyncStorageService } from '@/shared/storage'
 import {
   type CreateWorkspace,
   type DeleteWorkspace,
+  type IWorkspaceBackendReleaseService,
   type IWorkspaceService,
   type UpdateWorkspace,
 } from './core'
@@ -14,7 +15,8 @@ export class StorableWorkspaceService implements IWorkspaceService {
   constructor(
     private readonly storageService: IAsyncStorageService<
       Map<WorkspaceId, Workspace>
-    >
+    >,
+    private readonly backendReleaseService: IWorkspaceBackendReleaseService
   ) {}
 
   loadWorkspaces = async (): Promise<Map<WorkspaceId, Workspace>> =>
@@ -60,6 +62,11 @@ export class StorableWorkspaceService implements IWorkspaceService {
 
   deleteWorkspace = async ({ id }: DeleteWorkspace): Promise<void> => {
     const workspaces = await this.loadWorkspaces()
+    const workspace = workspaces.get(id)
+    if (workspace === undefined) {
+      throw new Error(`Workspace "${id}" not found`)
+    }
+    await this.backendReleaseService.release(workspace)
     workspaces.delete(id)
     await this.storageService.save(workspaces)
   }

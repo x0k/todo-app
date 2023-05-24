@@ -249,8 +249,11 @@ export class IDBToDoService implements IToDoService {
     let cursor = await this.dbService
       .transaction('event', 'readonly')
       .store.index('byCreatedAt')
-      .openCursor(null, 'prev')
-    cursor = await (cursor?.advance(EVENTS_PER_PAGE * page) ?? null)
+      .openCursor()
+    const shift = EVENTS_PER_PAGE * (page - 1)
+    if (shift > 0) {
+      cursor = await (cursor?.advance(EVENTS_PER_PAGE * (page - 1)) ?? null)
+    }
     let i = 0
     while (cursor !== null && i++ < EVENTS_PER_PAGE) {
       events.push(cursor.value)

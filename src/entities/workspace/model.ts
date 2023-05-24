@@ -1,6 +1,6 @@
 import { attach, sample } from 'effector'
 
-import { app } from '@/shared/app'
+import { $registryService, app } from '@/shared/app'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import { type Loadable, type States } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
@@ -15,11 +15,13 @@ import {
 
 export const workspace = app.createDomain('workspace')
 
-// Stores
+declare module '@/shared/app' {
+  interface Registry {
+    workspaceService: IWorkspaceService
+  }
+}
 
-export const $workspaceService = workspace.createStore<IWorkspaceService>(
-  {} as IWorkspaceService
-)
+// Stores
 
 export const $workspacesMap = workspace.createStore(
   new Map<WorkspaceId, Workspace>()
@@ -38,29 +40,32 @@ export const $workspace = workspace.createStore<
 // Effects
 
 export const loadWorkspacesFx = attach({
-  source: $workspaceService,
-  effect: async (s) => await s.loadWorkspaces(),
+  source: $registryService,
+  effect: async (r) => await (await r.workspaceService()).loadWorkspaces(),
 })
 
 export const loadWorkspaceFx = attach({
-  source: $workspaceService,
-  effect: async (s, id: WorkspaceId) => await s.loadWorkspace(id),
+  source: $registryService,
+  effect: async (r, id: WorkspaceId) =>
+    await (await r.workspaceService()).loadWorkspace(id),
 })
 
 export const createWorkspaceFx = attach({
-  source: $workspaceService,
-  effect: async (s, data: CreateWorkspace) => await s.createWorkspace(data),
+  source: $registryService,
+  effect: async (r, data: CreateWorkspace) =>
+    await (await r.workspaceService()).createWorkspace(data),
 })
 
 export const updateWorkspaceFx = attach({
-  source: $workspaceService,
-  effect: async (s, data: UpdateWorkspace) => await s.updateWorkspace(data),
+  source: $registryService,
+  effect: async (r, data: UpdateWorkspace) =>
+    await (await r.workspaceService()).updateWorkspace(data),
 })
 
 export const deleteWorkspaceFx = attach({
-  source: $workspaceService,
-  effect: async (s, data: DeleteWorkspace) => {
-    await s.deleteWorkspace(data)
+  source: $registryService,
+  effect: async (r, data: DeleteWorkspace) => {
+    await (await r.workspaceService()).deleteWorkspace(data)
   },
 })
 
@@ -77,15 +82,13 @@ $workspacesMap
     (map, workspace) => new Map(map).set(workspace.id, workspace)
   )
   .on(deleteWorkspaceFx.done, (map, { params: { id } }) => {
-    if (!map.has(id)) {
-      return
-    }
     const newMap = new Map(map)
     newMap.delete(id)
     return newMap
   })
 
 bindLoadable($workspace, loadWorkspaceFx)
+$workspace
   .on(
     [
       createWorkspaceFx.doneData,

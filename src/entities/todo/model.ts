@@ -1,14 +1,16 @@
 import { attach, sample } from 'effector'
 
-import { app, errorOccurred } from '@/shared/app'
+import { $registryService, app, errorOccurred } from '@/shared/app'
 import {
   type Event,
   type Task,
   type TaskId,
   type TasksList,
   type TasksListId,
+  type WorkspaceId,
 } from '@/shared/kernel'
-import { routes } from '@/shared/router'
+import { isDefined } from '@/shared/lib/guards'
+import { workspaceOpened } from '@/shared/router'
 
 import {
   type ArchiveTasks,
@@ -27,9 +29,15 @@ import {
 
 export const todo = app.createDomain('todo')
 
+declare module '@/shared/app' {
+  interface Registry {
+    todoService: IToDoService
+  }
+}
+
 // Stores
 
-export const $todoService = todo.createStore<IToDoService>({} as IToDoService)
+export const $currentWorkspaceId = todo.createStore<WorkspaceId | null>(null)
 
 export const $tasksState = todo.createStore<TasksState>({
   lists: new Map(),
@@ -58,61 +66,85 @@ export const $tasksArray = $tasksState.map((state) =>
 
 export const $events = todo.createStore<Event[]>([])
 
+const $todoService = sample({
+  source: {
+    registryService: $registryService,
+    workspaceId: $currentWorkspaceId,
+  },
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
+  fn: ({ registryService, workspaceId }): Promise<IToDoService> =>
+    workspaceId === null
+      ? Promise.reject(new Error(`Workspace is not initialized`))
+      : registryService.todoService(workspaceId),
+})
+
 // Effects
 
 export const loadTasksStateFx = attach({
   source: $todoService,
-  effect: async (s) => await s.loadTasksState(),
+  effect: async (todoService) => await (await todoService).loadTasksState(),
 })
 
 export const createTaskFx = attach({
   source: $todoService,
-  effect: async (s, data: CreateTask) => await s.createTask(data),
+  effect: async (todoService, data: CreateTask) =>
+    await (await todoService).createTask(data),
 })
 
 export const createTasksFx = attach({
   source: $todoService,
-  effect: async (s, data: CreateTasks) => await s.createTasks(data),
+  effect: async (todoService, data: CreateTasks) =>
+    await (await todoService).createTasks(data),
 })
 
 export const createTasksListFx = attach({
   source: $todoService,
-  effect: async (s, data: CreateTasksList) => await s.createTasksList(data),
+  effect: async (todoService, data: CreateTasksList) =>
+    await (await todoService).createTasksList(data),
 })
 
 export const updateTaskFx = attach({
   source: $todoService,
-  effect: async (s, data: UpdateTask) => await s.updateTask(data),
+  effect: async (todoService, data: UpdateTask) =>
+    await (await todoService).updateTask(data),
 })
 
 export const updateTasksListFx = attach({
   source: $todoService,
-  effect: async (s, data: UpdateTasksList) => await s.updateTasksList(data),
+  effect: async (todoService, data: UpdateTasksList) =>
+    await (await todoService).updateTasksList(data),
 })
 
 export const completeTaskFx = attach({
   source: $todoService,
-  effect: async (s, data: CompleteTask) => await s.completeTask(data),
+  effect: async (todoService, data: CompleteTask) =>
+    await (await todoService).completeTask(data),
 })
 
 export const archiveTasksFx = attach({
   source: $todoService,
-  effect: async (s, data: ArchiveTasks) => await s.archiveTasks(data),
+  effect: async (todoService, data: ArchiveTasks) =>
+    await (await todoService).archiveTasks(data),
 })
 
 export const getEventsCountFx = attach({
   source: $todoService,
-  effect: async (s) => await s.getEventsCount(),
+  effect: async (todoService) => await (await todoService).getEventsCount(),
 })
 
 export const loadEventsFx = attach({
   source: $todoService,
-  effect: async (s, query: QueryEvents) => await s.loadEvents(query),
+  effect: async (todoService, query: QueryEvents) =>
+    await (await todoService).loadEvents(query),
 })
 
 // Events
 
 // Init
+sample({
+  clock: workspaceOpened,
+  target: $currentWorkspaceId,
+})
 
 sample({
   clock: [
@@ -165,6 +197,7 @@ $events
   })
 
 sample({
-  clock: routes.workspace.index.opened,
+  clock: $currentWorkspaceId,
+  filter: isDefined,
   target: loadTasksStateFx,
 })

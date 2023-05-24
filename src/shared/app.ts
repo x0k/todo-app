@@ -10,3 +10,19 @@ if (process.env.NODE_ENV === 'development') {
 export const appStarted = app.createEvent()
 
 export const errorOccurred = app.createEvent<Error>()
+
+// Registry
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Config {}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Registry {}
+
+export type IRegistryService = {
+  [K in keyof Registry & keyof Config]: (
+    args: Config[K]
+  ) => Promise<Registry[K]>
+}
+
+export const $registryService = app.createStore({} as IRegistryService)

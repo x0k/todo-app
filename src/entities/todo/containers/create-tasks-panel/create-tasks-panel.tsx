@@ -8,17 +8,17 @@ import { $isOpen, statusChanged } from './model'
 export function CreateTasksPanelContainer(): JSX.Element {
   const tasksLists = useStore($listsArray)
   const isOpen = useStore($isOpen)
-  const handler = useUnit({ createTasksFx, createTasksListFx })
+  const binds = useUnit({ createTasksFx, createTasksListFx, statusChanged })
   async function handleSubmit({
     tasks,
     tasksList,
   }: CreateTasksFormData): Promise<unknown> {
     return await (typeof tasksList === 'string'
-      ? handler.createTasksListFx({
+      ? binds.createTasksListFx({
           title: tasksList,
           tasks: tasks.map((t) => t.title),
         })
-      : handler.createTasksFx({
+      : binds.createTasksFx({
           tasksListId: tasksList.id,
           tasks: tasks.map((t) => t.title),
         }))
@@ -44,7 +44,7 @@ export function CreateTasksPanelContainer(): JSX.Element {
       <CreateTasksForm
         tasksLists={tasksLists}
         onSubmit={handleSubmit}
-        onTouched={statusChanged}
+        onTouched={binds.statusChanged}
       />
     </Paper>
   )

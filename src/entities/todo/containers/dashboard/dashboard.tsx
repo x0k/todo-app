@@ -57,7 +57,7 @@ export function DashboardContainer({
                   onUnDoneTaskClick(task)
                 }}
                 onArchive={() => {
-                  handlers.archiveTasksFx({ tasksIds: [task.id] })
+                  void handlers.archiveTasksFx({ tasksIds: [task.id] })
                 }}
               />
             ))}

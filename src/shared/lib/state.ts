@@ -1,11 +1,8 @@
-import { type Union } from './type'
+import { type EmptyObject, type Union } from './type'
 
 export interface State<T extends string> {
   type: T
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface EmptyObject {}
 
 export interface Loadable<T, E> {
   idle: EmptyObject
@@ -22,6 +19,8 @@ export interface Optional<T> {
 export type States<S> = Union<{
   [K in keyof S]: State<K & string> & S[K]
 }>
+
+export type LoadableStates<T, E> = States<Loadable<T, E>>
 
 type WithOtherwise<S, PartialConfig, R> = PartialConfig & {
   otherwise: (state: Union<Omit<S, keyof PartialConfig>>) => R
@@ -51,7 +50,7 @@ export function fold<S, R>(value: States<S>, config: FoldConfig<S, R>): R {
 
 export function mapLoadable<T, R>(
   mapper: (data: T) => R
-): <E>(state: States<Loadable<T, E>>) => States<Loadable<R, E>> {
+): <E>(state: LoadableStates<T, E>) => LoadableStates<R, E> {
   return (state) =>
     state.type === 'loaded'
       ? { type: 'loaded', data: mapper(state.data) }

@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid'
 
 import {
   type Event,
+  type EventId,
   EventType,
   TASK_STATUSES,
   type Task,
@@ -30,7 +31,7 @@ import {
   type TasksState,
   type UpdateTask,
   type UpdateTasksList,
-} from './core'
+} from '../core'
 
 function createTask(tasksListId: TasksListId, title: string): Task {
   return {
@@ -91,6 +92,7 @@ export class TestToDoService implements IToDoService {
     title,
   }: CreateTask): Promise<TaskCreatedEvent> => {
     return {
+      id: nanoid() as EventId,
       type: EventType.TaskCreated,
       task: createTask(tasksListId, title),
       createdAt: new Date(),
@@ -103,6 +105,7 @@ export class TestToDoService implements IToDoService {
     tasksListId,
   }: CreateTasks): Promise<TasksCreatedEvent> => {
     return {
+      id: nanoid() as EventId,
       type: EventType.TasksCreated,
       createdAt: new Date(),
       tasks: tasks.map((title) => createTask(tasksListId, title)),
@@ -129,6 +132,7 @@ export class TestToDoService implements IToDoService {
       tasksList.tasks[task.status].add(task.id)
     }
     return {
+      id: nanoid() as EventId,
       type: EventType.TasksListCreated,
       createdAt: tasksList.createdAt,
       list: tasksList,
@@ -141,6 +145,7 @@ export class TestToDoService implements IToDoService {
     change,
   }: UpdateTask): Promise<TaskUpdatedEvent> => {
     return {
+      id: nanoid() as EventId,
       type: EventType.TaskUpdated,
       createdAt: new Date(),
       change,
@@ -153,6 +158,7 @@ export class TestToDoService implements IToDoService {
     change,
   }: UpdateTasksList): Promise<TasksListUpdatedEvent> => {
     return {
+      id: nanoid() as EventId,
       type: EventType.TasksListUpdated,
       tasksListId,
       createdAt: new Date(),
@@ -165,6 +171,7 @@ export class TestToDoService implements IToDoService {
     message,
   }: CompleteTask): Promise<TaskCompletedEvent> => {
     return {
+      id: nanoid() as EventId,
       type: EventType.TaskCompleted,
       taskId,
       createdAt: new Date(),
@@ -176,6 +183,7 @@ export class TestToDoService implements IToDoService {
     tasksIds,
   }: ArchiveTasks): Promise<TasksArchivedEvent> => {
     return {
+      id: nanoid() as EventId,
       type: EventType.TasksArchived,
       createdAt: new Date(),
       tasksIds,

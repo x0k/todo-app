@@ -1,6 +1,6 @@
 import { type IStorageService } from '@/shared/storage'
 
-import { type IThemeService, type ColorMode } from './core'
+import { type ColorMode, type IThemeService } from './core'
 
 export class ThemeService implements IThemeService {
   constructor(private readonly storageService: IStorageService<ColorMode>) {}

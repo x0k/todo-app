@@ -2,38 +2,34 @@ import { FactCheck, ViewList } from '@mui/icons-material'
 import { Box, IconButton, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useUnit } from 'effector-react/scope'
-import { useState } from 'react'
 
 import { Loader, TitledPanel } from '@/shared/components'
 import { type Workspace } from '@/shared/kernel'
 import { routes } from '@/shared/router'
 
 import {
+  CompleteTaskDialogContainer,
   CreateTasksPanelContainer,
   DashboardContainer,
   PositiveEventsLog,
+  TasksListsContainer,
+  completeTaskDialogModel,
 } from '@/entities/todo'
 import { WorkspaceContainer } from '@/entities/workspace'
 
-import {
-  CompleteTaskDialogContainer,
-  completeTaskDialogModel,
-} from '@/entities/todo/containers/complete-task-dialog'
-import { TasksListsContainer } from '@/entities/todo/containers/tasks-lists'
-
 import { ErrorMessage } from '@/widgets/error-message'
 import { HeaderWidget } from '@/widgets/header'
+
+import { $isEventsLogFeature, featureToggled } from './model'
 
 interface ViewProps {
   workspace: Workspace
 }
 
 function View({ workspace }: ViewProps): JSX.Element {
-  const [isEventsLogFeature, setIseEventsLogFeature] = useState(true)
-  function toggleFeature(): void {
-    setIseEventsLogFeature((s) => !s)
-  }
-  const handlers = useUnit({
+  const binds = useUnit({
+    isEventsLogFeature: $isEventsLogFeature,
+    toggleFeature: featureToggled,
     openTasksList: routes.workspace.tasksList.open,
     openCompleteTaskDialog: completeTaskDialogModel.dialogOpened,
   })
@@ -52,12 +48,12 @@ function View({ workspace }: ViewProps): JSX.Element {
       <Grid container spacing={4}>
         <Grid xs>
           <DashboardContainer
-            onUnDoneTaskClick={handlers.openCompleteTaskDialog}
+            onUnDoneTaskClick={binds.openCompleteTaskDialog}
             onDoneTaskClick={console.log}
           />
         </Grid>
         <Grid xs>
-          {isEventsLogFeature ? (
+          {binds.isEventsLogFeature ? (
             <TitledPanel
               title={
                 <>
@@ -66,7 +62,7 @@ function View({ workspace }: ViewProps): JSX.Element {
                 </>
               }
               actions={
-                <IconButton onClick={toggleFeature}>
+                <IconButton onClick={binds.toggleFeature}>
                   <FactCheck />
                 </IconButton>
               }
@@ -84,14 +80,14 @@ function View({ workspace }: ViewProps): JSX.Element {
                 </>
               }
               actions={
-                <IconButton onClick={toggleFeature}>
+                <IconButton onClick={binds.toggleFeature}>
                   <ViewList />
                 </IconButton>
               }
             >
               <TasksListsContainer
                 onClick={(tasksList) => {
-                  handlers.openTasksList({
+                  void binds.openTasksList({
                     workspaceId: workspace.id,
                     tasksListId: tasksList.id,
                   })

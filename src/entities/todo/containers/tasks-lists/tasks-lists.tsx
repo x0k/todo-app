@@ -16,7 +16,9 @@ export interface TasksListsContainerProps {
   onClick: (list: TasksList) => void
 }
 
-export function TasksListsContainer({ onClick }: TasksListsContainerProps): JSX.Element {
+export function TasksListsContainer({
+  onClick,
+}: TasksListsContainerProps): JSX.Element {
   const lists = useStore($actualTasksLists)
   return lists.length ? (
     <List>

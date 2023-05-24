@@ -1,3 +1,58 @@
+export interface ICodecService<I, O> {
+  decode: (data: O) => I
+  encode: (data: I) => O
+}
+
+export type DateCodec = ICodecService<Date, string>
+
+export const dateCodec: DateCodec = {
+  encode: (data) => data.toISOString(),
+  decode: (data) => new Date(data),
+}
+
+export type MapCodec<K, I, O = I> = ICodecService<Map<K, I>, Array<[K, O]>>
+
+export function makeMapCodec<K, I>(): ICodecService<Map<K, I>, Array<[K, I]>>
+export function makeMapCodec<K, I, O>(
+  valueCodec: ICodecService<I, O>
+): ICodecService<Map<K, I>, Array<[K, O]>>
+export function makeMapCodec<K, I, O = I>(
+  valueCodec?: ICodecService<I, O>
+): ICodecService<Map<K, I>, Array<[K, O]>> {
+  return valueCodec !== undefined
+    ? {
+        encode: (data): Array<[K, O]> => {
+          const entries = Array.from(data)
+          return entries.map((e) => [e[0], valueCodec.encode(e[1])])
+        },
+        decode: (data) =>
+          new Map(data.map((e) => [e[0], valueCodec.decode(e[1])])),
+      }
+    : {
+        encode: (data) => Array.from(data) as unknown as Array<[K, O]>,
+        decode: (data) => new Map(data as unknown as Array<[K, I]>),
+      }
+}
+
+export type SetCodec<I, O = I> = ICodecService<Set<I>, O[]>
+export function makeSetCodec<I>(): ICodecService<Set<I>, I[]>
+export function makeSetCodec<I, O>(
+  valueCodec: ICodecService<I, O>
+): ICodecService<Set<I>, O[]>
+export function makeSetCodec<I, O = I>(
+  valueCodec?: ICodecService<I, O>
+): SetCodec<I, O> {
+  return valueCodec !== undefined
+    ? {
+        encode: (data) => Array.from(data).map(valueCodec.encode),
+        decode: (data) => new Set(data.map(valueCodec.decode)),
+      }
+    : {
+        encode: (data) => Array.from(data) as unknown as O[],
+        decode: (data) => new Set(data) as unknown as Set<I>,
+      }
+}
+
 export interface IStorageService<T> {
   load: () => T
   save: (data: T) => void
@@ -28,6 +83,22 @@ export function withCache<T>(
   }
 }
 
+export function makeWithCodec<I, O>(
+  codec: ICodecService<I, O>
+): (storageService: IStorageService<O>) => IStorageService<I> {
+  return (storageService) => ({
+    load: () => codec.decode(storageService.load()),
+    save: (data) => {
+      storageService.save(codec.encode(data))
+    },
+    clear: storageService.clear.bind(storageService),
+  })
+}
+
+export const withMapCodec = makeWithCodec(makeMapCodec()) as <K, T>(
+  storageService: IStorageService<Array<[K, T]>>
+) => IStorageService<Map<K, T>>
+
 // Async
 
 export interface IAsyncStorageService<T> {
@@ -36,54 +107,37 @@ export interface IAsyncStorageService<T> {
   clear: () => Promise<void>
 }
 
-export interface ICodecService<I, O> {
-  decode: (data: O) => I
-  encode: (data: I) => O
+export function makeAsync<T>(
+  storageService: IStorageService<T>
+): IAsyncStorageService<T> {
+  return {
+    load: async () => storageService.load(),
+    save: async (data) => {
+      storageService.save(data)
+    },
+    clear: async () => {
+      storageService.clear()
+    },
+  }
 }
 
-export function makeWithCodec<I, O>(
+export function makeAsyncWithCodec<I, O>(
   codec: ICodecService<I, O>
 ): (storageService: IAsyncStorageService<O>) => IAsyncStorageService<I> {
   return (storageService) => ({
-    clear: storageService.clear.bind(storageService),
     async load() {
       return codec.decode(await storageService.load())
     },
     async save(data) {
       await storageService.save(codec.encode(data))
     },
+    clear: storageService.clear.bind(storageService),
   })
 }
 
-export function makeMapCodec<I>(): ICodecService<
-  Map<string, I>,
-  Array<[string, I]>
->
-export function makeMapCodec<I, O>(
-  valueCodec: ICodecService<I, O>
-): ICodecService<Map<string, I>, Array<[string, O]>>
-export function makeMapCodec<I, O = I>(
-  valueCodec?: ICodecService<I, O>
-): ICodecService<Map<string, I>, Array<[string, O]>> {
-  return valueCodec != null
-    ? {
-        encode: (data): Array<[string, O]> => {
-          const entries = Array.from(data)
-          return entries.map((e) => [e[0], valueCodec.encode(e[1])])
-        },
-        decode: (data) =>
-          new Map(data.map((e) => [e[0], valueCodec.decode(e[1])])),
-      }
-    : {
-        encode: (data) => Array.from(data) as unknown as Array<[string, O]>,
-        decode: (data) => new Map(data as unknown as Array<[string, I]>),
-      }
-}
-
-export const withMapCodec = makeWithCodec(makeMapCodec()) as <T>(
-  storageService: IAsyncStorageService<Array<[string, T]>>
-) => IAsyncStorageService<Map<string, T>>
-
+export const asyncWithMapCodec = makeAsyncWithCodec(makeMapCodec()) as <K, T>(
+  storageService: IAsyncStorageService<Array<[K, T]>>
+) => IAsyncStorageService<Map<K, T>>
 
 export function asyncWithCache<T>(
   storageService: IAsyncStorageService<T>

@@ -1,5 +1,4 @@
 export * from './core'
-export { $workspaceService } from './model'
 export * from './components'
 export * from './containers'
-export * from './test-workspace-service'
+export * from './storable-workspace-service'

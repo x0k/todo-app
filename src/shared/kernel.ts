@@ -1,4 +1,4 @@
-import { type Brand } from './lib/type'
+import { type Brand, type EmptyObject } from './lib/type'
 
 export type TaskId = Brand<'TaskID', string>
 
@@ -38,16 +38,19 @@ export type WritableTasksListData = Partial<
 >
 
 export enum EventType {
-  TaskCreated = 'taskCreated',
-  TasksCreated = 'tasksCreated',
-  TasksListCreated = 'tasksListCreated',
-  TaskUpdated = 'taskUpdated',
-  TasksListUpdated = 'tasksListUpdated',
-  TaskCompleted = 'taskCompleted',
-  TasksArchived = 'tasksArchived',
+  TaskCreated = 't_c',
+  TasksCreated = 'ts_c',
+  TasksListCreated = 'tl_c',
+  TaskUpdated = 't_u',
+  TasksListUpdated = 'tl_u',
+  TaskCompleted = 't_ct',
+  TasksArchived = 'ts_a',
 }
 
+export type EventId = Brand<'EventID', string>
+
 export interface AbstractEvent<T extends EventType> {
+  id: EventId
   type: T
   createdAt: Date
 }
@@ -100,11 +103,34 @@ export type Event =
   | TaskCompletedEvent
   | TasksArchivedEvent
 
+export enum BackendType {
+  IndexedDB = 'indexedDB',
+}
+
+export const BACKEND_TYPES = Object.values(BackendType)
+
+export const BACKEND_TITLES: Record<BackendType, string> = {
+  [BackendType.IndexedDB]: 'Indexed database',
+}
+export interface BackendConfigs {
+  [BackendType.IndexedDB]: EmptyObject
+}
+
+export interface BackendData<T extends BackendType> {
+  type: T
+  config: BackendConfigs[T]
+}
+
+export interface IIDBService {
+  getDBName: (workspaceId: WorkspaceId) => string
+}
+
 export type WorkspaceId = Brand<'WorkspaceId', string>
 
-export interface Workspace {
+export interface Workspace<T extends BackendType = BackendType> {
   id: WorkspaceId
   title: string
+  backend: BackendData<T>
 }
 
 export type WritableWorkspaceData = Partial<Pick<Workspace, 'title'>>

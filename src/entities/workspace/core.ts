@@ -1,4 +1,6 @@
 import {
+  type BackendData,
+  type BackendType,
   type Workspace,
   type WorkspaceId,
   type WritableWorkspaceData,
@@ -6,6 +8,7 @@ import {
 
 export interface CreateWorkspace {
   title: string
+  backend: BackendData<BackendType>
 }
 
 export interface UpdateWorkspace {
@@ -23,4 +26,8 @@ export interface IWorkspaceService {
   createWorkspace: (data: CreateWorkspace) => Promise<Workspace>
   updateWorkspace: (data: UpdateWorkspace) => Promise<Workspace>
   deleteWorkspace: (data: DeleteWorkspace) => Promise<void>
+}
+
+export interface IWorkspaceBackendReleaseService {
+  release: (ws: Workspace) => Promise<void>
 }

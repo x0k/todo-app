@@ -251,8 +251,8 @@ export class IDBToDoService implements IToDoService {
       .store.index('byCreatedAt')
       .openCursor()
     const shift = EVENTS_PER_PAGE * (page - 1)
-    if (shift > 0) {
-      cursor = await (cursor?.advance(EVENTS_PER_PAGE * (page - 1)) ?? null)
+    if (shift > 0 && cursor !== null) {
+      cursor = await cursor.advance(shift)
     }
     let i = 0
     while (cursor !== null && i++ < EVENTS_PER_PAGE) {

@@ -104,21 +104,15 @@ export type Event =
   | TasksArchivedEvent
 
 export enum BackendType {
-  InMemory = 'inMemory',
-  LocalStorage = 'localStorage',
   IndexedDB = 'indexedDB',
 }
 
 export const BACKEND_TYPES = Object.values(BackendType)
 
 export const BACKEND_TITLES: Record<BackendType, string> = {
-  [BackendType.InMemory]: 'In memory',
-  [BackendType.LocalStorage]: 'Local storage',
   [BackendType.IndexedDB]: 'Indexed database',
 }
 export interface BackendConfigs {
-  [BackendType.InMemory]: EmptyObject
-  [BackendType.LocalStorage]: EmptyObject
   [BackendType.IndexedDB]: EmptyObject
 }
 

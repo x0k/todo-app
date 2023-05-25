@@ -4,7 +4,7 @@ import { attachLogger } from 'effector-logger'
 
 export const app = createDomain()
 
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   attachLogger()
 }
 

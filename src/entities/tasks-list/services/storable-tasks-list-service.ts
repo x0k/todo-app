@@ -1,4 +1,4 @@
-import { type IAsyncStorageService } from '@/shared/storage'
+import { type IAsyncStorageService } from '@/shared/lib/storage'
 
 import { type ITasksListService, type TasksListState } from '../core'
 

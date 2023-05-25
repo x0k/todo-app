@@ -17,7 +17,7 @@ import {
   type TasksListId,
   type TasksListUpdatedEvent,
 } from '@/shared/kernel'
-import { type IAsyncStorageService } from '@/shared/storage'
+import { type IAsyncStorageService } from '@/shared/lib/storage'
 
 import {
   type ArchiveTasks,

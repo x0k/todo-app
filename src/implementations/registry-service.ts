@@ -15,7 +15,7 @@ import {
   makeAsync,
   withCache,
   withMapCodec,
-} from '@/shared/storage'
+} from '@/shared/lib/storage'
 
 import { type ITasksListService } from '@/entities/tasks-list'
 import { IDBTasksListService } from '@/entities/tasks-list/services/idb-tasks-list-service'

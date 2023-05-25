@@ -1,5 +1,5 @@
 import { type TasksListId } from '@/shared/kernel'
-import { type ICodecService } from '@/shared/storage'
+import { type ICodecService } from '@/shared/lib/storage'
 
 import { type TasksListState } from '@/entities/tasks-list'
 import { type StorableToDoServiceState } from '@/entities/todo'

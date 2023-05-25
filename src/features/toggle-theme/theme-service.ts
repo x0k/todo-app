@@ -1,4 +1,4 @@
-import { type IStorageService } from '@/shared/storage'
+import { type IStorageService } from '@/shared/lib/storage'
 
 import { type ColorMode, type IThemeService } from './core'
 

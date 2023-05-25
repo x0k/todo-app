@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid'
 
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
-import { type IAsyncStorageService } from '@/shared/storage'
+import { type IAsyncStorageService } from '@/shared/lib/storage'
 
 import {
   type CreateWorkspace,

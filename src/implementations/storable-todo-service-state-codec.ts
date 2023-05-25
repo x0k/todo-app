@@ -12,7 +12,7 @@ import {
   makeMapCodec,
   makeSetCodec,
   makeWithCodec,
-} from '@/shared/storage'
+} from '@/shared/lib/storage'
 
 import { type StorableToDoServiceState } from '@/entities/todo'
 

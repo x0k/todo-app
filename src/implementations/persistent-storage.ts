@@ -1,4 +1,4 @@
-import { type IStorageService } from '@/shared/storage'
+import { type IStorageService } from '@/shared/lib/storage'
 
 export class PersistentStorageService<T> implements IStorageService<T> {
   constructor(

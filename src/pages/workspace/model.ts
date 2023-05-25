@@ -2,7 +2,7 @@ import { attach, sample } from 'effector'
 
 import { $registryService, app } from '@/shared/app'
 import { routes } from '@/shared/router'
-import { type IStorageService } from '@/shared/storage'
+import { type IStorageService } from '@/shared/lib/storage'
 
 declare module '@/shared/app' {
   interface Registry {

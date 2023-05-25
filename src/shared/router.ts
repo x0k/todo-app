@@ -30,6 +30,7 @@ export const routesMap = [
 ]
 
 export const router = createHistoryRouter({
+  base: '/todo-app',
   routes: routesMap,
   notFoundRoute: routes.notFound,
 })

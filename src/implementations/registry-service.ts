@@ -1,7 +1,11 @@
-import { type IDBPDatabase, openDB } from 'idb'
+import { openDB } from 'idb'
 
 import { type IRegistryService } from '@/shared/app'
-import { type IDBSchema, TARGET_IDB_SCHEMA_VERSION } from '@/shared/idb-schema'
+import {
+  type IDB,
+  type IDBSchema,
+  TARGET_IDB_SCHEMA_VERSION,
+} from '@/shared/idb-schema'
 import {
   BackendType,
   type IIDBService,
@@ -9,13 +13,13 @@ import {
   type WorkspaceId,
 } from '@/shared/kernel'
 import { memoize } from '@/shared/lib/memoize-decorator'
-import { type WorkspaceTasksListRouteParams } from '@/shared/router'
 import {
   asyncWithCache,
   makeAsync,
   withCache,
   withMapCodec,
 } from '@/shared/lib/storage'
+import { type WorkspaceTasksListRouteParams } from '@/shared/router'
 
 import { type ITasksListService } from '@/entities/tasks-list'
 import { IDBTasksListService } from '@/entities/tasks-list/services/idb-tasks-list-service'
@@ -33,11 +37,12 @@ import {
 } from '@/features/toggle-theme'
 
 import { PersistentStorageService } from './persistent-storage'
-import { WorkspaceBackendReleaseService } from './workspace-backend-release-service'
+import { WorkspaceBackendService } from './workspace-backend-service'
 
 declare module '@/shared/app' {
   interface Config {
     themeService: void
+    indexedDb: WorkspaceId
     workspaceService: void
     workspacePageSettingsStorage: void
     todoService: WorkspaceId
@@ -48,25 +53,23 @@ declare module '@/shared/app' {
 export class RegistryService implements IRegistryService {
   constructor(private readonly idbService: IIDBService) {}
 
-  private readonly indexedDb = memoize(
-    async (workspaceId: WorkspaceId): Promise<IDBPDatabase<IDBSchema>> => {
-      return await openDB<IDBSchema>(
-        this.idbService.getDBName(workspaceId),
-        TARGET_IDB_SCHEMA_VERSION,
-        {
-          async upgrade(db, oldVersion) {
-            // Init
-            if (oldVersion < 1) {
-              db.createObjectStore('task', { keyPath: 'id' })
-              db.createObjectStore('tasksList', { keyPath: 'id' })
-              const events = db.createObjectStore('event', { keyPath: 'id' })
-              events.createIndex('byCreatedAt', 'createdAt')
-            }
-          },
-        }
-      )
-    }
-  )
+  indexedDb = memoize(async (workspaceId: WorkspaceId): Promise<IDB> => {
+    return await openDB<IDBSchema>(
+      this.idbService.getDBName(workspaceId),
+      TARGET_IDB_SCHEMA_VERSION,
+      {
+        async upgrade(db, oldVersion) {
+          // Init
+          if (oldVersion < 1) {
+            db.createObjectStore('task', { keyPath: 'id' })
+            db.createObjectStore('tasksList', { keyPath: 'id' })
+            const events = db.createObjectStore('event', { keyPath: 'id' })
+            events.createIndex('byCreatedAt', 'createdAt')
+          }
+        },
+      }
+    )
+  })
 
   workspacePageSettingsStorage = memoize(
     async () =>
@@ -123,7 +126,7 @@ export class RegistryService implements IRegistryService {
             )
           )
         ),
-        new WorkspaceBackendReleaseService(this.idbService)
+        new WorkspaceBackendService(this, this.idbService)
       )
   )
 

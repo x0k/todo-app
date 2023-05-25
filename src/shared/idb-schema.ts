@@ -1,4 +1,4 @@
-import { type DBSchema, type IDBPTransaction } from 'idb'
+import { type DBSchema, type IDBPDatabase, type IDBPTransaction } from 'idb'
 
 import { type Brand } from './lib/type'
 
@@ -102,6 +102,8 @@ export type IDBSchemaVersions = [DBSchema, IDBSchemaV1]
 export const TARGET_IDB_SCHEMA_VERSION = 1 as const
 
 export type IDBSchema = IDBSchemaVersions[typeof TARGET_IDB_SCHEMA_VERSION]
+
+export type IDB = IDBPDatabase<IDBSchema>
 
 export const IDB_SCHEMA_KEYS = ['task', 'tasksList', 'event'] as const
 

@@ -1,4 +1,4 @@
-import { FactCheck, ViewList } from '@mui/icons-material'
+import { FactCheck, Settings, ViewList } from '@mui/icons-material'
 import { Box, IconButton, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useUnit } from 'effector-react/scope'
@@ -15,7 +15,11 @@ import {
   TasksListsContainer,
   completeTaskDialogModel,
 } from '@/entities/todo'
-import { WorkspaceContainer } from '@/entities/workspace'
+import {
+  WorkspaceContainer,
+  WorkspaceSettingsDialog,
+  workspaceSettingsDialogModel,
+} from '@/entities/workspace'
 
 import { ErrorMessage } from '@/widgets/error-message'
 import { HeaderWidget } from '@/widgets/header'
@@ -32,6 +36,7 @@ function View({ workspace }: ViewProps): JSX.Element {
     toggleFeature: featureToggled,
     openTasksList: routes.workspace.tasksList.open,
     openCompleteTaskDialog: completeTaskDialogModel.dialogOpened,
+    openWorkspaceSettingsDialog: workspaceSettingsDialogModel.dialogOpened,
   })
   return (
     <Box
@@ -44,6 +49,11 @@ function View({ workspace }: ViewProps): JSX.Element {
     >
       <HeaderWidget
         title={<Typography variant="h4">{workspace.title}</Typography>}
+        append={
+          <IconButton onClick={binds.openWorkspaceSettingsDialog}>
+            <Settings />
+          </IconButton>
+        }
       />
       <Grid container spacing={4}>
         <Grid xs>
@@ -99,6 +109,7 @@ function View({ workspace }: ViewProps): JSX.Element {
       </Grid>
       <CreateTasksPanelContainer />
       <CompleteTaskDialogContainer />
+      <WorkspaceSettingsDialog />
     </Box>
   )
 }

@@ -1,12 +1,16 @@
 import { nanoid } from 'nanoid'
 
-import { type Workspace, type WorkspaceId } from '@/shared/kernel'
+import {
+  type BackendType,
+  type Workspace,
+  type WorkspaceId,
+} from '@/shared/kernel'
 import { type IAsyncStorageService } from '@/shared/lib/storage'
 
 import {
   type CreateWorkspace,
   type DeleteWorkspace,
-  type IWorkspaceBackendReleaseService,
+  type IWorkspaceBackendService,
   type IWorkspaceService,
   type UpdateWorkspace,
 } from './core'
@@ -16,8 +20,23 @@ export class StorableWorkspaceService implements IWorkspaceService {
     private readonly storageService: IAsyncStorageService<
       Map<WorkspaceId, Workspace>
     >,
-    private readonly backendReleaseService: IWorkspaceBackendReleaseService
+    private readonly workspaceBackendService: IWorkspaceBackendService
   ) {}
+
+  exportWorkspace = async (id: WorkspaceId): Promise<string> => {
+    const workspace = await this.loadWorkspace(id)
+    const data = await this.workspaceBackendService.export(workspace)
+    return JSON.stringify([workspace, data])
+  }
+
+  importWorkspace = async (input: string): Promise<Workspace<BackendType>> => {
+    const [workspace, data] = JSON.parse(input)
+    await this.workspaceBackendService.import(workspace, data)
+    const workspaces = await this.storageService.load()
+    workspaces.set(workspace.id, workspace)
+    await this.storageService.save(workspaces)
+    return workspace
+  }
 
   loadWorkspaces = async (): Promise<Map<WorkspaceId, Workspace>> =>
     await this.storageService.load()
@@ -66,7 +85,7 @@ export class StorableWorkspaceService implements IWorkspaceService {
     if (workspace === undefined) {
       throw new Error(`Workspace "${id}" not found`)
     }
-    await this.backendReleaseService.release(workspace)
+    await this.workspaceBackendService.release(workspace)
     workspaces.delete(id)
     await this.storageService.save(workspaces)
   }

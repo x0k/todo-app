@@ -10,11 +10,14 @@ import ReactDOM from 'react-dom/client'
 import { App } from './app'
 import { IDBService } from './implementations/idb-service'
 import { RegistryService } from './implementations/registry-service'
+import { workspaceDataCodec } from './implementations/workspace-data-codec'
 import { $registryService, appStarted } from './shared/app'
 import { router } from './shared/router'
 
 export const scope = fork({
-  values: [[$registryService, new RegistryService(new IDBService())]],
+  values: [
+    [$registryService, new RegistryService(new IDBService(workspaceDataCodec))],
+  ],
 })
 
 sample({

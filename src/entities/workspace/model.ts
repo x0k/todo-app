@@ -1,6 +1,7 @@
 import { attach, sample } from 'effector'
 
 import { $registryService, app } from '@/shared/app'
+import { type IDB } from '@/shared/idb-schema'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import { type Loadable, type States } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
@@ -17,6 +18,7 @@ export const workspace = app.createDomain('workspace')
 
 declare module '@/shared/app' {
   interface Registry {
+    indexedDb: IDB
     workspaceService: IWorkspaceService
   }
 }
@@ -67,6 +69,18 @@ export const deleteWorkspaceFx = attach({
   effect: async (r, data: DeleteWorkspace) => {
     await (await r.workspaceService()).deleteWorkspace(data)
   },
+})
+
+export const exportWorkspacesFx = attach({
+  source: $registryService,
+  effect: async (r, id: WorkspaceId) =>
+    await (await r.workspaceService()).exportWorkspace(id),
+})
+
+export const importWorkspacesFx = attach({
+  source: $registryService,
+  effect: async (r, data: string) =>
+    await (await r.workspaceService()).importWorkspace(data),
 })
 
 // Init

@@ -3,6 +3,7 @@ import { createDomain } from 'effector'
 import { attachLogger } from 'effector-logger'
 
 export const app = createDomain()
+
 if (process.env.NODE_ENV === 'development') {
   attachLogger()
 }

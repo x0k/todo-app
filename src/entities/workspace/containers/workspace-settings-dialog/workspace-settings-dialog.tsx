@@ -3,18 +3,27 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Typography,
 } from '@mui/material'
 import { useUnit } from 'effector-react/scope'
 
+import { type Workspace } from '@/shared/kernel'
+
+import { exportWorkspacesFx } from '../../model'
 import { $isOpen, dialogClosed } from './model'
 
-export function WorkspaceSettingsDialog(): JSX.Element {
+export interface WorkspaceSettingsDialogProps {
+  workspace: Workspace
+}
+
+export function WorkspaceSettingsDialog({
+  workspace,
+}: WorkspaceSettingsDialogProps): JSX.Element {
   const binds = useUnit({
     open: $isOpen,
     close: dialogClosed,
+    exportWorkspace: exportWorkspacesFx,
   })
   return (
     <Dialog
@@ -27,7 +36,14 @@ export function WorkspaceSettingsDialog(): JSX.Element {
       <DialogTitle variant="h5">Workspace settings</DialogTitle>
       <DialogContent>
         <Typography variant="h6">Export</Typography>
-        <DialogContentText>Some content</DialogContentText>
+        {/* <DialogContentText>Some content</DialogContentText> */}
+        <Button
+          onClick={() => {
+            void binds.exportWorkspace(workspace.id)
+          }}
+        >
+          Export to JSON
+        </Button>
       </DialogContent>
       <DialogActions>
         <Button type="reset" onClick={binds.close}>

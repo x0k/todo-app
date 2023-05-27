@@ -109,7 +109,7 @@ function View({ workspace }: ViewProps): JSX.Element {
       </Grid>
       <CreateTasksPanelContainer />
       <CompleteTaskDialogContainer />
-      <WorkspaceSettingsDialog />
+      <WorkspaceSettingsDialog workspace={workspace} />
     </Box>
   )
 }

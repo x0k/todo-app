@@ -3,6 +3,12 @@ import { attach, sample } from 'effector'
 import { $registryService, app } from '@/shared/app'
 import { type IDB } from '@/shared/idb-schema'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
+import {
+  JSON_MIME_TYPE,
+  blobOpen,
+  blobSave,
+  makeJSONBlob,
+} from '@/shared/lib/file'
 import { type Loadable, type States } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
 import { routes } from '@/shared/router'
@@ -73,14 +79,18 @@ export const deleteWorkspaceFx = attach({
 
 export const exportWorkspacesFx = attach({
   source: $registryService,
-  effect: async (r, id: WorkspaceId) =>
-    await (await r.workspaceService()).exportWorkspace(id),
+  effect: async (r, id: WorkspaceId) => {
+    const data = await (await r.workspaceService()).exportWorkspace(id)
+    await blobSave(`ws-${id}.json`, makeJSONBlob(data))
+  },
 })
 
 export const importWorkspacesFx = attach({
   source: $registryService,
-  effect: async (r, data: string) =>
-    await (await r.workspaceService()).importWorkspace(data),
+  effect: async (r) => {
+    const data = await blobOpen([JSON_MIME_TYPE])
+    await (await r.workspaceService()).importWorkspace(await data.text())
+  },
 })
 
 // Init

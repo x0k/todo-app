@@ -1,3 +1,4 @@
+import { type IDB } from './idb-schema'
 import { type Brand, type EmptyObject } from './lib/type'
 
 export type TaskId = Brand<'TaskID', string>
@@ -121,8 +122,50 @@ export interface BackendData<T extends BackendType> {
   config: BackendConfigs[T]
 }
 
+export type EncodedTask = Omit<Task, 'createdAt'> & {
+  createdAt: string
+}
+
+export type EncodedTaskList = Omit<TasksList, 'tasks' | 'createdAt'> & {
+  createdAt: string
+  tasks: Record<TaskStatus, TaskId[]>
+}
+// Omit will broke whole type
+// TODO: Rewrite this type with encoded variants
+export type EncodedEvent = (
+  | Exclude<Event, TasksListCreatedEvent | TasksCreatedEvent | TaskCreatedEvent>
+  | (
+      | (Omit<TaskCreatedEvent, 'task'> & {
+          task: EncodedTask
+        })
+      | (Omit<TasksCreatedEvent, 'tasks'> & {
+          tasks: EncodedTask[]
+        })
+      | (Omit<TasksListCreatedEvent, 'list' | 'tasks'> & {
+          list: EncodedTaskList
+          tasks: EncodedTask[]
+        })
+    )
+) & {
+  createdAt: string
+}
+
+export interface EncodedWorkspaceData {
+  tasks: EncodedTask[]
+  events: EncodedEvent[]
+  tasksLists: EncodedTaskList[]
+}
+
+export interface WorkspaceData {
+  tasks: Task[]
+  events: Event[]
+  tasksLists: TasksList[]
+}
+
 export interface IIDBService {
   getDBName: (workspaceId: WorkspaceId) => string
+  exportAsEncodedData: (db: IDB) => Promise<EncodedWorkspaceData>
+  importFromEncodedData: (db: IDB, data: EncodedWorkspaceData) => Promise<void>
 }
 
 export type WorkspaceId = Brand<'WorkspaceId', string>

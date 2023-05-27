@@ -10,6 +10,17 @@ export const dateCodec: DateCodec = {
   decode: (data) => new Date(data),
 }
 
+export type ArrayCodec<I, O> = ICodecService<I[], O[]>
+
+export function makeArrayCodec<I, O>(
+  valueCodec: ICodecService<I, O>
+): ArrayCodec<I, O> {
+  return {
+    encode: (data) => data.map(valueCodec.encode),
+    decode: (data) => data.map(valueCodec.decode),
+  }
+}
+
 export type MapCodec<K, I, O = I> = ICodecService<Map<K, I>, Array<[K, O]>>
 
 export function makeMapCodec<K, I>(): ICodecService<Map<K, I>, Array<[K, I]>>

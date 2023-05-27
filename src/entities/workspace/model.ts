@@ -1,7 +1,15 @@
 import { attach, sample } from 'effector'
 
 import { $registryService, app } from '@/shared/app'
+import { type IDB } from '@/shared/idb-schema'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
+import {
+  JSON_FILE_EXTENSION,
+  JSON_MIME_TYPE,
+  blobOpen,
+  blobSave,
+  makeJSONBlob,
+} from '@/shared/lib/file'
 import { type Loadable, type States } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
 import { routes } from '@/shared/router'
@@ -17,6 +25,7 @@ export const workspace = app.createDomain('workspace')
 
 declare module '@/shared/app' {
   interface Registry {
+    indexedDb: IDB
     workspaceService: IWorkspaceService
   }
 }
@@ -69,6 +78,26 @@ export const deleteWorkspaceFx = attach({
   },
 })
 
+export const exportWorkspacesFx = attach({
+  source: $registryService,
+  effect: async (r, id: WorkspaceId) => {
+    const data = await (await r.workspaceService()).exportWorkspace(id)
+    await blobSave(`ws-${id}.json`, makeJSONBlob(data))
+  },
+})
+
+export const importWorkspacesFx = attach({
+  source: $registryService,
+  effect: async (r) => {
+    const data = await blobOpen({
+      description: 'Workspace JSON file',
+      extensions: [JSON_FILE_EXTENSION],
+      mimeTypes: [JSON_MIME_TYPE],
+    })
+    return await (await r.workspaceService()).importWorkspace(await data.text())
+  },
+})
+
 // Init
 
 $workspacesMap
@@ -111,7 +140,7 @@ sample({
 })
 
 sample({
-  clock: createWorkspaceFx.doneData,
+  clock: [createWorkspaceFx.doneData, importWorkspacesFx.doneData],
   fn: (workspace) => ({ workspaceId: workspace.id }),
   target: routes.workspace.index.open,
 })

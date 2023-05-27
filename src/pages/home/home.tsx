@@ -1,7 +1,15 @@
-import { Box, Button, Paper, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  MenuItem,
+  MenuList,
+  Paper,
+  Typography,
+} from '@mui/material'
 import { useUnit } from 'effector-react/scope'
 
 import { Center } from '@/shared/components'
+import SplitButton from '@/shared/components/split-button'
 
 import {
   CreateWorkspaceDialog,
@@ -10,6 +18,7 @@ import {
   createWorkspaceDialogModel,
   deleteWorkspaceDialogModel,
 } from '@/entities/workspace'
+import { importWorkspacesFx } from '@/entities/workspace/model'
 
 import { HeaderWidget } from '@/widgets/header'
 
@@ -17,6 +26,7 @@ export function HomePage(): JSX.Element {
   const binds = useUnit({
     openCreateWorkspaceDialog: createWorkspaceDialogModel.dialogOpened,
     openDeleteWorkspaceDialog: deleteWorkspaceDialogModel.dialogOpened,
+    importWorkspace: importWorkspacesFx,
   })
   return (
     <Box display="flex" flexDirection="column" padding={2}>
@@ -33,9 +43,22 @@ export function HomePage(): JSX.Element {
             <WorkspacesContainer
               onDelete={(ws) => binds.openDeleteWorkspaceDialog(ws.id)}
             />
-            <Button onClick={binds.openCreateWorkspaceDialog}>
-              Create workspace
-            </Button>
+            <SplitButton
+              options={
+                <MenuList>
+                  <MenuItem onClick={binds.importWorkspace}>
+                    Import workspace
+                  </MenuItem>
+                </MenuList>
+              }
+            >
+              <Button
+                sx={{ flexGrow: 1 }}
+                onClick={binds.openCreateWorkspaceDialog}
+              >
+                Create workspace
+              </Button>
+            </SplitButton>
           </Box>
         </Paper>
       </Center>

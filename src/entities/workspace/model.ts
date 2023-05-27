@@ -4,6 +4,7 @@ import { $registryService, app } from '@/shared/app'
 import { type IDB } from '@/shared/idb-schema'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import {
+  JSON_FILE_EXTENSION,
   JSON_MIME_TYPE,
   blobOpen,
   blobSave,
@@ -88,8 +89,12 @@ export const exportWorkspacesFx = attach({
 export const importWorkspacesFx = attach({
   source: $registryService,
   effect: async (r) => {
-    const data = await blobOpen([JSON_MIME_TYPE])
-    await (await r.workspaceService()).importWorkspace(await data.text())
+    const data = await blobOpen({
+      description: 'Workspace JSON file',
+      extensions: [JSON_FILE_EXTENSION],
+      mimeTypes: [JSON_MIME_TYPE],
+    })
+    return await (await r.workspaceService()).importWorkspace(await data.text())
   },
 })
 
@@ -135,7 +140,7 @@ sample({
 })
 
 sample({
-  clock: createWorkspaceFx.doneData,
+  clock: [createWorkspaceFx.doneData, importWorkspacesFx.doneData],
   fn: (workspace) => ({ workspaceId: workspace.id }),
   target: routes.workspace.index.open,
 })

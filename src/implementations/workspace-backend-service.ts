@@ -49,6 +49,8 @@ export class WorkspaceBackendService implements IWorkspaceBackendService {
   release = async (ws: Workspace): Promise<void> => {
     switch (ws.backend.type) {
       case BackendType.IndexedDB: {
+        ;(await this.registryService.indexedDb(ws.id)).close()
+        this.registryService.indexedDb.clear()
         await deleteDB(this.idbService.getDBName(ws.id))
         return
       }

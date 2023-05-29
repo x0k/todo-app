@@ -12,7 +12,7 @@ import {
 } from '@/shared/lib/file'
 import { type Loadable, type States } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
-import { routes } from '@/shared/router'
+import { routes, workspaceOpened } from '@/shared/router'
 
 import {
   type CreateWorkspace,
@@ -134,8 +134,7 @@ sample({
 })
 
 sample({
-  clock: routes.workspace.index.opened,
-  fn: ({ params }) => params.workspaceId,
+  clock: workspaceOpened,
   target: loadWorkspaceFx,
 })
 

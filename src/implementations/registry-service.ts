@@ -30,6 +30,7 @@ import {
   StorableWorkspaceService,
 } from '@/entities/workspace'
 
+import { type PersistentLocation } from '@/features/persist-location'
 import {
   ColorMode,
   type IThemeService,
@@ -47,11 +48,23 @@ declare module '@/shared/app' {
     workspacePageSettingsStorage: void
     todoService: WorkspaceId
     tasksListService: WorkspaceTasksListRouteParams
+    locationStorage: void
   }
 }
 
 export class RegistryService implements IRegistryService {
   constructor(private readonly idbService: IIDBService) {}
+  locationStorage = memoize(
+    async () =>
+      new PersistentStorageService<PersistentLocation>(
+        localStorage,
+        'last-location',
+        {
+          path: '/todo-app/',
+          query: {},
+        }
+      )
+  )
 
   indexedDb = memoize(async (workspaceId: WorkspaceId): Promise<IDB> => {
     return await openDB<IDBSchema>(

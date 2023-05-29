@@ -1,9 +1,10 @@
-import { FactCheck, Settings, ViewList } from '@mui/icons-material'
+import { FactCheck, Home, Settings, ViewList } from '@mui/icons-material'
 import { Box, IconButton, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
+import { Link } from 'atomic-router-react/scope'
 import { useUnit } from 'effector-react/scope'
 
-import { Loader, TitledPanel } from '@/shared/components'
+import { Loader, Separator, TitledPanel } from '@/shared/components'
 import { type Workspace } from '@/shared/kernel'
 import { routes } from '@/shared/router'
 
@@ -48,7 +49,15 @@ function View({ workspace }: ViewProps): JSX.Element {
       marginBottom="72px"
     >
       <HeaderWidget
-        title={<Typography variant="h4">{workspace.title}</Typography>}
+        title={
+          <>
+            <IconButton component={Link} to={routes.home}>
+              <Home />
+            </IconButton>
+            <Separator />
+            <Typography variant="h4">{workspace.title}</Typography>
+          </>
+        }
         append={
           <IconButton onClick={binds.openWorkspaceSettingsDialog}>
             <Settings />

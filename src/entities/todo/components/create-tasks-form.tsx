@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
 import { type TasksList } from '@/shared/kernel'
+import { isMobile } from '@/shared/platform'
 import { REQUIRED_FIELD_MESSAGE } from '@/shared/validation'
 
 export interface CreateTasksFormProps {
@@ -66,8 +67,10 @@ export function CreateTasksForm({
     onTouched?.(isDirty)
   }, [isDirty, onTouched])
   useEffect(() => {
-    reset()
-    tryFocusTaskInputByIndex(formRef, 0)
+    if (isSubmitSuccessful) {
+      reset()
+      tryFocusTaskInputByIndex(formRef, 0)
+    }
   }, [isSubmitSuccessful])
   return (
     <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
@@ -77,6 +80,7 @@ export function CreateTasksForm({
             {...register(`tasks.${index}.title`, {
               required: REQUIRED_FIELD_MESSAGE,
             })}
+            multiline={isMobile}
             variant="standard"
             inputProps={{
               onKeyDown: (e) => {

@@ -1,11 +1,14 @@
-import { Box, Typography } from '@mui/material'
+import { Home } from '@mui/icons-material'
+import { Box, IconButton, Link as MLink, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
+import { Link } from 'atomic-router-react/scope'
 
-import { Loader, TitledPanel } from '@/shared/components'
+import { Loader, Separator, TitledPanel } from '@/shared/components'
 import { TaskStatus, type TasksList } from '@/shared/kernel'
+import { type WorkspaceRouteParams, routes } from '@/shared/router'
 
-import { TasksListContainer } from '@/entities/tasks-list'
-import { TasksContainer } from '@/entities/tasks-list/containers/tasks'
+import { TasksContainer, TasksListContainer } from '@/entities/tasks-list'
+import { WorkspaceContainer } from '@/entities/workspace'
 
 import { ErrorMessage } from '@/widgets/error-message'
 import { HeaderWidget } from '@/widgets/header'
@@ -25,7 +28,38 @@ function View({ tasksList }: ViewProps): JSX.Element {
       marginBottom="72px"
     >
       <HeaderWidget
-        title={<Typography variant="h4">{tasksList.title}</Typography>}
+        title={
+          <>
+            <IconButton component={Link} to={routes.home}>
+              <Home />
+            </IconButton>
+            <Separator />
+            <WorkspaceContainer
+              render={{
+                otherwise: () => (
+                  <Typography variant="h4" key="workspace">
+                    Workspace
+                  </Typography>
+                ),
+                loaded: ({ data }) => (
+                  <MLink
+                    color="inherit"
+                    underline="none"
+                    component={Link<WorkspaceRouteParams>}
+                    to={routes.workspace.index}
+                    params={{ workspaceId: data.id }}
+                  >
+                    <Typography variant="h4" key="workspace">
+                      {data.title}
+                    </Typography>
+                  </MLink>
+                ),
+              }}
+            />
+            <Separator />
+            <Typography variant="h4">{tasksList.title}</Typography>
+          </>
+        }
       />
       <Grid spacing={2} container>
         <Grid xs>

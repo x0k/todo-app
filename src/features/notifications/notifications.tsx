@@ -3,7 +3,7 @@ import { type VariantType, useSnackbar } from 'notistack'
 import { useEffect, useRef } from 'react'
 
 import { $notifications, notificationRemoved } from './model'
-import { type NotificationId, NotificationType } from './types'
+import { type NotificationId, NotificationType } from './core'
 
 const NOTIFICATION_TYPE_TO_STATUS_MAP: Record<NotificationType, VariantType> = {
   [NotificationType.Success]: 'success',

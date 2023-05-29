@@ -5,6 +5,7 @@ import '@fontsource/roboto/700.css'
 import CssBaseline from '@mui/material/CssBaseline'
 
 import { Notifications } from '@/features/notifications'
+import '@/features/persist-location/model'
 
 import './index.css'
 // Routes MUST be above router for proper effector init

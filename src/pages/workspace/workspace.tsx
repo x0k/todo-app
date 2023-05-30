@@ -65,13 +65,13 @@ function View({ workspace }: ViewProps): JSX.Element {
         }
       />
       <Grid container spacing={4}>
-        <Grid xs>
+        <Grid xs={12} md={6}>
           <DashboardContainer
             onUnDoneTaskClick={binds.openCompleteTaskDialog}
             onDoneTaskClick={console.log}
           />
         </Grid>
-        <Grid xs>
+        <Grid xs={12} md={6}>
           {binds.isEventsLogFeature ? (
             <TitledPanel
               title={

@@ -62,7 +62,7 @@ function View({ tasksList }: ViewProps): JSX.Element {
         }
       />
       <Grid spacing={2} container>
-        <Grid xs>
+        <Grid xs={12} md={4}>
           <TitledPanel title="To Do">
             <TasksContainer
               taskStatus={TaskStatus.NotDone}
@@ -70,7 +70,7 @@ function View({ tasksList }: ViewProps): JSX.Element {
             />
           </TitledPanel>
         </Grid>
-        <Grid xs>
+        <Grid xs={12} md={4}>
           <TitledPanel title="Done">
             <TasksContainer
               taskStatus={TaskStatus.Done}
@@ -78,7 +78,7 @@ function View({ tasksList }: ViewProps): JSX.Element {
             />
           </TitledPanel>
         </Grid>
-        <Grid xs>
+        <Grid xs={12} md={4}>
           <TitledPanel title="Archived">
             <TasksContainer
               taskStatus={TaskStatus.Archived}

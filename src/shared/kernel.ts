@@ -1,5 +1,9 @@
+import { type ITasksListService } from '@/entities/tasks-list'
+import { type IToDoService } from '@/entities/todo'
+
 import { type IDB } from './idb-schema'
 import { type Brand, type EmptyObject } from './lib/type'
+import { type WorkspaceTasksListRouteParams } from './router'
 
 export type TaskId = Brand<'TaskID', string>
 
@@ -117,6 +121,10 @@ export interface BackendConfigs {
   [BackendType.IndexedDB]: EmptyObject
 }
 
+export interface BackendClients {
+  [BackendType.IndexedDB]: IDB
+}
+
 export interface BackendData<T extends BackendType> {
   type: T
   config: BackendConfigs[T]
@@ -162,10 +170,19 @@ export interface WorkspaceData {
   tasksLists: TasksList[]
 }
 
-export interface IIDBService {
-  getDBName: (workspaceId: WorkspaceId) => string
-  exportAsEncodedData: (db: IDB) => Promise<EncodedWorkspaceData>
-  importFromEncodedData: (db: IDB, data: EncodedWorkspaceData) => Promise<void>
+export interface IBackendPoolService<T extends BackendType> {
+  resolve: (workspace: Workspace<T>) => Promise<IBackendService>
+  release: (workspace: Workspace<T>) => Promise<void>
+}
+
+export interface IBackendService {
+  getTasksListService: (
+    params: WorkspaceTasksListRouteParams
+  ) => Promise<ITasksListService>
+  getToDoService: (workspaceId: WorkspaceId) => Promise<IToDoService>
+  export: () => Promise<EncodedWorkspaceData>
+  import: (data: EncodedWorkspaceData) => Promise<void>
+  close: () => Promise<void>
 }
 
 export type WorkspaceId = Brand<'WorkspaceId', string>

@@ -41,12 +41,14 @@ export class StorableWorkspaceService implements IWorkspaceService {
   loadWorkspaces = async (): Promise<Map<WorkspaceId, Workspace>> =>
     await this.storageService.load()
 
-  loadWorkspace = async (id: WorkspaceId): Promise<Workspace> => {
+  loadWorkspace = async <T extends BackendType>(
+    id: WorkspaceId
+  ): Promise<Workspace<T>> => {
     const workspace = (await this.loadWorkspaces()).get(id)
     if (workspace === undefined) {
       throw new Error(`Workspace "${id}" not found`)
     }
-    return workspace
+    return workspace as Workspace<T>
   }
 
   createWorkspace = async ({

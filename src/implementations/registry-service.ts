@@ -1,14 +1,7 @@
-import { openDB } from 'idb'
-
 import { type IRegistryService } from '@/shared/app'
 import {
-  type IDB,
-  type IDBSchema,
-  TARGET_IDB_SCHEMA_VERSION,
-} from '@/shared/idb-schema'
-import {
-  BackendType,
-  type IIDBService,
+  type BackendType,
+  type IBackendPoolService,
   type Workspace,
   type WorkspaceId,
 } from '@/shared/kernel'
@@ -22,9 +15,7 @@ import {
 import { type WorkspaceTasksListRouteParams } from '@/shared/router'
 
 import { type ITasksListService } from '@/entities/tasks-list'
-import { IDBTasksListService } from '@/entities/tasks-list/services/idb-tasks-list-service'
 import { type IToDoService } from '@/entities/todo'
-import { IDBToDoService } from '@/entities/todo/services/idb-todo-service'
 import {
   type IWorkspaceService,
   StorableWorkspaceService,
@@ -43,7 +34,6 @@ import { WorkspaceBackendService } from './workspace-backend-service'
 declare module '@/shared/app' {
   interface Config {
     themeService: void
-    indexedDb: WorkspaceId
     workspaceService: void
     workspacePageSettingsStorage: void
     todoService: WorkspaceId
@@ -53,7 +43,23 @@ declare module '@/shared/app' {
 }
 
 export class RegistryService implements IRegistryService {
-  constructor(private readonly idbService: IIDBService) {}
+  // WARN: this might to produce bugs after WS deletion
+  private readonly connection = memoize(
+    async <T extends BackendType>(workspaceId: WorkspaceId) => {
+      const workspace = await (
+        await this.workspaceService()
+      ).loadWorkspace<T>(workspaceId)
+      const factory = this.backendPools[workspace.backend.type]
+      return await factory.resolve(workspace)
+    }
+  )
+
+  constructor(
+    private readonly backendPools: {
+      [T in BackendType]: IBackendPoolService<T>
+    }
+  ) {}
+
   locationStorage = memoize(
     async () =>
       new PersistentStorageService<PersistentLocation>(
@@ -66,24 +72,6 @@ export class RegistryService implements IRegistryService {
       )
   )
 
-  indexedDb = memoize(async (workspaceId: WorkspaceId): Promise<IDB> => {
-    return await openDB<IDBSchema>(
-      this.idbService.getDBName(workspaceId),
-      TARGET_IDB_SCHEMA_VERSION,
-      {
-        async upgrade(db, oldVersion) {
-          // Init
-          if (oldVersion < 1) {
-            db.createObjectStore('task', { keyPath: 'id' })
-            db.createObjectStore('tasksList', { keyPath: 'id' })
-            const events = db.createObjectStore('event', { keyPath: 'id' })
-            events.createIndex('byCreatedAt', 'createdAt')
-          }
-        },
-      }
-    )
-  })
-
   workspacePageSettingsStorage = memoize(
     async () =>
       new PersistentStorageService<boolean>(
@@ -94,34 +82,18 @@ export class RegistryService implements IRegistryService {
   )
 
   tasksListService = memoize(
-    async ({
-      tasksListId,
-      workspaceId,
-    }: WorkspaceTasksListRouteParams): Promise<ITasksListService> => {
-      const workspace = await (
-        await this.workspaceService()
-      ).loadWorkspace(workspaceId)
-      switch (workspace.backend.type) {
-        case BackendType.IndexedDB: {
-          return new IDBTasksListService(
-            await this.indexedDb(workspaceId),
-            tasksListId
-          )
-        }
-      }
+    async (
+      params: WorkspaceTasksListRouteParams
+    ): Promise<ITasksListService> => {
+      const backend = await this.connection(params.workspaceId)
+      return await backend.getTasksListService(params)
     }
   )
 
   todoService = memoize(
     async (workspaceId: WorkspaceId): Promise<IToDoService> => {
-      const workspace = await (
-        await this.workspaceService()
-      ).loadWorkspace(workspaceId)
-      switch (workspace.backend.type) {
-        case BackendType.IndexedDB: {
-          return new IDBToDoService(await this.indexedDb(workspaceId))
-        }
-      }
+      const backend = await this.connection(workspaceId)
+      return await backend.getToDoService(workspaceId)
     }
   )
 
@@ -139,7 +111,7 @@ export class RegistryService implements IRegistryService {
             )
           )
         ),
-        new WorkspaceBackendService(this, this.idbService)
+        new WorkspaceBackendService(this.backendPools)
       )
   )
 

@@ -23,7 +23,9 @@ export interface DeleteWorkspace {
 
 export interface IWorkspaceService {
   loadWorkspaces: () => Promise<Map<WorkspaceId, Workspace>>
-  loadWorkspace: (id: WorkspaceId) => Promise<Workspace>
+  loadWorkspace: <T extends BackendType>(
+    id: WorkspaceId
+  ) => Promise<Workspace<T>>
   createWorkspace: (data: CreateWorkspace) => Promise<Workspace>
   updateWorkspace: (data: UpdateWorkspace) => Promise<Workspace>
   deleteWorkspace: (data: DeleteWorkspace) => Promise<void>

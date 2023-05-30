@@ -1,7 +1,6 @@
 import { attach, sample } from 'effector'
 
 import { $registryService, app } from '@/shared/app'
-import { type IDB } from '@/shared/idb-schema'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import {
   JSON_FILE_EXTENSION,
@@ -25,7 +24,6 @@ export const workspace = app.createDomain('workspace')
 
 declare module '@/shared/app' {
   interface Registry {
-    indexedDb: IDB
     workspaceService: IWorkspaceService
   }
 }

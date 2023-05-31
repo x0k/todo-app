@@ -25,9 +25,6 @@ export class WorkspaceBackendService implements IWorkspaceBackendService {
   }
 
   release = async (ws: Workspace): Promise<void> => {
-    const factory = this.backendPools[ws.backend.type]
-    const backend = await factory.resolve(ws)
-    await backend.close()
-    await factory.release(ws)
+    await this.backendPools[ws.backend.type].release(ws)
   }
 }

@@ -61,8 +61,4 @@ export class IDBBackendService implements IBackendService {
       tx.done,
     ])
   }
-
-  close = async (): Promise<void> => {
-    this.db.close()
-  }
 }

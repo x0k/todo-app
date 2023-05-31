@@ -2,6 +2,7 @@ import { type IRegistryService } from '@/shared/app'
 import {
   type BackendType,
   type IBackendPoolService,
+  type IBackendService,
   type Workspace,
   type WorkspaceId,
 } from '@/shared/kernel'
@@ -43,16 +44,17 @@ declare module '@/shared/app' {
 }
 
 export class RegistryService implements IRegistryService {
-  // WARN: this might to produce bugs after WS deletion
-  private readonly connection = memoize(
-    async <T extends BackendType>(workspaceId: WorkspaceId) => {
-      const workspace = await (
-        await this.workspaceService()
-      ).loadWorkspace<T>(workspaceId)
-      const factory = this.backendPools[workspace.backend.type]
-      return await factory.resolve(workspace)
-    }
-  )
+  private readonly resolveBackend = async <T extends BackendType>(
+    workspaceId: WorkspaceId
+  ): Promise<IBackendService> => {
+    // This call should be cached
+    const workspace = await (
+      await this.workspaceService()
+    ).loadWorkspace<T>(workspaceId)
+    const factory = this.backendPools[workspace.backend.type]
+    // This call should return reused value from pull
+    return await factory.resolve(workspace)
+  }
 
   constructor(
     private readonly backendPools: {
@@ -85,14 +87,14 @@ export class RegistryService implements IRegistryService {
     async (
       params: WorkspaceTasksListRouteParams
     ): Promise<ITasksListService> => {
-      const backend = await this.connection(params.workspaceId)
+      const backend = await this.resolveBackend(params.workspaceId)
       return await backend.getTasksListService(params)
     }
   )
 
   todoService = memoize(
     async (workspaceId: WorkspaceId): Promise<IToDoService> => {
-      const backend = await this.connection(workspaceId)
+      const backend = await this.resolveBackend(workspaceId)
       return await backend.getToDoService(workspaceId)
     }
   )

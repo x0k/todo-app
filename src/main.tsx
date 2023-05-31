@@ -8,15 +8,20 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { App } from './app'
-import { IDBService } from './implementations/idb-service'
+import { IDBBackendPoolService } from './implementations/idb-backend-pool-service'
 import { RegistryService } from './implementations/registry-service'
-import { workspaceDataCodec } from './implementations/workspace-data-codec'
 import { $registryService, appStarted } from './shared/app'
+import { BackendType } from './shared/kernel'
 import { router } from './shared/router'
 
 export const scope = fork({
   values: [
-    [$registryService, new RegistryService(new IDBService(workspaceDataCodec))],
+    [
+      $registryService,
+      new RegistryService({
+        [BackendType.IndexedDB]: new IDBBackendPoolService(),
+      }),
+    ],
   ],
 })
 

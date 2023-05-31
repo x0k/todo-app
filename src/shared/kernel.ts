@@ -182,7 +182,6 @@ export interface IBackendService {
   getToDoService: (workspaceId: WorkspaceId) => Promise<IToDoService>
   export: () => Promise<EncodedWorkspaceData>
   import: (data: EncodedWorkspaceData) => Promise<void>
-  close: () => Promise<void>
 }
 
 export type WorkspaceId = Brand<'WorkspaceId', string>

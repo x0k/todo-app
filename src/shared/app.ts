@@ -1,13 +1,7 @@
 import { createDomain } from 'effector'
-// @ts-expect-error wtf
-import { attachLogger } from 'effector-logger'
 import { type MemoizedFn } from 'memoize-one'
 
 export const app = createDomain()
-
-if (import.meta.env.DEV) {
-  attachLogger()
-}
 
 export const appStarted = app.createEvent()
 

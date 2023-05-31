@@ -33,7 +33,9 @@ sample({
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
-attachLogger({ scope })
+if (import.meta.env.DEV) {
+  attachLogger({ scope })
+}
 
 allSettled(appStarted, { scope })
   .then(() => {

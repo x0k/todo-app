@@ -1,7 +1,6 @@
 import { type ITasksListService } from '@/entities/tasks-list'
 import { type IToDoService } from '@/entities/todo'
 
-import { type IDB } from './idb-schema'
 import { type Brand, type EmptyObject } from './lib/type'
 import { type WorkspaceTasksListRouteParams } from './router'
 
@@ -110,19 +109,20 @@ export type Event =
 
 export enum BackendType {
   IndexedDB = 'indexedDB',
+  PlanetScale = 'planetscale',
 }
 
 export const BACKEND_TYPES = Object.values(BackendType)
 
 export const BACKEND_TITLES: Record<BackendType, string> = {
   [BackendType.IndexedDB]: 'Indexed database',
+  [BackendType.PlanetScale]: 'PlanetScale',
 }
 export interface BackendConfigs {
   [BackendType.IndexedDB]: EmptyObject
-}
-
-export interface BackendClients {
-  [BackendType.IndexedDB]: IDB
+  [BackendType.PlanetScale]: {
+    url: string
+  }
 }
 
 export interface BackendData<T extends BackendType> {
@@ -170,7 +170,7 @@ export interface WorkspaceData {
   tasksLists: TasksList[]
 }
 
-export interface IBackendPoolService<T extends BackendType> {
+export interface IBackendManagerService<T extends BackendType> {
   resolve: (workspace: Workspace<T>) => Promise<IBackendService>
   release: (workspace: Workspace<T>) => Promise<void>
 }

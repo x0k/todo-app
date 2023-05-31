@@ -1,7 +1,7 @@
 import { type IRegistryService } from '@/shared/app'
 import {
   type BackendType,
-  type IBackendPoolService,
+  type IBackendManagerService,
   type IBackendService,
   type Workspace,
   type WorkspaceId,
@@ -58,7 +58,7 @@ export class RegistryService implements IRegistryService {
 
   constructor(
     private readonly backendPools: {
-      [T in BackendType]: IBackendPoolService<T>
+      [T in BackendType]: IBackendManagerService<T>
     }
   ) {}
 

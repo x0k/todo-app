@@ -1,7 +1,7 @@
 import {
   type BackendType,
   type EncodedWorkspaceData,
-  type IBackendPoolService,
+  type IBackendManagerService,
   type Workspace,
 } from '@/shared/kernel'
 
@@ -10,7 +10,7 @@ import { type IWorkspaceBackendService } from '@/entities/workspace'
 export class WorkspaceBackendService implements IWorkspaceBackendService {
   constructor(
     private readonly backendPools: {
-      [T in BackendType]: IBackendPoolService<T>
+      [T in BackendType]: IBackendManagerService<T>
     }
   ) {}
 

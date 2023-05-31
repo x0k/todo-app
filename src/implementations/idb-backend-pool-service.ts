@@ -7,7 +7,7 @@ import {
 } from '@/shared/idb-schema'
 import {
   type BackendType,
-  type IBackendPoolService,
+  type IBackendManagerService,
   type IBackendService,
   type Workspace,
   type WorkspaceId,
@@ -17,7 +17,7 @@ import { IDBBackendService } from './idb-backend-service'
 import { workspaceDataCodec } from './workspace-data-codec'
 
 export class IDBBackendPoolService
-  implements IBackendPoolService<BackendType.IndexedDB>
+  implements IBackendManagerService<BackendType.IndexedDB>
 {
   private getDBName(workspaceId: WorkspaceId): string {
     return `todo-${workspaceId}`

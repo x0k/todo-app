@@ -2,6 +2,7 @@ import { type IDB, IDB_SCHEMA_KEYS } from '@/shared/idb-schema'
 import {
   type EncodedWorkspaceData,
   type IBackendService,
+  type Workspace,
   type WorkspaceData,
 } from '@/shared/kernel'
 import { type ICodecService } from '@/shared/lib/storage'
@@ -40,7 +41,7 @@ export class IDBBackendService implements IBackendService {
     return this.workspaceDataCodec.encode(data)
   }
 
-  import = async (data: EncodedWorkspaceData): Promise<void> => {
+  import = async (_: Workspace, data: EncodedWorkspaceData): Promise<void> => {
     const { events, tasks, tasksLists } = this.workspaceDataCodec.decode(data)
     const tx = this.db.transaction(IDB_SCHEMA_KEYS, 'readwrite')
     const tasksStore = tx.objectStore('task')

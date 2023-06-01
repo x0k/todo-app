@@ -180,8 +180,8 @@ export interface IBackendService {
     params: WorkspaceTasksListRouteParams
   ) => Promise<ITasksListService>
   getToDoService: (workspaceId: WorkspaceId) => Promise<IToDoService>
-  export: () => Promise<EncodedWorkspaceData>
-  import: (data: EncodedWorkspaceData) => Promise<void>
+  export: (workspace: Workspace) => Promise<EncodedWorkspaceData>
+  import: (workspace: Workspace, data: EncodedWorkspaceData) => Promise<void>
 }
 
 export type WorkspaceId = Brand<'WorkspaceId', string>

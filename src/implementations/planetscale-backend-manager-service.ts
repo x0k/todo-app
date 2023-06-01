@@ -12,6 +12,7 @@ import { schema } from '@/shared/planetscale-schema'
 
 import migrations from './hydrated-drizzle-migrations/planetscale.json'
 import { PlanetScaleBackendService } from './planetscale-backend-service'
+import { workspaceDataCodec } from './workspace-data-codec'
 
 export class PlanetScaleBackendManagerService
   implements IBackendManagerService<BackendType.PlanetScale>
@@ -35,10 +36,12 @@ export class PlanetScaleBackendManagerService
         'Drizzle PlanetScale driver implementation has been changed, update code above'
       )
     }
-    return new PlanetScaleBackendService(db)
+    return new PlanetScaleBackendService(db, workspaceDataCodec)
   }
 
-  release = async (): Promise<void> => {
-    throw new Error('Not supported by PlanetScale backend')
+  release = async (
+    workspace: Workspace<BackendType.PlanetScale>
+  ): Promise<void> => {
+    // TODO: Remove data assigned to workspace
   }
 }

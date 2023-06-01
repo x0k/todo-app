@@ -9,22 +9,27 @@ import { type IWorkspaceBackendService } from '@/entities/workspace'
 
 export class WorkspaceBackendService implements IWorkspaceBackendService {
   constructor(
-    private readonly backendPools: {
+    private readonly backendManagers: {
       [T in BackendType]: IBackendManagerService<T>
     }
   ) {}
 
-  import = async (ws: Workspace, data: EncodedWorkspaceData): Promise<void> => {
-    const backend = await this.backendPools[ws.backend.type].resolve(ws)
-    await backend.import(data)
+  import = async <T extends BackendType>(
+    ws: Workspace<T>,
+    data: EncodedWorkspaceData
+  ): Promise<void> => {
+    const backend = await this.backendManagers[ws.backend.type].resolve(ws)
+    await backend.import(ws, data)
   }
 
-  export = async (ws: Workspace): Promise<EncodedWorkspaceData> => {
-    const backend = await this.backendPools[ws.backend.type].resolve(ws)
-    return await backend.export()
+  export = async <T extends BackendType>(
+    ws: Workspace<T>
+  ): Promise<EncodedWorkspaceData> => {
+    const backend = await this.backendManagers[ws.backend.type].resolve(ws)
+    return await backend.export(ws)
   }
 
-  release = async (ws: Workspace): Promise<void> => {
-    await this.backendPools[ws.backend.type].release(ws)
+  release = async <T extends BackendType>(ws: Workspace<T>): Promise<void> => {
+    await this.backendManagers[ws.backend.type].release(ws)
   }
 }

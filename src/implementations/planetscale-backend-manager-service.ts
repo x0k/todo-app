@@ -8,6 +8,7 @@ import {
   type IBackendService,
   type Workspace,
 } from '@/shared/kernel'
+import { schema } from '@/shared/planetscale-schema'
 
 import migrations from './hydrated-drizzle-migrations/planetscale.json'
 import { PlanetScaleBackendService } from './planetscale-backend-service'
@@ -19,7 +20,7 @@ export class PlanetScaleBackendManagerService
     workspace: Workspace<BackendType.PlanetScale>
   ): Promise<IBackendService> => {
     const connection = connect(workspace.backend.config)
-    const db = drizzle(connection)
+    const db = drizzle(connection, { schema })
     if (
       'dialect' in db &&
       db.dialect instanceof MySqlDialect &&
@@ -34,7 +35,7 @@ export class PlanetScaleBackendManagerService
         'Drizzle PlanetScale driver implementation has been changed, update code above'
       )
     }
-    return new PlanetScaleBackendService()
+    return new PlanetScaleBackendService(db)
   }
 
   release = async (): Promise<void> => {

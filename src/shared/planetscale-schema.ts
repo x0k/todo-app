@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm'
+import { type InferModel, relations } from 'drizzle-orm'
 import {
   boolean,
   char,
@@ -7,6 +7,7 @@ import {
   mysqlTable,
   varchar,
 } from 'drizzle-orm/mysql-core'
+import { type PlanetScaleDatabase } from 'drizzle-orm/planetscale-serverless'
 
 import { type Brand } from './lib/type'
 
@@ -32,11 +33,14 @@ export const tasks = mysqlTable('tasks', {
   id: varchar('id', { length: 21 }).primaryKey().$type<TaskId>(),
   tasksListId: varchar('tasksListId', { length: 21 })
     .notNull()
-    .references(() => tasksLists.id, { onDelete: 'cascade' }),
-  title: varchar('title', { length: 255 }),
-  status: char('status').$type<TaskStatus>(),
-  createdAt: datetime('createdAt'),
+    .references(() => tasksLists.id, { onDelete: 'cascade' })
+    .$type<TasksListId>(),
+  title: varchar('title', { length: 255 }).notNull(),
+  status: char('status').notNull().$type<TaskStatus>(),
+  createdAt: datetime('createdAt').notNull(),
 })
+
+export type PSTask = InferModel<typeof tasks>
 
 export const tasksRelations = relations(tasks, ({ one }) => ({
   tasksList: one(tasksLists, {
@@ -47,9 +51,9 @@ export const tasksRelations = relations(tasks, ({ one }) => ({
 
 export const tasksLists = mysqlTable('tasksLists', {
   id: varchar('id', { length: 21 }).primaryKey().$type<TasksListId>(),
-  title: varchar('title', { length: 255 }),
-  isArchived: boolean('isArchived'),
-  createdAt: datetime('createdAt'),
+  title: varchar('title', { length: 255 }).notNull(),
+  isArchived: boolean('isArchived').notNull(),
+  createdAt: datetime('createdAt').notNull(),
 })
 
 export const tasksListsRelations = relations(tasksLists, ({ many }) => ({
@@ -58,7 +62,17 @@ export const tasksListsRelations = relations(tasksLists, ({ many }) => ({
 
 export const events = mysqlTable('events', {
   id: varchar('id', { length: 21 }).primaryKey().$type<EventId>(),
-  type: varchar('type', { length: 8 }).$type<EventType>(),
-  createdAt: datetime('createdAt'),
-  data: json('data'),
+  type: varchar('type', { length: 8 }).notNull().$type<EventType>(),
+  createdAt: datetime('createdAt').notNull(),
+  data: json('data').notNull(),
 })
+
+export const schema = {
+  tasks,
+  tasksRelations,
+  tasksLists,
+  tasksListsRelations,
+  events,
+}
+
+export type PSDB = PlanetScaleDatabase<typeof schema>

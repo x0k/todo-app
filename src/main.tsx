@@ -8,7 +8,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { App } from './app'
-import { IDBBackendPoolService } from './implementations/idb-backend-pool-service'
+import { IDBBackendManagerService } from './implementations/idb-backend-manager-service'
 import { PlanetScaleBackendManagerService } from './implementations/planetscale-backend-manager-service'
 import { RegistryService } from './implementations/registry-service'
 import {
@@ -25,7 +25,7 @@ export const scope = fork({
     [
       $registryService,
       new RegistryService({
-        [BackendType.IndexedDB]: new IDBBackendPoolService(workspaceDataCodec),
+        [BackendType.IndexedDB]: new IDBBackendManagerService(workspaceDataCodec),
         [BackendType.PlanetScale]: new PlanetScaleBackendManagerService(
           workspaceDataCodec,
           eventCodec,

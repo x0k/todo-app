@@ -18,7 +18,7 @@ import { type ICodecService } from '@/shared/lib/storage'
 
 import { IDBBackendService } from './idb-backend-service'
 
-export class IDBBackendPoolService
+export class IDBBackendManagerService
   implements IBackendManagerService<BackendType.IndexedDB>
 {
   private getDBName(workspaceId: WorkspaceId): string {

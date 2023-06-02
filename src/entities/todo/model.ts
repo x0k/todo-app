@@ -174,6 +174,7 @@ $tasksState
     ],
     reducer
   )
+  .reset(workspaceOpened)
 
 $events
   .on(
@@ -195,6 +196,9 @@ $events
       .concat(result)
       .concat(events.slice(start + EVENTS_PER_PAGE))
   })
+  .reset(workspaceOpened)
+
+// Router
 
 sample({
   clock: $currentWorkspaceId,

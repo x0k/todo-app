@@ -1,6 +1,7 @@
 import { eq, inArray } from 'drizzle-orm'
 
 import {
+  type EncodedEvent,
   type EncodedWorkspaceData,
   type Event,
   type IBackendService,
@@ -31,7 +32,9 @@ export class PlanetScaleBackendService implements IBackendService {
     private readonly workspaceDataCodec: ICodecService<
       WorkspaceData,
       EncodedWorkspaceData
-    >
+    >,
+    private readonly eventCodec: ICodecService<Event, EncodedEvent>,
+    private readonly dateCodec: ICodecService<Date, string>
   ) {}
 
   getTasksListService = async (
@@ -41,7 +44,12 @@ export class PlanetScaleBackendService implements IBackendService {
   }
 
   getToDoService = async (workspaceId: WorkspaceId): Promise<IToDoService> => {
-    return new PlanetScaleToDoService(this.db, workspaceId)
+    return new PlanetScaleToDoService(
+      this.db,
+      workspaceId,
+      this.eventCodec,
+      this.dateCodec
+    )
   }
 
   export = async (workspace: Workspace): Promise<EncodedWorkspaceData> => {

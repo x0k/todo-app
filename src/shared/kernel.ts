@@ -138,25 +138,61 @@ export type EncodedTaskList = Omit<TasksList, 'tasks' | 'createdAt'> & {
   createdAt: string
   tasks: Record<TaskStatus, TaskId[]>
 }
-// Omit will broke whole type
-// TODO: Rewrite this type with encoded variants
-export type EncodedEvent = (
-  | Exclude<Event, TasksListCreatedEvent | TasksCreatedEvent | TaskCreatedEvent>
-  | (
-      | (Omit<TaskCreatedEvent, 'task'> & {
-          task: EncodedTask
-        })
-      | (Omit<TasksCreatedEvent, 'tasks'> & {
-          tasks: EncodedTask[]
-        })
-      | (Omit<TasksListCreatedEvent, 'list' | 'tasks'> & {
-          list: EncodedTaskList
-          tasks: EncodedTask[]
-        })
-    )
-) & {
+export interface AbstractEncodedEvent<T extends EventType> {
+  id: EventId
+  type: T
   createdAt: string
 }
+
+export interface EncodedTaskCreatedEvent
+  extends AbstractEncodedEvent<EventType.TaskCreated> {
+  tasksListId: TasksListId
+  task: EncodedTask
+}
+
+export interface EncodedTasksCreatedEvent
+  extends AbstractEncodedEvent<EventType.TasksCreated> {
+  tasksListId: TasksListId
+  tasks: EncodedTask[]
+}
+
+export interface EncodedTasksListCreatedEvent
+  extends AbstractEncodedEvent<EventType.TasksListCreated> {
+  list: EncodedTaskList
+  tasks: EncodedTask[]
+}
+
+export interface EncodedTaskUpdatedEvent
+  extends AbstractEncodedEvent<EventType.TaskUpdated> {
+  taskId: TaskId
+  change: WritableTaskData
+}
+
+export interface EncodedTasksListUpdatedEvent
+  extends AbstractEncodedEvent<EventType.TasksListUpdated> {
+  tasksListId: TasksListId
+  change: WritableTasksListData
+}
+
+export interface EncodedTaskCompletedEvent
+  extends AbstractEncodedEvent<EventType.TaskCompleted> {
+  taskId: TaskId
+  message: string
+}
+
+export interface EncodedTasksArchivedEvent
+  extends AbstractEncodedEvent<EventType.TasksArchived> {
+  tasksIds: TaskId[]
+}
+
+export type EncodedEvent =
+  | EncodedTaskCreatedEvent
+  | EncodedTasksCreatedEvent
+  | EncodedTasksListCreatedEvent
+  | EncodedTaskUpdatedEvent
+  | EncodedTasksListUpdatedEvent
+  | EncodedTaskCompletedEvent
+  | EncodedTasksArchivedEvent
 
 export interface EncodedWorkspaceData {
   tasks: EncodedTask[]

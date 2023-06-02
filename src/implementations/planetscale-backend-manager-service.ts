@@ -4,19 +4,32 @@ import { drizzle } from 'drizzle-orm/planetscale-serverless'
 
 import {
   type BackendType,
+  type EncodedEvent,
+  type EncodedWorkspaceData,
+  type Event,
   type IBackendManagerService,
   type IBackendService,
   type Workspace,
+  type WorkspaceData,
 } from '@/shared/kernel'
+import { type ICodecService } from '@/shared/lib/storage'
 import { schema } from '@/shared/planetscale-schema'
 
 import migrations from './hydrated-drizzle-migrations/planetscale.json'
 import { PlanetScaleBackendService } from './planetscale-backend-service'
-import { workspaceDataCodec } from './workspace-data-codec'
 
 export class PlanetScaleBackendManagerService
   implements IBackendManagerService<BackendType.PlanetScale>
 {
+  constructor(
+    private readonly workspaceDataCodec: ICodecService<
+      WorkspaceData,
+      EncodedWorkspaceData
+    >,
+    private readonly eventCodec: ICodecService<Event, EncodedEvent>,
+    private readonly dateCodec: ICodecService<Date, string>
+  ) {}
+
   resolve = async (
     workspace: Workspace<BackendType.PlanetScale>
   ): Promise<IBackendService> => {
@@ -36,7 +49,12 @@ export class PlanetScaleBackendManagerService
         'Drizzle PlanetScale driver implementation has been changed, update code above'
       )
     }
-    return new PlanetScaleBackendService(db, workspaceDataCodec)
+    return new PlanetScaleBackendService(
+      db,
+      this.workspaceDataCodec,
+      this.eventCodec,
+      this.dateCodec
+    )
   }
 
   release = async (

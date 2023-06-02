@@ -9,9 +9,15 @@ import ReactDOM from 'react-dom/client'
 
 import { App } from './app'
 import { IDBBackendPoolService } from './implementations/idb-backend-pool-service'
+import { PlanetScaleBackendManagerService } from './implementations/planetscale-backend-manager-service'
 import { RegistryService } from './implementations/registry-service'
+import {
+  eventCodec,
+  workspaceDataCodec,
+} from './implementations/workspace-data-codec'
 import { $registryService, appStarted } from './shared/app'
 import { BackendType } from './shared/kernel'
+import { dateCodec } from './shared/lib/storage'
 import { router } from './shared/router'
 
 export const scope = fork({
@@ -19,7 +25,12 @@ export const scope = fork({
     [
       $registryService,
       new RegistryService({
-        [BackendType.IndexedDB]: new IDBBackendPoolService(),
+        [BackendType.IndexedDB]: new IDBBackendPoolService(workspaceDataCodec),
+        [BackendType.PlanetScale]: new PlanetScaleBackendManagerService(
+          workspaceDataCodec,
+          eventCodec,
+          dateCodec
+        ),
       }),
     ],
   ],

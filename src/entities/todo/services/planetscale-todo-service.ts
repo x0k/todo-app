@@ -2,6 +2,7 @@ import { eq, inArray, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import {
+  type EncodedEvent,
   type Event,
   type EventId,
   EventType,
@@ -18,6 +19,7 @@ import {
   type TasksListUpdatedEvent,
   type WorkspaceId,
 } from '@/shared/kernel'
+import { type ICodecService } from '@/shared/lib/storage'
 import {
   type PSDB,
   type PSTasksList,
@@ -59,35 +61,32 @@ export class PlanetScaleToDoService implements IToDoService {
   }
 
   private tx<A, E extends Event>(
-    action: (
-      tx: PSTransaction,
-      arg: A
-    ) => Promise<Omit<E, 'createdAt' | 'workspaceId' | 'id'>>
+    action: (tx: PSTransaction, arg: A) => Promise<Omit<E, 'createdAt' | 'id'>>
   ): (arg: A) => Promise<E> {
     return async (arg: A) =>
       await this.db.transaction(async (tx) => {
-        const { type, ...data } = await action(tx, arg)
-        const { id, createdAt } = this.entity<EventId>()
+        const eventData = await action(tx, arg)
+        const event = {
+          ...eventData,
+          ...this.entity<EventId>(),
+        } as E
+        const { id, createdAt, type, ...data } = this.eventCodec.encode(event)
         await tx.insert(events).values({
           id,
-          workspaceId: this.workspaceId,
           type,
-          createdAt,
+          workspaceId: this.workspaceId,
+          createdAt: event.createdAt,
           data,
         })
-        // FIX: data should be encoded either some information will be loosed
-        return {
-          ...data,
-          type,
-          createdAt,
-          id,
-        } as E
+        return event
       })
   }
 
   constructor(
     private readonly db: PSDB,
-    private readonly workspaceId: WorkspaceId
+    private readonly workspaceId: WorkspaceId,
+    private readonly eventCodec: ICodecService<Event, EncodedEvent>,
+    private readonly dateCodec: ICodecService<Date, string>
   ) {}
 
   loadTasksState = async (): Promise<TasksState> => {
@@ -253,13 +252,13 @@ export class PlanetScaleToDoService implements IToDoService {
       .orderBy(events.createdAt)
       .offset((page - 1) * EVENTS_PER_PAGE)
       .limit(EVENTS_PER_PAGE)
-    return encodedEvents.map(
-      ({ workspaceId, data, ...rest }) =>
-        ({
-          // FIX: data should be decoded
-          ...data,
-          ...rest,
-        } as Event)
+    return encodedEvents.map(({ data, createdAt, id, type }) =>
+      this.eventCodec.decode({
+        ...data,
+        id,
+        type,
+        createdAt: this.dateCodec.encode(createdAt),
+      } as EncodedEvent)
     )
   }
 }

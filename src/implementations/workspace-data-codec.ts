@@ -67,9 +67,9 @@ const tasksListCodec: ICodecService<TasksList, EncodedTaskList> = {
   },
 }
 const tasksListsCodec = makeArrayCodec(tasksListCodec)
-const eventCodec: ICodecService<Event, EncodedEvent> = {
+export const eventCodec: ICodecService<Event, EncodedEvent> = {
   encode(data) {
-    const createdAt = dateCodec.encode(data.createdAt) as Date & string
+    const createdAt = dateCodec.encode(data.createdAt)
     switch (data.type) {
       case EventType.TaskCreated:
         return {

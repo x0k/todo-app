@@ -16,6 +16,7 @@ import {
   type PlanetScaleTransaction,
 } from 'drizzle-orm/planetscale-serverless'
 
+import { type EncodedEvent } from './kernel'
 import { type Brand } from './lib/type'
 
 type TaskId = Brand<'TaskID', string>
@@ -86,7 +87,9 @@ export const events = mysqlTable('events', {
     .$type<WorkspaceId>(),
   type: varchar('type', { length: 8 }).notNull().$type<EventType>(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
-  data: json('data').notNull().$type<Record<string, unknown>>(),
+  data: json('data')
+    .notNull()
+    .$type<Omit<EncodedEvent, 'id' | 'type' | 'createdAt'>>(),
 })
 
 export type PSEvent = InferModel<typeof events>

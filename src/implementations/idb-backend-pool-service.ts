@@ -7,14 +7,16 @@ import {
 } from '@/shared/idb-schema'
 import {
   type BackendType,
+  type EncodedWorkspaceData,
   type IBackendManagerService,
   type IBackendService,
   type Workspace,
+  type WorkspaceData,
   type WorkspaceId,
 } from '@/shared/kernel'
+import { type ICodecService } from '@/shared/lib/storage'
 
 import { IDBBackendService } from './idb-backend-service'
-import { workspaceDataCodec } from './workspace-data-codec'
 
 export class IDBBackendPoolService
   implements IBackendManagerService<BackendType.IndexedDB>
@@ -28,6 +30,13 @@ export class IDBBackendPoolService
     db: IDB
     backend: IBackendService
   } | null = null
+
+  constructor(
+    private readonly workspaceDataCodec: ICodecService<
+      WorkspaceData,
+      EncodedWorkspaceData
+    >
+  ) {}
 
   resolve = async (
     workspace: Workspace<BackendType.IndexedDB>
@@ -56,7 +65,7 @@ export class IDBBackendPoolService
         },
       }
     )
-    const backend = new IDBBackendService(db, workspaceDataCodec)
+    const backend = new IDBBackendService(db, this.workspaceDataCodec)
     this.connection = {
       workspaceId: workspace.id,
       db,

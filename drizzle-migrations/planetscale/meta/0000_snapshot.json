@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "816f20fb-69f7-489e-bf58-0ff0ad2a9f75",
+  "id": "6b9e66e7-4842-4b6a-b8f9-d058e2a0037c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "events": {
@@ -9,8 +9,15 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(21)",
+          "type": "varchar(36)",
           "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "workspaceId": {
+          "name": "workspaceId",
+          "type": "varchar(36)",
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -18,21 +25,22 @@
           "name": "type",
           "type": "varchar(8)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
         },
         "data": {
           "name": "data",
           "type": "json",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         }
       },
@@ -45,14 +53,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(21)",
+          "type": "varchar(36)",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
         "tasksListId": {
           "name": "tasksListId",
-          "type": "varchar(21)",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "workspaceId": {
+          "name": "workspaceId",
+          "type": "varchar(36)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -61,40 +76,28 @@
           "name": "title",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "status": {
           "name": "status",
           "type": "char",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'n'"
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "tasks_tasksListId_tasksLists_id_fk": {
-          "name": "tasks_tasksListId_tasksLists_id_fk",
-          "tableFrom": "tasks",
-          "tableTo": "tasksLists",
-          "columnsFrom": [
-            "tasksListId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {}
     },
     "tasksLists": {
@@ -102,8 +105,15 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(21)",
+          "type": "varchar(36)",
           "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "workspaceId": {
+          "name": "workspaceId",
+          "type": "varchar(36)",
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -111,22 +121,24 @@
           "name": "title",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "isArchived": {
           "name": "isArchived",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},

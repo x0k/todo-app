@@ -44,9 +44,9 @@ import {
 } from '../core'
 
 export class PlanetScaleToDoService implements IToDoService {
-  private toTasksList({ workspaceId, ...rest }: PSTasksList): TasksList {
+  private toTasksList(data: Omit<PSTasksList, 'workspaceId'>): TasksList {
     return {
-      ...rest,
+      ...data,
       tasks: {
         [TaskStatus.Archived]: new Set(),
         [TaskStatus.Done]: new Set(),
@@ -91,7 +91,16 @@ export class PlanetScaleToDoService implements IToDoService {
 
   loadTasksState = async (): Promise<TasksState> => {
     const allTasksLists = await this.db.query.tasksLists.findMany({
+      columns: {
+        workspaceId: false,
+      },
       where: eq(psTasksLists.workspaceId, this.workspaceId),
+    })
+    const allTasks = await this.db.query.tasks.findMany({
+      columns: {
+        workspaceId: false,
+      },
+      where: eq(psTasks.workspaceId, this.workspaceId),
     })
     const lists = new Map(
       allTasksLists.map((tasksList) => [
@@ -99,9 +108,6 @@ export class PlanetScaleToDoService implements IToDoService {
         this.toTasksList(tasksList),
       ])
     )
-    const allTasks = await this.db.query.tasks.findMany({
-      where: inArray(psTasks.tasksListId, Array.from(lists.keys())),
-    })
     const tasksMap = new Map(allTasks.map((task) => [task.id, task]))
     for (const task of allTasks) {
       const tasksList = lists.get(task.tasksListId)
@@ -123,6 +129,7 @@ export class PlanetScaleToDoService implements IToDoService {
         id,
         title,
         tasksListId,
+        workspaceId: this.workspaceId,
       })
       return {
         type: EventType.TaskCreated,
@@ -144,6 +151,7 @@ export class PlanetScaleToDoService implements IToDoService {
         ...this.entity<TaskId>(),
         title,
         tasksListId,
+        workspaceId: this.workspaceId,
         status: TaskStatus.NotDone,
       }))
       await tx.insert(psTasks).values(tasks)
@@ -157,21 +165,27 @@ export class PlanetScaleToDoService implements IToDoService {
 
   createTasksList = this.tx<CreateTasksList, TasksListCreatedEvent>(
     async (tx, { title, tasks: titles }) => {
-      const listData: PSTasksList = {
-        ...this.entity<TasksListId>(),
+      const { id, createdAt } = this.entity<TasksListId>()
+      await tx.insert(psTasksLists).values({
+        id,
+        createdAt,
         title,
         workspaceId: this.workspaceId,
-        isArchived: false,
-      }
-      await tx.insert(psTasksLists).values(listData)
+      })
       const tasks = titles.map((title) => ({
         ...this.entity<TaskId>(),
         title,
-        tasksListId: listData.id,
+        tasksListId: id,
+        workspaceId: this.workspaceId,
         status: TaskStatus.NotDone,
       }))
       await tx.insert(psTasks).values(tasks)
-      const list = this.toTasksList(listData)
+      const list = this.toTasksList({
+        id,
+        title,
+        createdAt,
+        isArchived: false,
+      })
       for (const task of tasks) {
         list.tasks[task.status].add(task.id)
         list.tasksCount++

@@ -45,8 +45,13 @@ export const tasks = mysqlTable('tasks', {
   id: varchar('id', { length: ID_LENGTH }).primaryKey().$type<TaskId>(),
   tasksListId: varchar('tasksListId', { length: ID_LENGTH })
     .notNull()
-    .references(() => tasksLists.id, { onDelete: 'cascade' })
+    // PlanetScale does not support foreign keys
+    // .references(() => tasksLists.id, { onDelete: 'cascade' })
     .$type<TasksListId>(),
+  // We store this redundant info for queries simplicity
+  workspaceId: varchar('workspaceId', { length: ID_LENGTH })
+    .notNull()
+    .$type<WorkspaceId>(),
   title: varchar('title', { length: TITLE_LENGTH }).notNull(),
   status: char('status')
     .default(TaskStatus.NotDone)

@@ -1,4 +1,4 @@
-import { eq, inArray } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 import {
   type EncodedEvent,
@@ -54,6 +54,9 @@ export class PlanetScaleBackendService implements IBackendService {
 
   export = async (workspace: Workspace): Promise<EncodedWorkspaceData> => {
     const allTasksLists = await this.db.query.tasksLists.findMany({
+      columns: {
+        workspaceId: false,
+      },
       where: eq(tasksLists.workspaceId, workspace.id),
     })
     const tasksListsWithTasks: TasksList[] = allTasksLists.map((tasksList) => ({
@@ -69,7 +72,10 @@ export class PlanetScaleBackendService implements IBackendService {
       tasksListsWithTasks.map((tasksList) => [tasksList.id, tasksList])
     )
     const allTasks = await this.db.query.tasks.findMany({
-      where: inArray(tasks.tasksListId, Array.from(tasksListMap.keys())),
+      columns: {
+        workspaceId: false,
+      },
+      where: eq(tasks.workspaceId, workspace.id),
     })
     for (const task of allTasks) {
       const tasksList = tasksListMap.get(task.tasksListId)
@@ -79,10 +85,18 @@ export class PlanetScaleBackendService implements IBackendService {
       }
     }
     const allEvents = await this.db.query.events.findMany({
+      columns: {
+        workspaceId: false,
+      },
       where: eq(events.workspaceId, workspace.id),
     })
-    const decodedEvents = allEvents.map(
-      ({ workspaceId, data, ...rest }) => ({ ...rest, ...data } as Event)
+    const decodedEvents = allEvents.map(({ data, createdAt, id, type }) =>
+      this.eventCodec.decode({
+        ...data,
+        type,
+        id,
+        createdAt: this.dateCodec.encode(createdAt),
+      } as EncodedEvent)
     )
     const data: WorkspaceData = {
       tasks: allTasks,
@@ -109,15 +123,22 @@ export class PlanetScaleBackendService implements IBackendService {
           workspaceId: workspace.id,
         }))
       )
-      await tx.insert(tasks).values(decoded.tasks)
+      await tx
+        .insert(tasks)
+        .values(
+          decoded.tasks.map((task) => ({ ...task, workspaceId: workspace.id }))
+        )
       await tx.insert(events).values(
-        decoded.events.map(({ type, id, createdAt, ...data }) => ({
-          workspaceId: workspace.id,
-          type,
-          id,
-          createdAt,
-          data,
-        }))
+        decoded.events.map((event) => {
+          const { id, type, createdAt, ...data } = this.eventCodec.encode(event)
+          return {
+            id,
+            type,
+            workspaceId: workspace.id,
+            createdAt: event.createdAt,
+            data,
+          }
+        })
       )
     })
   }

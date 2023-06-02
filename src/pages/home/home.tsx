@@ -18,7 +18,7 @@ import {
   createWorkspaceDialogModel,
   deleteWorkspaceDialogModel,
 } from '@/entities/workspace'
-import { importWorkspacesFx } from '@/entities/workspace/model'
+import { importWorkspaceFx } from '@/entities/workspace/model'
 
 import { HeaderWidget } from '@/widgets/header'
 
@@ -26,7 +26,7 @@ export function HomePage(): JSX.Element {
   const binds = useUnit({
     openCreateWorkspaceDialog: createWorkspaceDialogModel.dialogOpened,
     openDeleteWorkspaceDialog: deleteWorkspaceDialogModel.dialogOpened,
-    importWorkspace: importWorkspacesFx,
+    importWorkspace: importWorkspaceFx,
   })
   return (
     <Box display="flex" flexDirection="column" padding={2}>

@@ -10,7 +10,7 @@ import { useUnit } from 'effector-react/scope'
 
 import { type Workspace } from '@/shared/kernel'
 
-import { exportWorkspacesFx } from '../../model'
+import { exportWorkspaceFx } from '../../model'
 import { $isOpen, dialogClosed } from './model'
 
 export interface WorkspaceSettingsDialogProps {
@@ -23,7 +23,7 @@ export function WorkspaceSettingsDialog({
   const binds = useUnit({
     open: $isOpen,
     close: dialogClosed,
-    exportWorkspace: exportWorkspacesFx,
+    exportWorkspace: exportWorkspaceFx,
   })
   return (
     <Dialog

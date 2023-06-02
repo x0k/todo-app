@@ -1,6 +1,6 @@
 import { attach, sample } from 'effector'
 
-import { $registryService, app } from '@/shared/app'
+import { $registryService, app, errorOccurred } from '@/shared/app'
 import { isDefined } from '@/shared/lib/guards'
 import { type Loadable, type States, mapLoadable } from '@/shared/lib/state'
 import { bindLoadable } from '@/shared/lib/state-effector'
@@ -54,6 +54,11 @@ export const loadTasksListFx = attach({
 })
 
 // Init
+
+sample({
+  clock: [loadTasksListFx.failData],
+  target: errorOccurred,
+})
 
 sample({
   clock: tasksListOpened,

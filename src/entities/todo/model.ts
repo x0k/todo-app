@@ -142,22 +142,24 @@ export const loadEventsFx = attach({
 
 // Init
 sample({
-  clock: workspaceOpened,
-  target: $currentWorkspaceId,
-})
-
-sample({
   clock: [
     loadTasksStateFx.failData,
     createTaskFx.failData,
     createTasksFx.failData,
-    updateTaskFx.failData,
     createTasksListFx.failData,
+    updateTaskFx.failData,
     updateTasksListFx.failData,
     completeTaskFx.failData,
     archiveTasksFx.failData,
+    getEventsCountFx.failData,
+    loadEventsFx.failData,
   ],
   target: errorOccurred,
+})
+
+sample({
+  clock: workspaceOpened,
+  target: $currentWorkspaceId,
 })
 
 $tasksState

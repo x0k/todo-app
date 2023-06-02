@@ -3,6 +3,7 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import CssBaseline from '@mui/material/CssBaseline'
+import { SnackbarProvider } from 'notistack'
 
 import { Notifications } from '@/features/notifications'
 import '@/features/persist-location/model'
@@ -15,9 +16,11 @@ import { Theme } from './theme'
 export function App(): JSX.Element {
   return (
     <Theme>
-      <CssBaseline />
-      <Routes />
-      <Notifications />
+      <SnackbarProvider>
+        <CssBaseline />
+        <Routes />
+        <Notifications />
+      </SnackbarProvider>
     </Theme>
   )
 }

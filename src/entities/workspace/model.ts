@@ -1,6 +1,6 @@
 import { attach, sample } from 'effector'
 
-import { $registryService, app } from '@/shared/app'
+import { $registryService, app, errorOccurred } from '@/shared/app'
 import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import {
   JSON_FILE_EXTENSION,
@@ -76,7 +76,7 @@ export const deleteWorkspaceFx = attach({
   },
 })
 
-export const exportWorkspacesFx = attach({
+export const exportWorkspaceFx = attach({
   source: $registryService,
   effect: async (r, id: WorkspaceId) => {
     const data = await (await r.workspaceService()).exportWorkspace(id)
@@ -84,7 +84,7 @@ export const exportWorkspacesFx = attach({
   },
 })
 
-export const importWorkspacesFx = attach({
+export const importWorkspaceFx = attach({
   source: $registryService,
   effect: async (r) => {
     const data = await blobOpen({
@@ -97,6 +97,18 @@ export const importWorkspacesFx = attach({
 })
 
 // Init
+sample({
+  clock: [
+    loadWorkspacesFx.failData,
+    loadWorkspaceFx.failData,
+    createWorkspaceFx.failData,
+    updateWorkspaceFx.failData,
+    deleteWorkspaceFx.failData,
+    exportWorkspaceFx.failData,
+    importWorkspaceFx.failData,
+  ],
+  target: errorOccurred,
+})
 
 $workspacesMap
   .on(loadWorkspacesFx.doneData, (_, data) => data)
@@ -137,7 +149,7 @@ sample({
 })
 
 sample({
-  clock: [createWorkspaceFx.doneData, importWorkspacesFx.doneData],
+  clock: [createWorkspaceFx.doneData, importWorkspaceFx.doneData],
   fn: (workspace) => ({ workspaceId: workspace.id }),
   target: routes.workspace.index.open,
 })

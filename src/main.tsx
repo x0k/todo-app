@@ -8,6 +8,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { App } from './app'
+import { NotificationType, notificationShowed } from './features/notifications'
 import { IDBBackendManagerService } from './implementations/idb-backend-manager-service'
 import { PlanetScaleBackendManagerService } from './implementations/planetscale-backend-manager-service'
 import { RegistryService } from './implementations/registry-service'
@@ -15,7 +16,7 @@ import {
   eventCodec,
   workspaceDataCodec,
 } from './implementations/workspace-data-codec'
-import { $registryService, appStarted } from './shared/app'
+import { $registryService, appStarted, errorOccurred } from './shared/app'
 import { BackendType } from './shared/kernel'
 import { dateCodec } from './shared/lib/storage'
 import { router } from './shared/router'
@@ -25,7 +26,9 @@ export const scope = fork({
     [
       $registryService,
       new RegistryService({
-        [BackendType.IndexedDB]: new IDBBackendManagerService(workspaceDataCodec),
+        [BackendType.IndexedDB]: new IDBBackendManagerService(
+          workspaceDataCodec
+        ),
         [BackendType.PlanetScale]: new PlanetScaleBackendManagerService(
           workspaceDataCodec,
           eventCodec,
@@ -40,6 +43,12 @@ sample({
   clock: appStarted,
   fn: () => createBrowserHistory(),
   target: router.setHistory,
+})
+
+sample({
+  clock: errorOccurred,
+  fn: (error) => ({ type: NotificationType.Error, message: error.message }),
+  target: notificationShowed,
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)

@@ -2,8 +2,8 @@ import { useStore, useUnit } from 'effector-react/scope'
 import { type VariantType, useSnackbar } from 'notistack'
 import { useEffect, useRef } from 'react'
 
-import { $notifications, notificationRemoved } from './model'
 import { type NotificationId, NotificationType } from './core'
+import { $notifications, notificationRemoved } from './model'
 
 const NOTIFICATION_TYPE_TO_STATUS_MAP: Record<NotificationType, VariantType> = {
   [NotificationType.Success]: 'success',
@@ -28,6 +28,11 @@ export function Notifications(): null {
       enqueueSnackbar(message, {
         key: id,
         variant: NOTIFICATION_TYPE_TO_STATUS_MAP[type],
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+        preventDuplicate: true,
         onExit: () => {
           removeNotification(id)
           displayed.delete(id)

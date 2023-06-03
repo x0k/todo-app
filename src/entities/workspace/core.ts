@@ -1,5 +1,5 @@
 import {
-  type BackendData,
+  type Backend,
   type BackendType,
   type EncodedWorkspaceData,
   type Workspace,
@@ -9,7 +9,7 @@ import {
 
 export interface CreateWorkspace {
   title: string
-  backend: BackendData<BackendType>
+  backend: Backend<BackendType>
 }
 
 export interface UpdateWorkspace {
@@ -23,9 +23,7 @@ export interface DeleteWorkspace {
 
 export interface IWorkspaceService {
   loadWorkspaces: () => Promise<Map<WorkspaceId, Workspace>>
-  loadWorkspace: <T extends BackendType>(
-    id: WorkspaceId
-  ) => Promise<Workspace<T>>
+  loadWorkspace: (id: WorkspaceId) => Promise<Workspace>
   createWorkspace: (data: CreateWorkspace) => Promise<Workspace>
   updateWorkspace: (data: UpdateWorkspace) => Promise<Workspace>
   deleteWorkspace: (data: DeleteWorkspace) => Promise<void>

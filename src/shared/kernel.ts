@@ -125,7 +125,11 @@ export interface BackendConfigs {
   }
 }
 
-export interface BackendData<T extends BackendType> {
+export type BackendId = Brand<'BackendID', string>
+
+export interface Backend<T extends BackendType> {
+  id: BackendId
+  title: string
   type: T
   config: BackendConfigs[T]
 }
@@ -206,9 +210,9 @@ export interface WorkspaceData {
   tasksLists: TasksList[]
 }
 
-export interface IBackendManagerService<T extends BackendType> {
-  resolve: (workspace: Workspace<T>) => Promise<IBackendService>
-  release: (workspace: Workspace<T>) => Promise<void>
+export interface IBackendManagerService {
+  resolve: (workspace: Workspace) => Promise<IBackendService>
+  release: (workspace: Workspace) => Promise<void>
 }
 
 export interface IBackendService {
@@ -222,10 +226,10 @@ export interface IBackendService {
 
 export type WorkspaceId = Brand<'WorkspaceId', string>
 
-export interface Workspace<T extends BackendType = BackendType> {
+export interface Workspace {
   id: WorkspaceId
   title: string
-  backend: BackendData<T>
+  backendId: BackendId
 }
 
 export type WritableWorkspaceData = Partial<Pick<Workspace, 'title'>>

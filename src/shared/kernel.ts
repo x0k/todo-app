@@ -1,8 +1,4 @@
-import { type ITasksListService } from '@/entities/tasks-list'
-import { type IToDoService } from '@/entities/todo'
-
 import { type Brand, type EmptyObject } from './lib/type'
-import { type WorkspaceTasksListRouteParams } from './router'
 
 export type TaskId = Brand<'TaskID', string>
 
@@ -208,20 +204,6 @@ export interface WorkspaceData {
   tasks: Task[]
   events: Event[]
   tasksLists: TasksList[]
-}
-
-export interface IBackendManagerService {
-  resolve: (workspace: Workspace) => Promise<IBackendService>
-  release: (workspace: Workspace) => Promise<void>
-}
-
-export interface IBackendService {
-  getTasksListService: (
-    params: WorkspaceTasksListRouteParams
-  ) => Promise<ITasksListService>
-  getToDoService: (workspaceId: WorkspaceId) => Promise<IToDoService>
-  export: (workspace: Workspace) => Promise<EncodedWorkspaceData>
-  import: (workspace: Workspace, data: EncodedWorkspaceData) => Promise<void>
 }
 
 export type WorkspaceId = Brand<'WorkspaceId', string>

@@ -1,35 +1,22 @@
-import {
-  type BackendType,
-  type EncodedWorkspaceData,
-  type IBackendManagerService,
-  type Workspace,
-} from '@/shared/kernel'
+import { type EncodedWorkspaceData, type Workspace } from '@/shared/kernel'
 
 import { type IWorkspaceBackendService } from '@/entities/workspace'
 
-export class WorkspaceBackendService implements IWorkspaceBackendService {
-  constructor(
-    private readonly backendManagers: {
-      [T in BackendType]: IBackendManagerService<T>
-    }
-  ) {}
+import { type IWorkspaceIOService } from './interfaces/workspace-io-service'
 
-  import = async <T extends BackendType>(
-    ws: Workspace<T>,
-    data: EncodedWorkspaceData
-  ): Promise<void> => {
-    const backend = await this.backendManagers[ws.backend.type].resolve(ws)
+export class WorkspaceBackendService implements IWorkspaceBackendService {
+  constructor(private readonly workspaceIOService: IWorkspaceIOService) {}
+
+  import = async (ws: Workspace, data: EncodedWorkspaceData): Promise<void> => {
     await backend.import(ws, data)
   }
 
-  export = async <T extends BackendType>(
-    ws: Workspace<T>
-  ): Promise<EncodedWorkspaceData> => {
+  export = async (ws: Workspace): Promise<EncodedWorkspaceData> => {
     const backend = await this.backendManagers[ws.backend.type].resolve(ws)
     return await backend.export(ws)
   }
 
-  release = async <T extends BackendType>(ws: Workspace<T>): Promise<void> => {
+  release = async (ws: Workspace): Promise<void> => {
     await this.backendManagers[ws.backend.type].release(ws)
   }
 }

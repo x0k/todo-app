@@ -1,11 +1,5 @@
 import { type IRegistryService } from '@/shared/app'
-import {
-  type BackendType,
-  type IBackendManagerService,
-  type IBackendService,
-  type Workspace,
-  type WorkspaceId,
-} from '@/shared/kernel'
+import { type Workspace, type WorkspaceId } from '@/shared/kernel'
 import { memoize } from '@/shared/lib/memoize-decorator'
 import {
   asyncWithCache,
@@ -29,6 +23,7 @@ import {
   ThemeService,
 } from '@/features/toggle-theme'
 
+import { type IWorkspaceServicesFactory } from './interfaces/workspace-services-factory'
 import { PersistentStorageService } from './persistent-storage'
 import { WorkspaceBackendService } from './workspace-backend-service'
 
@@ -42,24 +37,28 @@ declare module '@/shared/app' {
     locationStorage: void
   }
 }
+// export interface IBackendManagerService {
+//   resolve: (workspace: Workspace) => Promise<IWorkspaceServicesFactory>
+//   release: (workspace: Workspace) => Promise<void>
+// }
+
+// export interface IWorkspaceServicesFactory {
+//   getTasksListService: (
+//     params: WorkspaceTasksListRouteParams
+//   ) => Promise<ITasksListService>
+//   getToDoService: (workspaceId: WorkspaceId) => Promise<IToDoService>
+//   export: (workspace: Workspace) => Promise<EncodedWorkspaceData>
+//   import: (workspace: Workspace, data: EncodedWorkspaceData) => Promise<void>
+// }
 
 export class RegistryService implements IRegistryService {
-  private readonly resolveBackend = async <T extends BackendType>(
+  private readonly loadWorkspace = async (
     workspaceId: WorkspaceId
-  ): Promise<IBackendService> => {
-    // This call should be cached
-    const workspace = await (
-      await this.workspaceService()
-    ).loadWorkspace<T>(workspaceId)
-    const factory = this.backendPools[workspace.backend.type]
-    // This call should return reused value from pull
-    return await factory.resolve(workspace)
-  }
+  ): Promise<Workspace> =>
+    await (await this.workspaceService()).loadWorkspace(workspaceId)
 
   constructor(
-    private readonly backendPools: {
-      [T in BackendType]: IBackendManagerService<T>
-    }
+    private readonly workspaceServicesFactory: IWorkspaceServicesFactory
   ) {}
 
   locationStorage = memoize(
@@ -87,15 +86,18 @@ export class RegistryService implements IRegistryService {
     async (
       params: WorkspaceTasksListRouteParams
     ): Promise<ITasksListService> => {
-      const backend = await this.resolveBackend(params.workspaceId)
-      return await backend.getTasksListService(params)
+      const workspace = await this.loadWorkspace(params.workspaceId)
+      return await this.workspaceServicesFactory.getTasksListService(
+        workspace,
+        params
+      )
     }
   )
 
   todoService = memoize(
     async (workspaceId: WorkspaceId): Promise<IToDoService> => {
-      const backend = await this.resolveBackend(workspaceId)
-      return await backend.getToDoService(workspaceId)
+      const workspace = await this.loadWorkspace(workspaceId)
+      return await this.workspaceServicesFactory.getToDoService(workspace)
     }
   )
 
